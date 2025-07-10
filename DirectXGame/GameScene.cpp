@@ -40,6 +40,7 @@ void GameScene::Update()
 {
 	stage->Update();
 
+
 	player_->Update();
 }
 
