@@ -14,6 +14,10 @@ public:
 
 	void Draw();
 
+	bool IsScrollFinished() const {
+		return totalScroll > 719.0f;
+	}
+
 private:
 	// 背景テクスチャハンドル
 	uint32_t BGTextureHandle_ = 0;

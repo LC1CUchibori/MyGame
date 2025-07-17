@@ -31,6 +31,8 @@ void GameScene::Initialize()
 	stage = new Stage;
 	stage->Initialize();
 
+	player_->SetStage(stage);
+
 	worldTransform_.Initialize();
 	 // カメラの初期化
 	camera_.Initialize();
@@ -42,6 +44,10 @@ void GameScene::Update()
 
 
 	player_->Update();
+
+	worldTransform_.UpdateMatrix();
+	// 行列を定数バッファに転送
+	worldTransform_.TransferMatrix();
 }
 
 void GameScene::Draw()

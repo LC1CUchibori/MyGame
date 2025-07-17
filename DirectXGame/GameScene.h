@@ -32,7 +32,6 @@ private:
 	KamataEngine::Model2* effectModel_ = nullptr;
 
 	uint32_t textureHandle_ = 0;
-
 	Player* player_ = nullptr;
 	KamataEngine::Model* playerModel_ = nullptr;
 

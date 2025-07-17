@@ -1,6 +1,7 @@
 #pragma once
 #include <KamataEngine.h>
 #include "Model2.h"
+#include "Stage.h"
 
 class Player
 {
@@ -12,6 +13,8 @@ public:
 	void Update();
 
 	void Draw(KamataEngine::Camera* camera,uint32_t textureHandle);
+
+	void SetStage(Stage* stage);
 private:
 	// ワールド変換データ
 	KamataEngine::WorldTransform worldTransform_;
@@ -24,5 +27,10 @@ private:
 	KamataEngine::Camera* camera_ = nullptr;
 
 	KamataEngine::Vector3 position_;
+
+	Stage* stage_ = nullptr;
+
+	bool isDescending_ = true;
+	float descendSpeed_ = 0.5f; // 落下速度
 };
 
