@@ -1,23 +1,31 @@
 #pragma once
 #include <KamataEngine.h>
 #include "Model2.h"
-#include "Stage.h"
+#include <vector>
 
-class Player
+class Enemy
 {
 public:
-	Player();
-	~Player();
+	Enemy();
+	~Enemy();
+
 	void Initialize(KamataEngine::Model* model,uint32_t textureHandle,KamataEngine::Camera* camera);
 
 	void Update();
 
 	void Draw(KamataEngine::Camera* camera,uint32_t textureHandle);
 
+	void SetPosition(const KamataEngine::Vector3& pos) {
+		position_ = pos;
+	}
+
+	void SetSpeed(float speed) { speed_ = speed; }
+
+	void SetDirection(int dir) { direction_ = dir; }
+
 private:
 	// ワールド変換データ
 	KamataEngine::WorldTransform worldTransform_;
-	KamataEngine::Input* input = KamataEngine::Input::GetInstance();
 	// モデル
 	KamataEngine::Model* model_ = nullptr;
 	// テクスチャハンドル
@@ -27,5 +35,7 @@ private:
 
 	KamataEngine::Vector3 position_;
 
+	float speed_ = 0.2f;
+	int direction_ = -1; 
 };
 
