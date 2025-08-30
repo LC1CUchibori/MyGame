@@ -43,6 +43,12 @@ public:
 	// 射影行列
 	Matrix4x4 matProjection;
 
+	// ビュー行列の取得
+	const Matrix4x4& GetViewMatrix() const { return matView; }
+
+	// 射影行列の取得
+	const Matrix4x4& GetProjectionMatrix() const { return matProjection; }
+
 	Camera() = default;
 	~Camera() = default;
 

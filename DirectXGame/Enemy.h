@@ -23,6 +23,11 @@ public:
 
 	void SetDirection(int dir) { direction_ = dir; }
 
+	const KamataEngine::Vector3& GetPosition() const {
+		return position_;
+	}
+
+
 private:
 	// ワールド変換データ
 	KamataEngine::WorldTransform worldTransform_;

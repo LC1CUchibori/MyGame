@@ -68,14 +68,30 @@ void GameScene::Update()
 
 	for (Enemy* enemy : enemies_) {
 		enemy->Update();
+
+		// 敵の位置を取得
+		KamataEngine::Vector3 pos = enemy->GetPosition();
+
+		// 画面外に出たか判定
+		if (pos.x < -60.0f || pos.x > 60.0f) {
+			// 再出現処理
+			int direction = (std::rand() % 2 == 0) ? -1 : 1;
+
+			float y = -15.0f + static_cast<float>(std::rand()) / RAND_MAX * 50.0f;
+			float x = (direction == -1) ? 40.0f + std::rand() % 20 : -40.0f - std::rand() % 20;
+
+			enemy->SetPosition({ x, y, 30.0f });
+			enemy->SetDirection(direction);
+			enemy->SetSpeed(0.2f + static_cast<float>(std::rand()) / RAND_MAX * 0.5f);
+		}
 	}
 
 	player_->Update();
 
 	worldTransform_.UpdateMatrix();
-	// 行列を定数バッファに転送
 	worldTransform_.TransferMatrix();
 }
+
 
 void GameScene::Draw()
 {
