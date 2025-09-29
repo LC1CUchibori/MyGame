@@ -49,6 +49,7 @@ public:
 	// 射影行列の取得
 	const Matrix4x4& GetProjectionMatrix() const { return matProjection; }
 
+
 	Camera() = default;
 	~Camera() = default;
 

@@ -6,6 +6,7 @@
 #include "Enemy.h"
 #include <cstdlib>
 #include <ctime>  
+#include "CrossHair3D.h"
 
 class GameScene
 {
@@ -59,5 +60,8 @@ private:
 	KamataEngine::Sprite* cursorSprite_ = nullptr;
 	float cursorX_ = 400.0f; // 初期位置（画面中央など）
 	float cursorY_ = 300.0f;
+
+	Crosshair3D* crosshair_ = nullptr;
+	KamataEngine::Model* crosshairModel_ = nullptr;
 };
 

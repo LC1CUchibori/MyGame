@@ -56,6 +56,11 @@ void GameScene::Initialize()
 	stage = new Stage;
 	stage->Initialize();
 
+	// 照準
+	crosshairModel_ = Model::CreateFromOBJ("CrossHair"); 
+	crosshair_ = new Crosshair3D();
+	crosshair_->Initialize(crosshairModel_);
+
 
 	worldTransform_.Initialize();
 	 // カメラの初期化
@@ -87,6 +92,34 @@ void GameScene::Update()
 	}
 
 	player_->Update();
+
+	crosshair_->Update();
+
+	if (input->TriggerKey(DIK_SPACE)) {
+		Vector3 crossPos = crosshair_->GetPosition();
+
+		for (Enemy* enemy : enemies_) {
+			Vector3 enemyPos = enemy->GetPosition();
+
+			float dx = enemyPos.x - crossPos.x;
+			float dy = enemyPos.y - crossPos.y;
+			float dz = enemyPos.z - crossPos.z;
+			float dist = sqrtf(dx*dx + dy*dy + dz*dz);
+
+			if (dist < 3.0f) {
+				// 倒されたらリスポーン
+				int direction = (std::rand() % 2 == 0) ? -1 : 1;
+				float y = -15.0f + static_cast<float>(std::rand()) / RAND_MAX * 50.0f;
+				float x = (direction == -1) ? 40.0f + std::rand() % 20 : -40.0f - std::rand() % 20;
+
+				enemy->SetPosition({ x, y, 30.0f });
+				enemy->SetDirection(direction);
+				enemy->SetSpeed(0.2f + static_cast<float>(std::rand()) / RAND_MAX * 0.5f);
+			}
+		}
+	}
+
+
 
 	worldTransform_.UpdateMatrix();
 	worldTransform_.TransferMatrix();
@@ -121,6 +154,8 @@ void GameScene::Draw()
 	for (Enemy* enemy : enemies_) {
 		enemy->Draw(&camera_, enemyTextureHandle_);
 	}
+
+	crosshair_->Draw(&camera_);
 
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
