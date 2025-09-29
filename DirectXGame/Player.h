@@ -14,6 +14,8 @@ public:
 
 	void Draw(KamataEngine::Camera* camera,uint32_t textureHandle);
 
+	KamataEngine::Vector3 GetPosition() const { return position_; }
+
 private:
 	// ワールド変換データ
 	KamataEngine::WorldTransform worldTransform_;

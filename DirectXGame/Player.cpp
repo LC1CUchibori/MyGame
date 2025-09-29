@@ -20,7 +20,7 @@ void Player::Initialize(KamataEngine::Model* model,uint32_t textureHandle,Kamata
 
 	input = Input::GetInstance(); 
 
-	position_ = { 00.0f, -10.0f, 0.0f };
+	position_ = { 00.0f, -15.0f, 0.0f };
 
 	worldTransform_.Initialize();
 
@@ -32,21 +32,6 @@ void Player::Initialize(KamataEngine::Model* model,uint32_t textureHandle,Kamata
 
 void Player::Update()
 {
-	// プレイヤー移動入力処理
-	const float speed = 0.2f;
-
-	if (input->PushKey(DIK_A)) {
-		position_.x -= speed;
-	}
-	if (input->PushKey(DIK_D)) {
-		position_.x += speed;
-	}
-	if (input->PushKey(DIK_W)) {
-		position_.y += speed;
-	}
-	if (input->PushKey(DIK_S)) {
-		position_.y -= speed;
-	}
 
 	worldTransform_.translation_ = position_;
 	worldTransform_.UpdateMatrix();

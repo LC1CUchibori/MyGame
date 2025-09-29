@@ -13,10 +13,10 @@ void Crosshair3D::Initialize(Model* model) {
 void Crosshair3D::Update() {
     Input* input = Input::GetInstance();
 
-    if (input->PushKey(DIK_UP))    worldTransform_.translation_.y += speed_;
-    if (input->PushKey(DIK_DOWN))  worldTransform_.translation_.y -= speed_;
-    if (input->PushKey(DIK_LEFT))  worldTransform_.translation_.x -= speed_;
-    if (input->PushKey(DIK_RIGHT)) worldTransform_.translation_.x += speed_;
+    if (input->PushKey(DIK_W))    worldTransform_.translation_.y += speed_;
+    if (input->PushKey(DIK_S))  worldTransform_.translation_.y -= speed_;
+    if (input->PushKey(DIK_A))  worldTransform_.translation_.x -= speed_;
+    if (input->PushKey(DIK_D)) worldTransform_.translation_.x += speed_;
 
     worldTransform_.UpdateMatrix();
     worldTransform_.TransferMatrix();

@@ -53,6 +53,7 @@ void GameScene::Initialize()
 		enemies_.push_back(enemy);
 	}
 
+	// ステージ
 	stage = new Stage;
 	stage->Initialize();
 
@@ -91,8 +92,10 @@ void GameScene::Update()
 		}
 	}
 
+	// プレイヤー更新
 	player_->Update();
 
+	// 照準更新
 	crosshair_->Update();
 
 	if (input->TriggerKey(DIK_SPACE)) {
