@@ -14,6 +14,8 @@ public:
 
 	void Draw(KamataEngine::Camera* camera,uint32_t textureHandle);
 
+	void SetYaw(float yaw);
+
 	KamataEngine::Vector3 GetPosition() const { return position_; }
 
 private:
@@ -26,8 +28,10 @@ private:
 	uint32_t textureHandle_ = 0u;
 	// カメラ
 	KamataEngine::Camera* camera_ = nullptr;
-
+	// 位置
 	KamataEngine::Vector3 position_;
 
+	// Y軸回転
+	float  yaw_ = 0.0f;
 };
 

@@ -24,13 +24,10 @@ public:
 	// 描画
 	void Draw();
 
-
-
 private:
 	KamataEngine::Model* model_ = nullptr;
 	KamataEngine::WorldTransform worldTransform_;
 	KamataEngine::Input* input = KamataEngine::Input::GetInstance();
-
 
 	// カメラ
 	KamataEngine::Camera camera_;
@@ -51,7 +48,6 @@ private:
 	uint32_t enemyTextureHandle_ = 0;
 
 	Stage* stage = nullptr;
-
 
 	KamataEngine::Vector3 cursorPos_{0.0f, 0.0f, 30.0f}; // 初期位置
 	float cursorSpeed_ = 0.5f; // 移動速度

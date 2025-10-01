@@ -43,3 +43,11 @@ void Player::Draw(KamataEngine::Camera* camera, uint32_t textureHandle)
 {
 	model_->Draw(worldTransform_, *camera, textureHandle);
 }
+
+void Player::SetYaw(float yaw)
+{
+	yaw_ = yaw;
+	worldTransform_.rotation_ = { 0.0f,yaw_,0.0f };
+	worldTransform_.UpdateMatrix();
+	worldTransform_.TransferMatrix();
+}

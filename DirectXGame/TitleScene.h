@@ -4,7 +4,7 @@
 #include <cstdint>
 #include <KamataEngine.h>
 #include "Stage.h"
-
+#include "TitleModel.h"
 
 class TitleScene
 {
@@ -19,10 +19,10 @@ public:
 
 	void Draw();
 private:
-	// タイトルテクスチャハンドル
-	uint32_t TitleTextureHandle_ = 0;
-	// タイトルスプライト
-	KamataEngine::Sprite* TitleSprite_ = nullptr;
+	KamataEngine::Model* model_ = nullptr;
+	KamataEngine::WorldTransform worldTransform_;
+	// カメラ
+	KamataEngine::Camera camera_;
 
 	// タイトル操作テクスチャハンドル
 	uint32_t HitTextureHandle_ = 0;
@@ -31,12 +31,8 @@ private:
 
 	Stage* stage = nullptr;
 
-	float titleY_ = -100.0f;             // 初期Y座標（画面上からスタート）
-	float targetY_ = 200.0f;             // 到達Y座標（真ん中）
-	float fallSpeed_ = 5.0f;             // Y方向のスピード
-	float oscillationTime_ = 0.0f;       // 揺れ用の時間
-	bool isTitleStopped_ = false;        // 停止フラグ
-	bool isTitleMoving_ = false;
+	TitleModel* title_ = nullptr;
+	KamataEngine::Model* titleModel_ = nullptr;
 
 	float hitAlphaTime_ = 0.0f;
 };

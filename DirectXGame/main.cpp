@@ -43,6 +43,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	titleScene = new TitleScene;
 	titleScene->Initialize();
 
+
 	// メインループ
 	while (true) {
 		if (KamataEngine::Update()) {
@@ -69,6 +70,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	delete gameScene;
 	// nullptrの代入
 	gameScene = nullptr;
+
+	delete titleScene;
+	titleScene = nullptr;
 
 	return 0;
 }

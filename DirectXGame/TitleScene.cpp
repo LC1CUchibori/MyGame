@@ -9,59 +9,32 @@ TitleScene::TitleScene()
 
 TitleScene::~TitleScene()
 {
-	delete TitleSprite_;
+	delete titleModel_;
 }
 
 void TitleScene::Initialize()
 {
-	TitleTextureHandle_ = TextureManager::Load("title.png");
-	TitleSprite_ = Sprite::Create(TitleTextureHandle_, { 150 + 50, -100 });
-
 	HitTextureHandle_ = TextureManager::Load("Hit.png");
 	HitSprite_ = Sprite::Create(HitTextureHandle_, { 170,200 });
 
+	titleModel_ = Model::CreateFromOBJ("Title");
+	title_ = new TitleModel();
+	title_->Initialize(titleModel_);
+
+	// 背景ステージ
 	stage = new Stage;
 	stage->Initialize();
 
-	titleY_ = -100.0f;
-	targetY_ = 50.0f;
-	isTitleMoving_ = false;
-	isTitleStopped_ = false;
-	oscillationTime_ = 0.0f;
-
+	// 点滅タイマー
 	hitAlphaTime_ = 0.0f;
+
+	// カメラの初期化
+	camera_.Initialize();
 }
 
 void TitleScene::Update()
 {
-	Input* input = Input::GetInstance();
-
-	// スペースキーが押されたら移動開始
-	if (!isTitleMoving_ && input->TriggerKey(DIK_SPACE)) {
-		isTitleMoving_ = true;
-	}
-
-	if (isTitleMoving_ && !isTitleStopped_) {
-		// Y座標のイージング移動
-		float deltaY = targetY_ - titleY_;
-		titleY_ += deltaY * 0.03f;
-
-		// 揺れの時間更新
-		oscillationTime_ += 0.01f;
-
-		// X座標揺れ
-		float offsetX = std::sin(oscillationTime_) * 10.0f;
-
-		// 停止条件
-		if (std::abs(deltaY) < 0.5f) {
-			isTitleStopped_ = true;
-			titleY_ = targetY_;
-			offsetX = 0.0f;
-		}
-
-		// スプライト位置設定（揺れ含む）
-		TitleSprite_->SetPosition({ 150 + 50, titleY_ });
-	}
+	//Input* input = Input::GetInstance();
 
 	// α値用タイマーを進める
 	hitAlphaTime_ += 1.0f / 60.0f;  // 60FPS前提
@@ -72,6 +45,8 @@ void TitleScene::Update()
 	// スプライトに色設定（R,G,B=1.0f, αだけ変化）
 	HitSprite_->SetColor({ 1.0f, 1.0f, 1.0f, alpha });
 
+	//=======タイトルモデル移動処理===========
+	title_->Update();
 
 	stage->Update();
 }
@@ -98,9 +73,17 @@ void TitleScene::Draw()
 	// 3Dモデル描画前処理
 	Sprite::PreDraw(dxCommn->GetCommandList());
 
-	TitleSprite_->Draw();
 	HitSprite_->Draw();
 
 	// 3Dモデル描画後処理
 	Sprite::PostDraw();
+
+#pragma region 3Dオブジェクト描画
+	dxCommn->ClearDepthBuffer();
+	// 3Dオブジェクト描画前処理
+	Model::PreDraw(dxCommn->GetCommandList());
+
+	title_->Draw(&camera_);
+
+	Model::PostDraw();
 }

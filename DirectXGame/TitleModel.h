@@ -3,7 +3,8 @@
 #include "Model2.h"
 #include <vector>
 
-class Crosshair3D {
+class TitleModel
+{
 public:
     void Initialize(KamataEngine::Model* model);
 
@@ -12,9 +13,13 @@ public:
     void Draw(KamataEngine::Camera* camera);
 
     KamataEngine::Vector3 GetPosition() const { return worldTransform_.translation_; }
-
 private:
-    KamataEngine::Model* model_ = nullptr;
+    KamataEngine::Model* TitleModel_ = nullptr;
     KamataEngine::WorldTransform worldTransform_;
-    float speed_ = 0.5f;
+
+    KamataEngine::Vector3 titlePosition_ = { 0.0f,0.0f,0.0f };
+	KamataEngine::Vector3 titleVelocity_ = { 0.5f,0.0f,0.0f };
+    float leftLimit  = -15.0f;
+    float rightLimit = 15.0f;
 };
+

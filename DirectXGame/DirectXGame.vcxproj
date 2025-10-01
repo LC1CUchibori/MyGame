@@ -114,6 +114,7 @@
     <ClCompile Include="Model2.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Stage.cpp" />
+    <ClCompile Include="TitleModel.cpp" />
     <ClCompile Include="TitleScene.cpp" />
     <ClCompile Include="WorldTransformEx.cpp" />
   </ItemGroup>
@@ -200,6 +201,7 @@
     <ClInclude Include="Model2.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Stage.h" />
+    <ClInclude Include="TitleModel.h" />
     <ClInclude Include="TitleScene.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

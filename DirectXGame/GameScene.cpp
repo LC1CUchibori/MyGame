@@ -11,6 +11,7 @@ GameScene::~GameScene()
 	delete effectModel_;
 	delete model_;
 	delete player_;
+	delete crosshairModel_;
 
 	Model2::StaticFinalize();
 }
@@ -29,7 +30,7 @@ void GameScene::Initialize()
 	player_ = new Player();
 	player_->Initialize(playerModel_,playerTextureHandle_,&camera_);
 
-	// 敵
+	// ===============================敵の初期化================================
 	enemyTextureHandle_ = TextureManager::Load("white1x1.png");
 	enemyModel_ = Model::Create();
 
@@ -52,6 +53,7 @@ void GameScene::Initialize()
 
 		enemies_.push_back(enemy);
 	}
+	//===================================================================
 
 	// ステージ
 	stage = new Stage;
@@ -70,8 +72,10 @@ void GameScene::Initialize()
 
 void GameScene::Update()
 {
+	// 背景ステージ
 	stage->Update();
 
+	// ==========================敵の処理===========================
 	for (Enemy* enemy : enemies_) {
 		enemy->Update();
 
@@ -91,16 +95,24 @@ void GameScene::Update()
 			enemy->SetSpeed(0.2f + static_cast<float>(std::rand()) / RAND_MAX * 0.5f);
 		}
 	}
+    // ===============================================================
 
-	// プレイヤー更新
-	player_->Update();
 
-	// 照準更新
+	// =========================照準更新===============================
 	crosshair_->Update();
 
-	if (input->TriggerKey(DIK_SPACE)) {
-		Vector3 crossPos = crosshair_->GetPosition();
+	Vector3 crossPos = crosshair_->GetPosition();
+	Vector3 playerPos = player_->GetPosition();
 
+	// プレイヤーからクロスヘアまでの差分
+	float deltaX = crossPos.x - playerPos.x;
+	float deltaZ = crossPos.z - playerPos.z; 
+
+	// X/Z平面での角度
+	float targetYaw = atan2f(deltaZ, deltaX); 
+	player_->SetYaw(targetYaw);
+
+	if (input->TriggerKey(DIK_SPACE)) {
 		for (Enemy* enemy : enemies_) {
 			Vector3 enemyPos = enemy->GetPosition();
 
@@ -121,8 +133,10 @@ void GameScene::Update()
 			}
 		}
 	}
-
-
+	// ========================================================================
+	
+	// プレイヤー更新
+	player_->Update();
 
 	worldTransform_.UpdateMatrix();
 	worldTransform_.TransferMatrix();
@@ -152,27 +166,26 @@ void GameScene::Draw()
 	// 3Dオブジェクト描画前処理
 	Model::PreDraw(dxCommn->GetCommandList());
 
+
+	// プレイヤーの描画
 	player_->Draw(&camera_, playerTextureHandle_);
 
+	// 敵の描画
 	for (Enemy* enemy : enemies_) {
 		enemy->Draw(&camera_, enemyTextureHandle_);
 	}
 
+	// 照準の描画
 	crosshair_->Draw(&camera_);
 
-	/// <summary>
-	/// ここに3Dオブジェクトの描画処理を追加できる
-	/// </summary>
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
 #pragma endregion
 
-
 	// 3Dモデル描画前処理
 	Model2::PreDraw(dxCommn->GetCommandList());
 
-	
 
 	// 3Dモデル描画後処理
 	Model2::PostDraw();
