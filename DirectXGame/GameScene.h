@@ -7,7 +7,6 @@
 #include <cstdlib>
 #include <ctime>  
 #include "CrossHair3D.h"
-#include "Bullet.h"
 
 class GameScene
 {
