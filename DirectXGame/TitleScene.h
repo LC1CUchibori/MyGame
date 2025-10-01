@@ -29,7 +29,7 @@ private:
 	// タイトル操作スプライト
 	KamataEngine::Sprite* HitSprite_ = nullptr;
 
-	Stage* stage = nullptr;
+	Stage* stage1 = nullptr;
 
 	TitleModel* title_ = nullptr;
 	KamataEngine::Model* titleModel_ = nullptr;

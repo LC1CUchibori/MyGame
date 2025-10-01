@@ -22,8 +22,8 @@ void TitleScene::Initialize()
 	title_->Initialize(titleModel_);
 
 	// 背景ステージ
-	stage = new Stage;
-	stage->Initialize();
+	stage1 = new Stage;
+	stage1->Initialize();
 
 	// 点滅タイマー
 	hitAlphaTime_ = 0.0f;
@@ -48,7 +48,7 @@ void TitleScene::Update()
 	//=======タイトルモデル移動処理===========
 	title_->Update();
 
-	stage->Update();
+	stage1->Update();
 }
 
 void TitleScene::Draw()
@@ -63,7 +63,7 @@ void TitleScene::Draw()
 	/// <summary>
 	/// ここに背景スプライトの描画処理を追加できる
 	/// </summary>
-	stage->Draw();
+	stage1->Draw();
 
 	// スプライト描画後処理
 	Sprite::PostDraw();
