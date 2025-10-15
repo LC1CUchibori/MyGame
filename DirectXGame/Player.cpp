@@ -1,4 +1,5 @@
 #include "Player.h"
+#include <cassert>
 using namespace KamataEngine;
 
 Player::Player()

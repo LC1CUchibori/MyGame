@@ -108,6 +108,7 @@
   <ItemGroup>
     <ClCompile Include="CrossHair3D.cpp" />
     <ClCompile Include="Enemy.cpp" />
+    <ClCompile Include="Fade.cpp" />
     <ClCompile Include="GameScene.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="math.cpp" />
@@ -196,6 +197,7 @@
   <ItemGroup>
     <ClInclude Include="CrossHair3D.h" />
     <ClInclude Include="Enemy.h" />
+    <ClInclude Include="Fade.h" />
     <ClInclude Include="GameScene.h" />
     <ClInclude Include="math.h" />
     <ClInclude Include="Model2.h" />

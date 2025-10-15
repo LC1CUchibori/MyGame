@@ -1,98 +1,124 @@
 #include "KamataEngine.h"
 #include "GameScene.h"
 #include "TitleScene.h"
+#include "Fade.h"     // ← フェード用クラス追加
 #include <Windows.h>
 
 using namespace KamataEngine;
 
 GameScene* gameScene = nullptr;
 TitleScene* titleScene = nullptr;
+Fade fade;  // フェード用インスタンス
 
 enum class Scene {
-	kUnknown=0,
-
-	kTitleScene,
-	kGame,
+    kUnknown = 0,
+    kTitleScene,
+    kGame,
 };
 
 // 現在シーン
 Scene scene = Scene::kUnknown;
 
-//シーン切り替え処理
+// シーン切り替え処理
 void ChangeScene();
-
-//シーンの更新
+// シーンの更新
 void UpdateScene();
-
-//シーンの描画
+// シーンの描画
 void DrawScene();
 
 
-// Windowsアプリでのエントリーポイント(main関数)
+// Windowsアプリでのエントリーポイント
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
-	
-	// エンジンの初期化
-	KamataEngine::Initialize(L"LE3C_02_ウチボリ_ユウタ");
 
-	DirectXCommon* dxCommon = DirectXCommon::GetInstance();
+    // エンジン初期化
+    KamataEngine::Initialize(L"LE3C_02_ウチボリ_ユウタ");
+    DirectXCommon* dxCommon = DirectXCommon::GetInstance();
 
-	
+    // フェード初期化
+    fade.Initialize();
 
-	// 最初のシーンの初期化
-	scene = Scene::kTitleScene;
-	titleScene = new TitleScene;
-	titleScene->Initialize();
+    // 最初のシーン
+    scene = Scene::kTitleScene;
+    titleScene = new TitleScene;
+    titleScene->Initialize();
 
+    // メインループ
+    while (true) {
+        if (KamataEngine::Update()) {
+            break;
+        }
 
-	// メインループ
-	while (true) {
-		if (KamataEngine::Update()) {
-			break;
-		}
+        // フェード更新
+        fade.Update();
 
-		ChangeScene();
+        // 🔸 フェード中は全シーンの更新を止める
+        if (fade.IsFading()) {
+            // ただし ChangeScene は動かす（フェード完了を検知するため）
+            ChangeScene();
 
-		UpdateScene();
+            // --- 描画だけは行う ---
+            dxCommon->PreDraw();
+            DrawScene();  // 現在のシーンを描画
+            fade.Draw();  // その上にフェードを描画
+            dxCommon->PostDraw();
+            continue;  // ← 更新スキップ
+        }
 
-		// 描画開始
-		dxCommon->PreDraw();
+        // シーン切り替え処理
+        ChangeScene();
 
-		DrawScene();
+        // シーン更新処理
+        UpdateScene();
 
-		// 描画終了処理
-		dxCommon->PostDraw();
-	}
+        // 描画開始
+        dxCommon->PreDraw();
 
-	// エンジンの終了処理
-	KamataEngine::Finalize();
+        DrawScene();
 
-	// ゲームシーンの解放
-	delete gameScene;
-	// nullptrの代入
-	gameScene = nullptr;
+        // 🔸 フェード描画（最後に上に重ねる）
+        fade.Draw();
 
-	delete titleScene;
-	titleScene = nullptr;
+        // 描画終了
+        dxCommon->PostDraw();
+    }
 
-	return 0;
+    // 終了処理
+    KamataEngine::Finalize();
+
+    delete gameScene;
+    gameScene = nullptr;
+
+    delete titleScene;
+    titleScene = nullptr;
+
+    return 0;
 }
 
-void ChangeScene()
-{
+
+void ChangeScene() {
+	static bool isTransitioning = false;
+
 	switch (scene)
 	{
 	case Scene::kTitleScene:
-		if (Input::GetInstance()->TriggerKey(DIK_RETURN)) {
-			// シーンの変更
-			scene = Scene::kGame;
-			// 旧シーンの解放
+		if (!isTransitioning && Input::GetInstance()->TriggerKey(DIK_RETURN)) {
+			fade.StartFadeOut();
+			isTransitioning = true;
+		}
+		if (isTransitioning && fade.IsFadeOutEnd()) {
 			delete titleScene;
 			titleScene = nullptr;
-			// 新シーンの生成と初期化
+
 			gameScene = new GameScene();
 			gameScene->Initialize();
+
+			scene = Scene::kGame;
+
+			fade.StartFadeIn();
+			isTransitioning = false;
 		}
 		break;
+
 	case Scene::kGame:
 		break;
 	}
