@@ -7,11 +7,10 @@ Enemy::Enemy() {
 Enemy::~Enemy() {
 }
 
-void Enemy::Initialize(KamataEngine::Model* model, uint32_t textureHandle, KamataEngine::Camera* camera) {
+void Enemy::Initialize(KamataEngine::Model* model, KamataEngine::Camera* camera) {
     assert(model);
 
     model_ = model;
-    textureHandle_ = textureHandle;
     camera_ = camera;
 
     // 敵の初期位置（奥のほうに配置）
@@ -63,6 +62,6 @@ void Enemy::Update() {
 
 
 
-void Enemy::Draw(KamataEngine::Camera* camera, uint32_t textureHandle) {
-    model_->Draw(worldTransform_, *camera, textureHandle);
+void Enemy::Draw(KamataEngine::Camera* camera) {
+    model_->Draw(worldTransform_, *camera);
 }

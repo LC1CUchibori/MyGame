@@ -9,11 +9,11 @@ public:
 	Enemy();
 	~Enemy();
 
-	void Initialize(KamataEngine::Model* model,uint32_t textureHandle,KamataEngine::Camera* camera);
+	void Initialize(KamataEngine::Model* model,KamataEngine::Camera* camera);
 
 	void Update();
 
-	void Draw(KamataEngine::Camera* camera,uint32_t textureHandle);
+	void Draw(KamataEngine::Camera* camera);
 
 	void SetPosition(const KamataEngine::Vector3& pos) {
 		position_ = pos;

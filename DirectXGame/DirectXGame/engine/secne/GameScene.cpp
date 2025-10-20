@@ -32,7 +32,7 @@ void GameScene::Initialize()
 
 	enemyModel_ = Model::CreateFromOBJ("Enemy");
 	enemy_ = new Enemy();
-	enemy_->Initialize(enemyModel_, enemyTextureHandle_, &camera_);
+	enemy_->Initialize(enemyModel_,&camera_);
 
 	// ===============================背景演出の初期化================================
 	backEffectTextureHandle_ = TextureManager::Load("white1x1.png");
@@ -165,7 +165,7 @@ void GameScene::Draw()
 	player_->Draw(&camera_, playerTextureHandle_);
 
 	// 敵の描画
-	enemy_->Draw(&camera_, enemyTextureHandle_);
+	enemy_->Draw(&camera_);
 
 	// 背景演出の描画
 	/*for (BackEffect* backEffect : backEffects_) {
