@@ -1,9 +1,10 @@
 #pragma once
 #include "KamataEngine.h"
 #include "../3d/Model2.h"
-#include "../../applikation/Stage.h"
-#include "../../applikation/Player.h"
-#include "../../applikation/Enemy.h"
+#include "../../application/Stage.h"
+#include "../../application/Player.h"
+#include "../../application/Enemy.h"
+#include "../../application/BackEffect.h"
 #include <cstdlib>
 #include <ctime>
 #include "../3d/CrossHair3D.h"
@@ -43,9 +44,14 @@ private:
 	uint32_t playerTextureHandle_ = 0;
 
 	// 敵
-	std::vector<Enemy*> enemies_; // 複数の敵
+	Enemy* enemy_; // 複数の敵
 	KamataEngine::Model* enemyModel_ = nullptr;
 	uint32_t enemyTextureHandle_ = 0;
+
+	// 背景演出
+	std::vector<BackEffect*> backEffects_; 
+	KamataEngine::Model* backEffectModel_ = nullptr;
+	uint32_t backEffectTextureHandle_ = 0;
 
 	Stage* stage = nullptr;
 

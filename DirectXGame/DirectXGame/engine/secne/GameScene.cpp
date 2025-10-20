@@ -30,29 +30,34 @@ void GameScene::Initialize()
 	player_ = new Player();
 	player_->Initialize(playerModel_,playerTextureHandle_,&camera_);
 
-	// ===============================敵の初期化================================
-	enemyTextureHandle_ = TextureManager::Load("white1x1.png");
-	enemyModel_ = Model::Create();
+	enemyModel_ = Model::CreateFromOBJ("Enemy");
+	enemy_ = new Enemy();
+	enemy_->Initialize(enemyModel_, enemyTextureHandle_, &camera_);
+
+	// ===============================背景演出の初期化================================
+	backEffectTextureHandle_ = TextureManager::Load("white1x1.png");
+	backEffectModel_ = Model::Create();
 
 	for (int i = 0; i < 20; ++i) {
-		Enemy* enemy = new Enemy();
-		enemy->Initialize(playerModel_, playerTextureHandle_, &camera_);
+		BackEffect* backEffect = new BackEffect();
+		backEffect->Initialize(playerModel_, playerTextureHandle_, &camera_);
 
-		// 右からか左からかを選別
-		int direction = (std::rand() % 2 == 0) ? -1 : 1;
+		// 左から右だけ
+		int direction = 1;
 
-		// 高さをランダム
+		// 高さランダム
 		float y = -15.0f + static_cast<float>(std::rand()) / RAND_MAX * 50.0f;
 
-		// 左右をランダム
-		float x = (direction == -1) ? 40.0f + std::rand() % 20 : -40.0f - std::rand() % 20;
+		// 画面左端の少し外から出現
+		float x = -50.0f - static_cast<float>(std::rand() % 20);
 
-		enemy->SetPosition({ x,y,30.0f});
-		enemy->SetDirection(direction);
-		enemy->SetSpeed(0.2f+ static_cast<float>(std::rand()) / RAND_MAX * 0.5f);
+		backEffect->SetPosition({ x, y, 60.0f });
+		backEffect->SetDirection(direction);
+		backEffect->SetSpeed(0.2f + static_cast<float>(std::rand()) / RAND_MAX * 0.5f);
 
-		enemies_.push_back(enemy);
+		backEffects_.push_back(backEffect);
 	}
+
 	//===================================================================
 
 	// ステージ
@@ -75,26 +80,22 @@ void GameScene::Update()
 	// 背景ステージ
 	stage->Update();
 
-	// ==========================敵の処理===========================
-	for (Enemy* enemy : enemies_) {
-		enemy->Update();
+	// ==========================背景演出の処理===========================
+	//for (BackEffect* backEffect : backEffects_) {
+	//	backEffect->Update();
 
-		// 敵の位置を取得
-		KamataEngine::Vector3 pos = enemy->GetPosition();
+	//	// 背景演出の位置を取得
+	//	KamataEngine::Vector3 pos = backEffect->GetPosition();
 
-		// 画面外に出たか判定
-		if (pos.x < -60.0f || pos.x > 60.0f) {
-			// 再出現処理
-			int direction = (std::rand() % 2 == 0) ? -1 : 1;
+	//	if (pos.x > 80.0f) {  // 80は画面右端目安
+	//		float y = -15.0f + static_cast<float>(std::rand()) / RAND_MAX * 50.0f;
+	//		float x = -80.0f - static_cast<float>(std::rand() % 20); // 左端外
 
-			float y = -15.0f + static_cast<float>(std::rand()) / RAND_MAX * 50.0f;
-			float x = (direction == -1) ? 40.0f + std::rand() % 20 : -40.0f - std::rand() % 20;
-
-			enemy->SetPosition({ x, y, 30.0f });
-			enemy->SetDirection(direction);
-			enemy->SetSpeed(0.2f + static_cast<float>(std::rand()) / RAND_MAX * 0.5f);
-		}
-	}
+	//		backEffect->SetPosition({ x, y, 60.0f });
+	//		backEffect->SetDirection(1); // 左から右
+	//		backEffect->SetSpeed(0.2f + static_cast<float>(std::rand()) / RAND_MAX * 0.5f);
+	//	}
+	//}
     // ===============================================================
 
 
@@ -104,39 +105,32 @@ void GameScene::Update()
 	Vector3 crossPos = crosshair_->GetPosition();
 	Vector3 playerPos = player_->GetPosition();
 
-	// プレイヤーからクロスヘアまでの差分
-	float deltaX = crossPos.x - playerPos.x;
-	float deltaZ = crossPos.z - playerPos.z; 
+	if (input->TriggerKey(DIK_SPACE) && enemy_) {
 
-	// X/Z平面での角度
-	float targetYaw = atan2f(deltaZ, deltaX); 
-	player_->SetYaw(targetYaw);
+		Vector3 enemyPos = enemy_->GetPosition();
 
-	if (input->TriggerKey(DIK_SPACE)) {
-		for (Enemy* enemy : enemies_) {
-			Vector3 enemyPos = enemy->GetPosition();
+		// クロスヘアと敵の距離
+		float dx = enemyPos.x - crossPos.x;
+		float dy = enemyPos.y - crossPos.y;
+		float dz = enemyPos.z - crossPos.z;
+		float dist = sqrtf(dx * dx + dy * dy + dz * dz);
 
-			float dx = enemyPos.x - crossPos.x;
-			float dy = enemyPos.y - crossPos.y;
-			float dz = enemyPos.z - crossPos.z;
-			float dist = sqrtf(dx*dx + dy*dy + dz*dz);
-
-			if (dist < 3.0f) {
-				// 倒されたらリスポーン
-				int direction = (std::rand() % 2 == 0) ? -1 : 1;
-				float y = -15.0f + static_cast<float>(std::rand()) / RAND_MAX * 50.0f;
-				float x = (direction == -1) ? 40.0f + std::rand() % 20 : -40.0f - std::rand() % 20;
-
-				enemy->SetPosition({ x, y, 30.0f });
-				enemy->SetDirection(direction);
-				enemy->SetSpeed(0.2f + static_cast<float>(std::rand()) / RAND_MAX * 0.5f);
-			}
+		// 距離が一定以内なら命中
+		if (dist < 3.0f) {
+			// 命中処理：リスポーンさせる
+			enemy_->SetPosition({ 0.0f, 10.0f, 200.0f });
+			enemy_->ResetApproach(); // ← 後述（Enemyに追加する関数）
 		}
 	}
 	// ========================================================================
 	
 	// プレイヤー更新
 	player_->Update();
+
+	// 敵の更新
+	if (enemy_) {
+		enemy_->Update();
+	}
 
 	worldTransform_.UpdateMatrix();
 	worldTransform_.TransferMatrix();
@@ -171,9 +165,12 @@ void GameScene::Draw()
 	player_->Draw(&camera_, playerTextureHandle_);
 
 	// 敵の描画
-	for (Enemy* enemy : enemies_) {
-		enemy->Draw(&camera_, enemyTextureHandle_);
-	}
+	enemy_->Draw(&camera_, enemyTextureHandle_);
+
+	// 背景演出の描画
+	/*for (BackEffect* backEffect : backEffects_) {
+		backEffect->Draw(&camera_, backEffectTextureHandle_);
+	}*/
 
 	// 照準の描画
 	crosshair_->Draw(&camera_);

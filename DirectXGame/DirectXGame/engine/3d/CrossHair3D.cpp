@@ -5,7 +5,7 @@ using namespace KamataEngine;
 void Crosshair3D::Initialize(Model* model) {
     model_ = model;
     worldTransform_.Initialize();
-    worldTransform_.translation_ = {0.0f, 0.0f, 30.0f}; // カメラ前方あたりに初期配置
+    worldTransform_.translation_ = {0.0f, 0.0f, -11.0f}; // カメラ前方あたりに初期配置
     worldTransform_.UpdateMatrix();
     worldTransform_.TransferMatrix();
 }

@@ -3,11 +3,11 @@
 #include "../engine/3d/Model2.h"
 #include <vector>
 
-class Enemy
+class BackEffect
 {
 public:
-	Enemy();
-	~Enemy();
+	BackEffect();
+	~BackEffect();
 
 	void Initialize(KamataEngine::Model* model,uint32_t textureHandle,KamataEngine::Camera* camera);
 

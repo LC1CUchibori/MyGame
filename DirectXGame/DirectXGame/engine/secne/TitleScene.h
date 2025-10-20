@@ -3,7 +3,7 @@
 
 #include <cstdint>
 #include <KamataEngine.h>
-#include "../../applikation/Stage.h"
+#include "../../application/Stage.h"
 #include "../3d/TitleModel.h"
 
 class TitleScene

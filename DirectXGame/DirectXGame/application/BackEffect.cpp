@@ -1,15 +1,15 @@
-#include "Enemy.h"
+#include "BackEffect.h"
 #include <cassert>
 
-Enemy::Enemy()
+BackEffect::BackEffect()
 {
 }
 
-Enemy::~Enemy()
+BackEffect::~BackEffect()
 {
 }
 
-void Enemy::Initialize(KamataEngine::Model* model, uint32_t textureHandle, KamataEngine::Camera* camera)
+void BackEffect::Initialize(KamataEngine::Model* model, uint32_t textureHandle, KamataEngine::Camera* camera)
 {
 	// NULLポインタチェック
 	assert(model);
@@ -18,7 +18,7 @@ void Enemy::Initialize(KamataEngine::Model* model, uint32_t textureHandle, Kamat
 	textureHandle_ = textureHandle;
 	camera_ = camera;
 
-	position_ = { 0.0f, -10.0f, 30.0f };
+	position_ = { 0.0f, -10.0f, 60.0f };
 
 	worldTransform_.Initialize();
 
@@ -28,7 +28,7 @@ void Enemy::Initialize(KamataEngine::Model* model, uint32_t textureHandle, Kamat
 	worldTransform_.TransferMatrix();
 }
 
-void Enemy::Update()
+void BackEffect::Update()
 {
 	position_.x +=speed_*direction_;
 
@@ -38,7 +38,7 @@ void Enemy::Update()
 	worldTransform_.TransferMatrix();
 }
 
-void Enemy::Draw(KamataEngine::Camera* camera, uint32_t textureHandle)
+void BackEffect::Draw(KamataEngine::Camera* camera, uint32_t textureHandle)
 {
 	model_->Draw(worldTransform_, *camera, textureHandle);
 }

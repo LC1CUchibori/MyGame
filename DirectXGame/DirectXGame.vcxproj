@@ -106,15 +106,16 @@
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="DirectXGame\application\BackEffect.cpp" />
     <ClCompile Include="DirectXGame\engine\3d\CrossHair3D.cpp" />
-    <ClCompile Include="DirectXGame\applikation\Enemy.cpp" />
+    <ClCompile Include="DirectXGame\application\Enemy.cpp" />
     <ClCompile Include="DirectXGame\engine\2d\Fade.cpp" />
     <ClCompile Include="DirectXGame\engine\secne\GameScene.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="DirectXGame\engine\math\math.cpp" />
     <ClCompile Include="DirectXGame\engine\3d\Model2.cpp" />
-    <ClCompile Include="DirectXGame\applikation\Player.cpp" />
-    <ClCompile Include="DirectXGame\applikation\Stage.cpp" />
+    <ClCompile Include="DirectXGame\application\Player.cpp" />
+    <ClCompile Include="DirectXGame\application\Stage.cpp" />
     <ClCompile Include="DirectXGame\engine\3d\TitleModel.cpp" />
     <ClCompile Include="DirectXGame\engine\secne\TitleScene.cpp" />
     <ClCompile Include="DirectXGame\engine\math\WorldTransformEx.cpp" />
@@ -195,14 +196,15 @@
     <None Include="Resources\shaders\Sprite.hlsli" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DirectXGame\application\BackEffect.h" />
     <ClInclude Include="DirectXGame\engine\3d\CrossHair3D.h" />
-    <ClInclude Include="DirectXGame\applikation\Enemy.h" />
+    <ClInclude Include="DirectXGame\application\Enemy.h" />
     <ClInclude Include="DirectXGame\engine\2d\Fade.h" />
     <ClInclude Include="DirectXGame\engine\secne\GameScene.h" />
     <ClInclude Include="DirectXGame\engine\math\math.h" />
     <ClInclude Include="DirectXGame\engine\3d\Model2.h" />
-    <ClInclude Include="DirectXGame\applikation\Player.h" />
-    <ClInclude Include="DirectXGame\applikation\Stage.h" />
+    <ClInclude Include="DirectXGame\application\Player.h" />
+    <ClInclude Include="DirectXGame\application\Stage.h" />
     <ClInclude Include="DirectXGame\engine\3d\TitleModel.h" />
     <ClInclude Include="DirectXGame\engine\secne\TitleScene.h" />
   </ItemGroup>

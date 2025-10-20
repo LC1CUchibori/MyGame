@@ -19,9 +19,6 @@
     <Filter Include="externals">
       <UniqueIdentifier>{9232c7b3-13b6-483d-8f3d-1bdd9310b00c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\applikation">
-      <UniqueIdentifier>{3b58cd0b-cc63-40a6-9335-62850e09d028}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\engine">
       <UniqueIdentifier>{6464fbfd-f30c-434e-82cc-ccc842a8c32c}</UniqueIdentifier>
     </Filter>
@@ -49,11 +46,14 @@
     <Filter Include="ヘッダー ファイル\engine\scene">
       <UniqueIdentifier>{411cc1b1-65b2-495b-bb5b-534b2da7e0a9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ヘッダー ファイル\applikation">
-      <UniqueIdentifier>{9c0e94b5-be5f-4e5b-857f-c0d4eb7c1c3d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ヘッダー ファイル\engine\2d">
       <UniqueIdentifier>{5f633041-2388-4634-a44e-2a65e05ba066}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\application">
+      <UniqueIdentifier>{3b58cd0b-cc63-40a6-9335-62850e09d028}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\application">
+      <UniqueIdentifier>{9c0e94b5-be5f-4e5b-857f-c0d4eb7c1c3d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -75,14 +75,14 @@
     <ClCompile Include="DirectXGame\engine\3d\Model2.cpp">
       <Filter>externals</Filter>
     </ClCompile>
-    <ClCompile Include="DirectXGame\applikation\Enemy.cpp">
-      <Filter>ソース ファイル\applikation</Filter>
+    <ClCompile Include="DirectXGame\application\Enemy.cpp">
+      <Filter>ソース ファイル\application</Filter>
     </ClCompile>
-    <ClCompile Include="DirectXGame\applikation\Player.cpp">
-      <Filter>ソース ファイル\applikation</Filter>
+    <ClCompile Include="DirectXGame\application\Player.cpp">
+      <Filter>ソース ファイル\application</Filter>
     </ClCompile>
-    <ClCompile Include="DirectXGame\applikation\Stage.cpp">
-      <Filter>ソース ファイル\applikation</Filter>
+    <ClCompile Include="DirectXGame\application\Stage.cpp">
+      <Filter>ソース ファイル\application</Filter>
     </ClCompile>
     <ClCompile Include="DirectXGame\engine\3d\CrossHair3D.cpp">
       <Filter>ソース ファイル\engine\3d</Filter>
@@ -92,6 +92,9 @@
     </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectXGame\application\BackEffect.cpp">
+      <Filter>ソース ファイル\application</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -162,17 +165,20 @@
     <ClInclude Include="DirectXGame\engine\3d\Model2.h">
       <Filter>externals</Filter>
     </ClInclude>
-    <ClInclude Include="DirectXGame\applikation\Enemy.h">
-      <Filter>ヘッダー ファイル\applikation</Filter>
+    <ClInclude Include="DirectXGame\application\Enemy.h">
+      <Filter>ヘッダー ファイル\application</Filter>
     </ClInclude>
-    <ClInclude Include="DirectXGame\applikation\Player.h">
-      <Filter>ヘッダー ファイル\applikation</Filter>
+    <ClInclude Include="DirectXGame\application\Player.h">
+      <Filter>ヘッダー ファイル\application</Filter>
     </ClInclude>
-    <ClInclude Include="DirectXGame\applikation\Stage.h">
-      <Filter>ヘッダー ファイル\applikation</Filter>
+    <ClInclude Include="DirectXGame\application\Stage.h">
+      <Filter>ヘッダー ファイル\application</Filter>
     </ClInclude>
     <ClInclude Include="DirectXGame\engine\2d\Fade.h">
       <Filter>ヘッダー ファイル\engine\2d</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXGame\application\BackEffect.h">
+      <Filter>ヘッダー ファイル\application</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
