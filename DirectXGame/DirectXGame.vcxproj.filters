@@ -16,42 +16,81 @@
     <Filter Include="シェーダー ファイル">
       <UniqueIdentifier>{718c7f4c-fc51-40ad-a221-b9456a7a1a3c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="externals">
+      <UniqueIdentifier>{9232c7b3-13b6-483d-8f3d-1bdd9310b00c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\applikation">
+      <UniqueIdentifier>{3b58cd0b-cc63-40a6-9335-62850e09d028}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\engine">
+      <UniqueIdentifier>{6464fbfd-f30c-434e-82cc-ccc842a8c32c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\engine\3d">
+      <UniqueIdentifier>{5f03970f-ec35-4b5f-9073-0ef12e8efe3d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\engine\math">
+      <UniqueIdentifier>{c6e19f61-65c0-4f2b-8183-e366da8015cc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\engine\scene">
+      <UniqueIdentifier>{7f5626ae-cefa-4c10-8eba-ba2cf633cf33}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\engine\2d">
+      <UniqueIdentifier>{cc4d6417-8dae-4b4a-8504-21129f5ad6ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\engine">
+      <UniqueIdentifier>{d0629de5-335e-419a-bae4-158b4ca5ccf9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\engine\3d">
+      <UniqueIdentifier>{5fd6dfa9-0e47-4478-b7a7-b4b65b0fc1e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\engine\math">
+      <UniqueIdentifier>{38e4bb8f-1740-43e8-889a-692307709919}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\engine\scene">
+      <UniqueIdentifier>{411cc1b1-65b2-495b-bb5b-534b2da7e0a9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\applikation">
+      <UniqueIdentifier>{9c0e94b5-be5f-4e5b-857f-c0d4eb7c1c3d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\engine\2d">
+      <UniqueIdentifier>{5f633041-2388-4634-a44e-2a65e05ba066}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="DirectXGame\engine\secne\GameScene.cpp">
+      <Filter>ソース ファイル\engine\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectXGame\engine\secne\TitleScene.cpp">
+      <Filter>ソース ファイル\engine\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectXGame\engine\math\math.cpp">
+      <Filter>ソース ファイル\engine\math</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectXGame\engine\math\WorldTransformEx.cpp">
+      <Filter>ソース ファイル\engine\math</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectXGame\engine\3d\TitleModel.cpp">
+      <Filter>ソース ファイル\engine\3d</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectXGame\engine\3d\Model2.cpp">
+      <Filter>externals</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectXGame\applikation\Enemy.cpp">
+      <Filter>ソース ファイル\applikation</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectXGame\applikation\Player.cpp">
+      <Filter>ソース ファイル\applikation</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectXGame\applikation\Stage.cpp">
+      <Filter>ソース ファイル\applikation</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectXGame\engine\3d\CrossHair3D.cpp">
+      <Filter>ソース ファイル\engine\3d</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectXGame\engine\2d\Fade.cpp">
+      <Filter>ソース ファイル\engine\2d</Filter>
+    </ClCompile>
     <ClCompile Include="main.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="GameScene.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Model2.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="TitleScene.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Stage.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Player.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="math.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="WorldTransformEx.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Enemy.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="CrossHair3D.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="TitleModel.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Fade.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -105,35 +144,35 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="GameScene.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="DirectXGame\engine\secne\GameScene.h">
+      <Filter>ヘッダー ファイル\engine\scene</Filter>
     </ClInclude>
-    <ClInclude Include="Model2.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="DirectXGame\engine\secne\TitleScene.h">
+      <Filter>ヘッダー ファイル\engine\scene</Filter>
     </ClInclude>
-    <ClInclude Include="TitleScene.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="DirectXGame\engine\math\math.h">
+      <Filter>ヘッダー ファイル\engine\math</Filter>
     </ClInclude>
-    <ClInclude Include="Stage.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="DirectXGame\engine\3d\CrossHair3D.h">
+      <Filter>ヘッダー ファイル\engine\3d</Filter>
     </ClInclude>
-    <ClInclude Include="Player.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="DirectXGame\engine\3d\TitleModel.h">
+      <Filter>ヘッダー ファイル\engine\3d</Filter>
     </ClInclude>
-    <ClInclude Include="math.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="DirectXGame\engine\3d\Model2.h">
+      <Filter>externals</Filter>
     </ClInclude>
-    <ClInclude Include="Enemy.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="DirectXGame\applikation\Enemy.h">
+      <Filter>ヘッダー ファイル\applikation</Filter>
     </ClInclude>
-    <ClInclude Include="CrossHair3D.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="DirectXGame\applikation\Player.h">
+      <Filter>ヘッダー ファイル\applikation</Filter>
     </ClInclude>
-    <ClInclude Include="TitleModel.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="DirectXGame\applikation\Stage.h">
+      <Filter>ヘッダー ファイル\applikation</Filter>
     </ClInclude>
-    <ClInclude Include="Fade.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="DirectXGame\engine\2d\Fade.h">
+      <Filter>ヘッダー ファイル\engine\2d</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
