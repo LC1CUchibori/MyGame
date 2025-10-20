@@ -1,12 +1,12 @@
 #pragma once
 #include "KamataEngine.h"
-#include "Model2.h"
-#include "Stage.h"
-#include "Player.h"
-#include "Enemy.h"
+#include "../3d/Model2.h"
+#include "../../applikation/Stage.h"
+#include "../../applikation/Player.h"
+#include "../../applikation/Enemy.h"
 #include <cstdlib>
-#include <ctime>  
-#include "CrossHair3D.h"
+#include <ctime>
+#include "../3d/CrossHair3D.h"
 
 class GameScene
 {

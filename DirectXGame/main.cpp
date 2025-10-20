@@ -1,7 +1,7 @@
 #include "KamataEngine.h"
-#include "GameScene.h"
-#include "TitleScene.h"
-#include "Fade.h"     // ← フェード用クラス追加
+#include "DirectXGame/engine/secne/GameScene.h"
+#include "DirectXGame/engine/secne/TitleScene.h"
+#include "DirectXGame/engine/2d/Fade.h"     // ← フェード用クラス追加
 #include <Windows.h>
 
 using namespace KamataEngine;
@@ -96,56 +96,56 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 
 void ChangeScene() {
-	static bool isTransitioning = false;
+    static bool isTransitioning = false;
 
-	switch (scene)
-	{
-	case Scene::kTitleScene:
-		if (!isTransitioning && Input::GetInstance()->TriggerKey(DIK_RETURN)) {
-			fade.StartFadeOut();
-			isTransitioning = true;
-		}
-		if (isTransitioning && fade.IsFadeOutEnd()) {
-			delete titleScene;
-			titleScene = nullptr;
+    switch (scene)
+    {
+    case Scene::kTitleScene:
+        if (!isTransitioning && Input::GetInstance()->TriggerKey(DIK_RETURN)) {
+            fade.StartFadeOut();
+            isTransitioning = true;
+        }
+        if (isTransitioning && fade.IsFadeOutEnd()) {
+            delete titleScene;
+            titleScene = nullptr;
 
-			gameScene = new GameScene();
-			gameScene->Initialize();
+            gameScene = new GameScene();
+            gameScene->Initialize();
 
-			scene = Scene::kGame;
+            scene = Scene::kGame;
 
-			fade.StartFadeIn();
-			isTransitioning = false;
-		}
-		break;
+            fade.StartFadeIn();
+            isTransitioning = false;
+        }
+        break;
 
-	case Scene::kGame:
-		break;
-	}
+    case Scene::kGame:
+        break;
+    }
 }
 
 void UpdateScene()
 {
-	switch (scene)
-	{
-	case Scene::kTitleScene:
-		titleScene->Update();
-		break;
-	case Scene::kGame:
-		gameScene->Update();
-		break;
-	}
+    switch (scene)
+    {
+    case Scene::kTitleScene:
+        titleScene->Update();
+        break;
+    case Scene::kGame:
+        gameScene->Update();
+        break;
+    }
 }
 
 void DrawScene()
 {
-	switch (scene)
-	{
-	case Scene::kTitleScene:
-		titleScene->Draw();
-		break;
-	case Scene::kGame:
-		gameScene->Draw();
-		break;
-	}
+    switch (scene)
+    {
+    case Scene::kTitleScene:
+        titleScene->Draw();
+        break;
+    case Scene::kGame:
+        gameScene->Draw();
+        break;
+    }
 }
