@@ -144,7 +144,7 @@ void GameScene::Update()
 	if (isSpawnActive_) {
 		spawnTimer_ += 1.0f;
 
-		// 出現演出のパラメータ
+		// 出現演出
 		float startX = -500.0f;  // 左外
 		float centerX = 390.0f;  // 画面中央
 		float endX = 1280.0f;    // 右外
@@ -170,8 +170,7 @@ void GameScene::Update()
 
 		spawnSprite_->SetPosition({ spawnX_, 300.0f });
 	}
-
-
+    // ==============================================================================
 
 	worldTransform_.UpdateMatrix();
 	worldTransform_.TransferMatrix();

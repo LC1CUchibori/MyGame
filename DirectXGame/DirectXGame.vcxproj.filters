@@ -96,6 +96,9 @@
     <ClCompile Include="DirectXGame\application\BackEffect.cpp">
       <Filter>ソース ファイル\application</Filter>
     </ClCompile>
+    <ClCompile Include="DirectXGame\application\EnemyBullet.cpp">
+      <Filter>ソース ファイル\application</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\SpritePS.hlsl">
@@ -178,6 +181,9 @@
       <Filter>ヘッダー ファイル\engine\2d</Filter>
     </ClInclude>
     <ClInclude Include="DirectXGame\application\BackEffect.h">
+      <Filter>ヘッダー ファイル\application</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXGame\application\EnemyBullet.h">
       <Filter>ヘッダー ファイル\application</Filter>
     </ClInclude>
   </ItemGroup>
