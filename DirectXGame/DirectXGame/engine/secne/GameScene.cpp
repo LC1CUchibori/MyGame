@@ -69,6 +69,14 @@ void GameScene::Initialize()
 	crosshair_ = new Crosshair3D();
 	crosshair_->Initialize(crosshairModel_);
 
+	// 出現スプライト初期化
+	spawnTextureHandle_ = TextureManager::Load("spawn.png");
+	spawnSprite_ = KamataEngine::Sprite::Create(spawnTextureHandle_, { spawnX_, 300.0f });
+
+	isSpawnActive_ = true;
+	spawnTimer_ = 0.0f;
+	spawnX_ = -300.0f;
+
 
 	worldTransform_.Initialize();
 	 // カメラの初期化
@@ -132,6 +140,39 @@ void GameScene::Update()
 		enemy_->Update();
 	}
 
+	// ===================== 出現スプライトのアニメーション =====================
+	if (isSpawnActive_) {
+		spawnTimer_ += 1.0f;
+
+		// 出現演出のパラメータ
+		float startX = -500.0f;  // 左外
+		float centerX = 390.0f;  // 画面中央
+		float endX = 1280.0f;    // 右外
+
+		if (spawnTimer_ < 90) {
+			// 左→中央へ移動
+			float t = spawnTimer_ / 90.0f;
+			spawnX_ = startX + (centerX - startX) * t;
+		}
+		else if (spawnTimer_ < 240) {
+			// 中央で停止
+			spawnX_ = centerX;
+		}
+		else if (spawnTimer_ < 360) {
+			// 中央→右へ移動
+			float t = (spawnTimer_ - 240.0f) / 120.0f;
+			spawnX_ = centerX + (endX - centerX) * t;
+		}
+		else {
+			// 終了
+			isSpawnActive_ = false;
+		}
+
+		spawnSprite_->SetPosition({ spawnX_, 300.0f });
+	}
+
+
+
 	worldTransform_.UpdateMatrix();
 	worldTransform_.TransferMatrix();
 }
@@ -154,6 +195,15 @@ void GameScene::Draw()
 	// スプライト描画後処理
 	Sprite::PostDraw();
 #pragma endregion
+
+	Sprite::PreDraw(dxCommn->GetCommandList());
+
+	// 出現スプライト描画
+	if (isSpawnActive_) {
+		spawnSprite_->Draw();
+	}
+
+	Sprite::PostDraw();
 
 #pragma region 3Dオブジェクト描画
 	dxCommn->ClearDepthBuffer();

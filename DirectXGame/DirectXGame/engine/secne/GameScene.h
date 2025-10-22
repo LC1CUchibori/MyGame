@@ -65,5 +65,14 @@ private:
 
 	Crosshair3D* crosshair_ = nullptr;
 	KamataEngine::Model* crosshairModel_ = nullptr;
+
+	// 出現スプライト用
+	uint32_t spawnTextureHandle_ = 0;
+	KamataEngine::Sprite* spawnSprite_ = nullptr;
+
+	// 出現アニメーション制御用
+	bool isSpawnActive_ = false;
+	float spawnTimer_ = 0.0f;
+	float spawnX_ = -300.0f; //
 };
 
