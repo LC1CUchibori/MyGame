@@ -69,6 +69,11 @@ void GameScene::Initialize()
 	crosshair_ = new Crosshair3D();
 	crosshair_->Initialize(crosshairModel_);
 
+	sharkTopModel_ = Model::CreateFromOBJ("sharkTop");
+	sharkTop_ = new SharkTop();
+	sharkTop_->Initialize(sharkTopModel_);
+	//sharkTop_->SetPosition({5.0f, 5.0f, 0.0f});
+
 	// 出現スプライト初期化
 	spawnTextureHandle_ = TextureManager::Load("spawn.png");
 	spawnSprite_ = KamataEngine::Sprite::Create(spawnTextureHandle_, { spawnX_, 300.0f });
@@ -76,7 +81,6 @@ void GameScene::Initialize()
 	isSpawnActive_ = true;
 	spawnTimer_ = 0.0f;
 	spawnX_ = -300.0f;
-
 
 	worldTransform_.Initialize();
 	 // カメラの初期化
@@ -135,10 +139,15 @@ void GameScene::Update()
 	// プレイヤー更新
 	player_->Update();
 
+	if (player_->IsDead()) {
+		sharkTop_->Update();
+	}
+
 	// 敵の更新
 	if (enemy_) {
 		enemy_->Update();
 	}
+
 
 	for (auto& bullet : enemy_->GetBullets()) {
 		if (!bullet->IsActive()) continue;
@@ -190,6 +199,7 @@ void GameScene::Update()
 		spawnSprite_->SetPosition({ spawnX_, 300.0f });
 	}
     // ==============================================================================
+
 
 	worldTransform_.UpdateMatrix();
 	worldTransform_.TransferMatrix();
@@ -243,6 +253,7 @@ void GameScene::Draw()
 	// 照準の描画
 	crosshair_->Draw(&camera_);
 
+	sharkTop_->Draw(&camera_);
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();

@@ -8,6 +8,7 @@
 #include <cstdlib>
 #include <ctime>
 #include "../3d/CrossHair3D.h"
+#include "../3d/SharkTop.h"
 
 class GameScene
 {
@@ -65,6 +66,10 @@ private:
 
 	Crosshair3D* crosshair_ = nullptr;
 	KamataEngine::Model* crosshairModel_ = nullptr;
+
+	SharkTop* sharkTop_ = nullptr;
+	KamataEngine::Model* sharkTopModel_ = nullptr;
+	bool isSharkTopActive_ = false;
 
 	// 出現スプライト用
 	uint32_t spawnTextureHandle_ = 0;
