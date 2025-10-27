@@ -28,6 +28,9 @@ void Enemy::Initialize(KamataEngine::Model* model, KamataEngine::Camera* camera)
     isApproaching_ = true; // 最初は接近中
     stopZ_ = -10.0f;     // 手前に来るZ座標
     stopY_ = 10.0f; 
+
+    bulletModel_ = KamataEngine::Model::CreateFromOBJ("Enemy");
+
 }
 
 void Enemy::Update() {
@@ -54,6 +57,34 @@ void Enemy::Update() {
         }
     }
 
+    // 弾の発射管理
+    fireTimer_++;
+    if (fireTimer_ > 120) { // 2秒おきに撃つ
+        EnemyBullet* bullet = new EnemyBullet();
+        bullet->Initialize(bulletModel_, camera_, position_);
+        bullets_.push_back(bullet);
+        fireTimer_ = 0;
+    }
+
+
+    // 弾の更新
+    for (EnemyBullet* bullet : bullets_) {
+        bullet->Update();
+    }
+
+    // 死亡弾の削除
+    bullets_.erase(
+        std::remove_if(bullets_.begin(), bullets_.end(),
+            [](EnemyBullet* b) {
+                if (!b->IsActive()) {
+                    delete b;
+                    return true;
+                }
+                return false;
+            }),
+        bullets_.end());
+
+
     // ワールド変換更新
     worldTransform_.translation_ = position_;
     worldTransform_.UpdateMatrix();
@@ -64,4 +95,9 @@ void Enemy::Update() {
 
 void Enemy::Draw(KamataEngine::Camera* camera) {
     model_->Draw(worldTransform_, *camera);
+
+    // 弾描画
+    for (EnemyBullet* bullet : bullets_) {
+        bullet->Draw(camera);
+    }
 }

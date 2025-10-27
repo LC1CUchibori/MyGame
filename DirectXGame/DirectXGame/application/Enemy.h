@@ -2,6 +2,9 @@
 #include <KamataEngine.h>
 #include "../engine/3d/Model2.h"
 #include <vector>
+#include "EnemyBullet.h"
+#include <vector>
+
 
 class Enemy
 {
@@ -31,6 +34,9 @@ public:
 		return position_;
 	}
 
+	// 敵の弾を取得
+	std::vector<EnemyBullet*>& GetBullets() { return bullets_; }
+
 
 private:
 	// ワールド変換データ
@@ -44,11 +50,16 @@ private:
 
 	KamataEngine::Vector3 position_;
 
+	std::vector<EnemyBullet*> bullets_;
+	int fireTimer_ = 0;
+	KamataEngine::Model* bulletModel_ = nullptr;
+
 	float speed_ = 0.2f;
 	float direction_ = -1; 
 	float approachSpeed_ = 0.0f;
 	bool isApproaching_ = true;
 	float stopZ_ = -10.0f;
 	float stopY_ = 10.0f; 
+
 };
 

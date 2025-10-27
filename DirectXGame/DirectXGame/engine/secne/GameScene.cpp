@@ -108,7 +108,7 @@ void GameScene::Update()
 
 
 	// =========================照準更新===============================
-	crosshair_->Update();
+	//crosshair_->Update();
 
 	Vector3 crossPos = crosshair_->GetPosition();
 	Vector3 playerPos = player_->GetPosition();
@@ -139,6 +139,25 @@ void GameScene::Update()
 	if (enemy_) {
 		enemy_->Update();
 	}
+
+	for (auto& bullet : enemy_->GetBullets()) {
+		if (!bullet->IsActive()) continue;
+		bullet->Update();
+		Vector3 bulletPos = bullet->GetPosition();
+
+		float dx = bulletPos.x - playerPos.x;
+		float dy = bulletPos.y - playerPos.y;
+		float dz = bulletPos.z - playerPos.z;
+		float distance = sqrtf(dx*dx + dy*dy + dz*dz);
+
+		float hitRadius = 1.0f;
+
+		if (distance < hitRadius && !player_->IsDead()) {
+			player_->Kill();
+			bullet->SetInactive();
+		}
+	}
+
 
 	// ===================== 出現スプライトのアニメーション =====================
 	if (isSpawnActive_) {

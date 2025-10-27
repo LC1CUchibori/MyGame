@@ -1,37 +1,34 @@
 #pragma once
 #include <KamataEngine.h>
-#include "../engine/3d/Model2.h"
-#include "Stage.h"
 
-class Player
-{
+class Player {
 public:
-	Player();
-	~Player();
-	void Initialize(KamataEngine::Model* model,uint32_t textureHandle,KamataEngine::Camera* camera);
+    Player();
+    ~Player();
 
-	void Update();
+    void Initialize(KamataEngine::Model* model, uint32_t textureHandle, KamataEngine::Camera* camera);
+    void Update();
+    void Draw(KamataEngine::Camera* camera, uint32_t textureHandle);
+    void SetYaw(float yaw);
 
-	void Draw(KamataEngine::Camera* camera,uint32_t textureHandle);
+    // 死亡処理
+    void Kill() { isDead_ = true; }
+    bool IsDead() const { return isDead_; }
 
-	void SetYaw(float yaw);
-
-	KamataEngine::Vector3 GetPosition() const { return position_; }
+    // 座標取得
+    const KamataEngine::Vector3& GetPosition() const { return worldTransform_.translation_; }
 
 private:
-	// ワールド変換データ
-	KamataEngine::WorldTransform worldTransform_;
-	KamataEngine::Input* input = KamataEngine::Input::GetInstance();
-	// モデル
-	KamataEngine::Model* model_ = nullptr;
-	// テクスチャハンドル
-	uint32_t textureHandle_ = 0u;
-	// カメラ
-	KamataEngine::Camera* camera_ = nullptr;
-	// 位置
-	KamataEngine::Vector3 position_;
+    KamataEngine::Model* model_ = nullptr;
+    KamataEngine::Camera* camera_ = nullptr;
+    uint32_t textureHandle_ = 0;
 
-	// Y軸回転
-	float  yaw_ = 0.0f;
+    KamataEngine::Vector3 position_{};
+    KamataEngine::WorldTransform worldTransform_;
+    KamataEngine::Input* input = nullptr;
+
+    float speed_ = 0.5f;
+    float yaw_ = 0.0f;
+
+    bool isDead_ = false;  // 死亡フラグ
 };
-

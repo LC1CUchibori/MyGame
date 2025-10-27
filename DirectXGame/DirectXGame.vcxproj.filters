@@ -99,6 +99,9 @@
     <ClCompile Include="DirectXGame\application\EnemyBullet.cpp">
       <Filter>ソース ファイル\application</Filter>
     </ClCompile>
+    <ClCompile Include="DirectXGame\engine\3d\SharkTop.cpp">
+      <Filter>ソース ファイル\engine\3d</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\SpritePS.hlsl">
@@ -185,6 +188,9 @@
     </ClInclude>
     <ClInclude Include="DirectXGame\application\EnemyBullet.h">
       <Filter>ヘッダー ファイル\application</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXGame\engine\3d\SharkTop.h">
+      <Filter>ヘッダー ファイル\engine\3d</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -21,7 +21,7 @@ void Player::Initialize(KamataEngine::Model* model,uint32_t textureHandle,Kamata
 
 	input = Input::GetInstance(); 
 
-	position_ = { 00.0f, -15.0f, 0.0f };
+	position_ = { 00.0f, -15.0f, -10.0f };
 
 	worldTransform_.Initialize();
 
@@ -33,8 +33,14 @@ void Player::Initialize(KamataEngine::Model* model,uint32_t textureHandle,Kamata
 
 void Player::Update()
 {
+	if (isDead_) return;
 
-	worldTransform_.translation_ = position_;
+	if (input->PushKey(DIK_W))    worldTransform_.translation_.y += speed_;
+	if (input->PushKey(DIK_S))  worldTransform_.translation_.y -= speed_;
+	if (input->PushKey(DIK_A))  worldTransform_.translation_.x -= speed_;
+	if (input->PushKey(DIK_D)) worldTransform_.translation_.x += speed_;
+
+	//worldTransform_.translation_ = position_;
 	worldTransform_.UpdateMatrix();
 	// 行列を定数バッファに転送
 	worldTransform_.TransferMatrix();
@@ -42,7 +48,9 @@ void Player::Update()
 
 void Player::Draw(KamataEngine::Camera* camera, uint32_t textureHandle)
 {
-	model_->Draw(worldTransform_, *camera, textureHandle);
+	if (!isDead_) {
+		model_->Draw(worldTransform_, *camera, textureHandle);
+	}
 }
 
 void Player::SetYaw(float yaw)

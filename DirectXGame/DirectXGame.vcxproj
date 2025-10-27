@@ -120,6 +120,7 @@
     <ClCompile Include="DirectXGame\engine\3d\TitleModel.cpp" />
     <ClCompile Include="DirectXGame\engine\secne\TitleScene.cpp" />
     <ClCompile Include="DirectXGame\engine\math\WorldTransformEx.cpp" />
+    <ClCompile Include="DirectXGame\engine\3d\SharkTop.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\TerrainPS.hlsl">
@@ -209,6 +210,7 @@
     <ClInclude Include="DirectXGame\engine\3d\TitleModel.h" />
     <ClInclude Include="DirectXGame\engine\secne\TitleScene.h" />
     <ClInclude Include="DirectXGame\application\EnemyBullet.h" />
+    <ClInclude Include="DirectXGame\engine\3d\SharkTop.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
