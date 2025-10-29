@@ -120,6 +120,23 @@ void ChangeScene() {
         break;
 
     case Scene::kGame:
+        if (!isTransitioning && gameScene->IsGameOver() && Input::GetInstance()->TriggerKey(DIK_RETURN)) {
+            fade.StartFadeOut();
+            isTransitioning = true;
+        }
+
+        if (isTransitioning && fade.IsFadeOutEnd()) {
+            delete gameScene;
+            gameScene = nullptr;
+
+            titleScene = new TitleScene();
+            titleScene->Initialize();
+
+            scene = Scene::kTitleScene;
+
+            fade.StartFadeIn();
+            isTransitioning = false;
+        }
         break;
     }
 }

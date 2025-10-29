@@ -69,10 +69,13 @@ void GameScene::Initialize()
 	crosshair_ = new Crosshair3D();
 	crosshair_->Initialize(crosshairModel_);
 
+	// 鮫役物落下
 	sharkTopModel_ = Model::CreateFromOBJ("sharkTop");
 	sharkTop_ = new SharkTop();
 	sharkTop_->Initialize(sharkTopModel_);
-	//sharkTop_->SetPosition({5.0f, 5.0f, 0.0f});
+
+	gameOverTextureHandle_ = TextureManager::Load("GameOver.png");
+	gameOverSprite_ = KamataEngine::Sprite::Create(gameOverTextureHandle_, { 400.0f, 200.0f });
 
 	// 出現スプライト初期化
 	spawnTextureHandle_ = TextureManager::Load("spawn.png");
@@ -144,8 +147,21 @@ void GameScene::Update()
 	}
 
 	// 敵の更新
-	if (enemy_) {
+	if (enemy_ && !(player_->IsDead() && sharkTop_->HasReturned())) {
 		enemy_->Update();
+	}
+
+	// ゲームオーバーシーンに移行
+	if (player_->IsDead()) {
+		sharkTop_->Update();
+
+		if (sharkTop_->HasReturned()) {
+			isGameOver_ = true;
+		}
+	}
+
+	if (enemy_) {
+		enemy_->SetInactive();
 	}
 
 
@@ -200,7 +216,6 @@ void GameScene::Update()
 	}
     // ==============================================================================
 
-
 	worldTransform_.UpdateMatrix();
 	worldTransform_.TransferMatrix();
 }
@@ -231,6 +246,12 @@ void GameScene::Draw()
 		spawnSprite_->Draw();
 	}
 
+	// ゲームオーバー表示
+	if (isGameOver_ && gameOverSprite_) {
+		gameOverSprite_->Draw();
+	}
+
+
 	Sprite::PostDraw();
 
 #pragma region 3Dオブジェクト描画
@@ -238,12 +259,15 @@ void GameScene::Draw()
 	// 3Dオブジェクト描画前処理
 	Model::PreDraw(dxCommn->GetCommandList());
 
-
 	// プレイヤーの描画
 	player_->Draw(&camera_, playerTextureHandle_);
 
-	// 敵の描画
-	enemy_->Draw(&camera_);
+	if (!(player_->IsDead())) {
+		// 敵の描画
+		enemy_->Draw(&camera_);
+	}
+
+	sharkTop_->Draw(&camera_);
 
 	// 背景演出の描画
 	/*for (BackEffect* backEffect : backEffects_) {
@@ -253,7 +277,6 @@ void GameScene::Draw()
 	// 照準の描画
 	crosshair_->Draw(&camera_);
 
-	sharkTop_->Draw(&camera_);
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();

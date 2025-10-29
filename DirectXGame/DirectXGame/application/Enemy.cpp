@@ -49,13 +49,13 @@ void Enemy::Update() {
             isApproaching_ = false;
         }
     }
-    else {
-        // 左右移動
-        position_.x += speed_ * direction_;
-        if (position_.x > 20.0f || position_.x < -20.0f) {
-            direction_ *= -1;
-        }
-    }
+    //else {
+    //    // 左右移動
+    //    position_.x += speed_ * direction_;
+    //    if (position_.x > 20.0f || position_.x < -20.0f) {
+    //        direction_ *= -1;
+    //    }
+    //}
 
     // 弾の発射管理
     fireTimer_++;

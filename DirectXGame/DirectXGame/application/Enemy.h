@@ -37,6 +37,10 @@ public:
 	// 敵の弾を取得
 	std::vector<EnemyBullet*>& GetBullets() { return bullets_; }
 
+	void SetInactive() {
+		isActive_ = false;
+	}
+
 
 private:
 	// ワールド変換データ
@@ -61,5 +65,6 @@ private:
 	float stopZ_ = -10.0f;
 	float stopY_ = 10.0f; 
 
+	bool isActive_;
 };
 
