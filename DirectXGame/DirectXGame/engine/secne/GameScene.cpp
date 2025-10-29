@@ -175,7 +175,7 @@ void GameScene::Update()
 		float dz = bulletPos.z - playerPos.z;
 		float distance = sqrtf(dx*dx + dy*dy + dz*dz);
 
-		float hitRadius = 1.0f;
+		float hitRadius = 2.0f;
 
 		if (distance < hitRadius && !player_->IsDead()) {
 			player_->Kill();

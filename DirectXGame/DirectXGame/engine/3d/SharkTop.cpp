@@ -6,7 +6,7 @@ void SharkTop::Initialize(KamataEngine::Model* model) {
 	worldTransform_.Initialize();
 
 	// 初期位置は画面上に設定しておく
-	worldTransform_.translation_ = {45, -30.0f, 0.0f};
+	worldTransform_.translation_ = {55.0f, -30.0f, 0.0f};
 	initialPosition_ = worldTransform_.translation_; // 元の位置を記録
 
 	// タイマー初期化
