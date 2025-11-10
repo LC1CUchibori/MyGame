@@ -13,8 +13,8 @@ void Enemy::Initialize(KamataEngine::Model* model, KamataEngine::Camera* camera)
     model_ = model;
     camera_ = camera;
 
-    // 敵の初期位置（奥のほうに配置）
-    position_ = { 0.0f, 60.0f, 200.0f }; // ← Zを大きくして奥から出てくる
+    // 敵の初期位置
+    position_ = { 0.0f, 60.0f, 200.0f }; 
 
     worldTransform_.Initialize();
     worldTransform_.translation_ = position_;
@@ -38,9 +38,8 @@ void Enemy::Update() {
         // Z方向に手前へ移動
         position_.z -= approachSpeed_;
 
-        // Y座標を線形補間で下降（上→下）
-        float t = (200.0f - position_.z) / (200.0f - stopZ_); // 0〜1
-        position_.y = 60.0f + t * (stopY_ - 60.0f); // 上から stopY_ まで
+        float t = (200.0f - position_.z) / (200.0f - stopZ_); 
+        position_.y = 60.0f + t * (stopY_ - 60.0f);
 
         // 停止判定
         if (position_.z <= stopZ_) {

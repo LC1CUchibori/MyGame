@@ -1,5 +1,7 @@
 #pragma once
 #include <KamataEngine.h>
+#include <vector>
+#include "PlayerBullet.h"
 
 class Player {
 public:
@@ -10,6 +12,9 @@ public:
     void Update();
     void Draw(KamataEngine::Camera* camera, uint32_t textureHandle);
     void SetYaw(float yaw);
+
+    void Fire();
+    const std::vector<PlayerBullet*>& GetBullets() const { return bullets_; }
 
     // 死亡処理
     void Kill() { isDead_ = true; }
@@ -26,6 +31,9 @@ private:
     KamataEngine::Vector3 position_{};
     KamataEngine::WorldTransform worldTransform_;
     KamataEngine::Input* input = nullptr;
+
+    std::vector<PlayerBullet*> bullets_;
+    KamataEngine::Model* bulletModel_ = nullptr;
 
     float speed_ = 0.5f;
     float yaw_ = 0.0f;

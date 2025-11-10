@@ -183,7 +183,6 @@ void GameScene::Update()
 		}
 	}
 
-
 	// ===================== 出現スプライトのアニメーション =====================
 	if (isSpawnActive_) {
 		spawnTimer_ += 1.0f;
@@ -215,6 +214,26 @@ void GameScene::Update()
 		spawnSprite_->SetPosition({ spawnX_, 300.0f });
 	}
     // ==============================================================================
+
+	// =====================プレイヤーの弾と敵の当たり判定======================
+	for (auto* bullet : player_->GetBullets()) {
+		if (!bullet->IsActive() || !enemy_) continue;
+
+		Vector3 bulletPos = bullet->GetPosition();
+		Vector3 enemyPos = enemy_->GetPosition();
+
+		float dx = bulletPos.x - enemyPos.x;
+		float dy = bulletPos.y - enemyPos.y;
+		float dz = bulletPos.z - enemyPos.z;
+		float dist = sqrtf(dx * dx + dy * dy + dz * dz);
+
+		if (dist < 3.0f) {
+			bullet->SetActive(false);
+			enemy_->SetPosition({ 0.0f, 10.0f, 200.0f });
+			enemy_->ResetApproach(); // 敵をリスポーン
+		}
+	}
+    // =============================================================================
 
 	worldTransform_.UpdateMatrix();
 	worldTransform_.TransferMatrix();
