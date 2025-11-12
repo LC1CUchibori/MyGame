@@ -257,8 +257,6 @@ void GameScene::Update()
 		}
 	}
 
-
-
 	worldTransform_.UpdateMatrix();
 	worldTransform_.TransferMatrix();
 }
@@ -277,8 +275,6 @@ void GameScene::Draw()
 	/// ここに背景スプライトの描画処理を追加できる
 	/// </summary>
 	stage->Draw();
-
-	fade.Draw();
 
 	// スプライト描画後処理
 	Sprite::PostDraw();
@@ -319,8 +315,9 @@ void GameScene::Draw()
 	}*/
 
 	// 照準の描画
-	crosshair_->Draw(&camera_);
+	//crosshair_->Draw(&camera_);
 
+	fade.Draw();
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
