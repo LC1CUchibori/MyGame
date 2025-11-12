@@ -99,6 +99,7 @@ private:
 
 	int phase_ = 1;
 	bool isPhaseChanging_ = false;
+	bool isFadeActive_ = false; // フェード開始フラグ
 	float phaseChangeTimer_ = 0.0f;
 };
 

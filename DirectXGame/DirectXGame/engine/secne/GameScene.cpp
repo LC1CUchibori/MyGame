@@ -85,6 +85,8 @@ void GameScene::Initialize()
 	spawnTimer_ = 0.0f;
 	spawnX_ = -300.0f;
 
+	fade.Initialize();
+
 	worldTransform_.Initialize();
 	 // カメラの初期化
 	camera_.Initialize();
@@ -216,6 +218,7 @@ void GameScene::Update()
     // ==============================================================================
 
 	// =====================プレイヤーの弾と敵の当たり判定======================
+	// プレイヤーの弾と敵の当たり判定
 	for (auto* bullet : player_->GetBullets()) {
 		if (!bullet->IsActive() || !enemy_) continue;
 
@@ -227,27 +230,34 @@ void GameScene::Update()
 		float dz = bulletPos.z - enemyPos.z;
 		float dist = sqrtf(dx * dx + dy * dy + dz * dz);
 
-		if (dist < 3.0f) {
+		if (dist < 3.0f && !enemy_->IsDead()) {
 			bullet->SetActive(false);
 			enemy_->OnDeath();
-			
-			// フェーズ切り替え開始
-			isPhaseChanging_ = true;
-			phaseChangeTimer_ = 0.0f;
 		}
 	}
-    // =============================================================================
 
-	// フェーズ移行処理
-	if (isPhaseChanging_) {
-		phaseChangeTimer_ += 1.0f;
+	if (enemy_ && enemy_->HasEscaped() && !isFadeActive_ && !isPhaseChanging_) {
+		isFadeActive_ = true;
+		isPhaseChanging_ = true;
+		fade.StartFadeOut();
+	}
 
-		if (phaseChangeTimer_ > 120.0f) { 
+	if (isFadeActive_) {
+		fade.Update();
+
+		if (fade.IsFadeOutEnd()) {  
 			phase_++;
+			InitializePhase();      
+			fade.StartFadeIn();
+		}
+
+		if (fade.IsFadeInEnd()) {   
+			isFadeActive_ = false;
 			isPhaseChanging_ = false;
-			InitializePhase();
 		}
 	}
+
+
 
 	worldTransform_.UpdateMatrix();
 	worldTransform_.TransferMatrix();
@@ -268,6 +278,8 @@ void GameScene::Draw()
 	/// </summary>
 	stage->Draw();
 
+	fade.Draw();
+
 	// スプライト描画後処理
 	Sprite::PostDraw();
 #pragma endregion
@@ -283,7 +295,6 @@ void GameScene::Draw()
 	if (isGameOver_ && gameOverSprite_) {
 		gameOverSprite_->Draw();
 	}
-
 
 	Sprite::PostDraw();
 
@@ -318,33 +329,25 @@ void GameScene::Draw()
 	// 3Dモデル描画前処理
 	Model2::PreDraw(dxCommn->GetCommandList());
 
-
 	// 3Dモデル描画後処理
 	Model2::PostDraw();
 }
 
 void GameScene::InitializePhase()
 {
-	// フェーズごとに設定を変える
 	switch (phase_) {
 	case 1:
-		enemy_->SetPosition({ 0.0f, 10.0f, 200.0f });
-		enemy_->ResetApproach();
+		enemy_->ResetForPhase({ 0.0f, 10.0f, 200.0f });
 		break;
-
 	case 2:
-		enemy_->SetPosition({ 10.0f, 20.0f, 250.0f });
-		enemy_->ResetApproach();
+		enemy_->ResetForPhase({ 0.0f, 10.0f, 200.0f });
 		break;
-
 	case 3:
-		enemy_->SetPosition({ -15.0f, 25.0f, 300.0f });
-		enemy_->ResetApproach();
+		enemy_->ResetForPhase({ -15.0f, 25.0f, 300.0f });
 		break;
-
 	default:
-		// それ以上のフェーズはクリア扱い
 		isGameOver_ = true;
 		break;
 	}
 }
+

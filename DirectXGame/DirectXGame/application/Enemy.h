@@ -43,6 +43,24 @@ public:
 		isActive_ = false;
 	}
 
+	void SetAlive();
+
+	bool HasEscaped() const {
+		return isDead_ && position_.y > 150.0f; // 逃げ上昇完了の目安高さ
+	}
+
+	bool IsDead() const { return isDead_; }
+
+	void ResetForPhase(const KamataEngine::Vector3& pos) {
+		position_ = pos;
+		isDead_ = false;
+		isEscaping_ = false;
+		shakeTimer_ = 0;
+		isApproaching_ = true;
+		worldTransform_.translation_ = position_;
+		worldTransform_.UpdateMatrix();
+		worldTransform_.TransferMatrix();
+	}
 
 private:
 	// ワールド変換データ
@@ -76,5 +94,6 @@ private:
 	bool isEscaping_ = false;
 	int shakeTimer_ = 0;
 	float escapeSpeed_ = 2.0f;
+
 };
 

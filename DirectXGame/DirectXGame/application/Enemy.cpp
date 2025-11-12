@@ -122,3 +122,9 @@ void Enemy::OnDeath() {
         shakeTimer_ = 0;
     }
 }
+
+void Enemy::SetAlive()
+{
+    isDead_ = false;
+    shakeTimer_ = 0;
+}
