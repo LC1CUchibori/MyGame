@@ -27,6 +27,8 @@ public:
 	// 描画
 	void Draw();
 
+	void InitializePhase();
+
 	bool IsGameOver() const {
 		return (player_->IsDead() && sharkTop_->HasReturned());
 	}
@@ -94,5 +96,9 @@ private:
 
 	uint32_t gameOverTextureHandle_;
 	KamataEngine::Sprite* gameOverSprite_ = nullptr;
+
+	int phase_ = 1;
+	bool isPhaseChanging_ = false;
+	float phaseChangeTimer_ = 0.0f;
 };
 

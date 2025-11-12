@@ -30,6 +30,8 @@ public:
 		isApproaching_ = true;
 	}
 
+	void OnDeath(); 
+
 	const KamataEngine::Vector3& GetPosition() const {
 		return position_;
 	}
@@ -66,5 +68,13 @@ private:
 	float stopY_ = 10.0f; 
 
 	bool isActive_;
+
+	bool isDefeated_ = false;
+	float defeatTimer_ = 0.0f;
+
+	bool isDead_ = false;
+	bool isEscaping_ = false;
+	int shakeTimer_ = 0;
+	float escapeSpeed_ = 2.0f;
 };
 

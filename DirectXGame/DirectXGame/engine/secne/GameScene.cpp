@@ -229,11 +229,25 @@ void GameScene::Update()
 
 		if (dist < 3.0f) {
 			bullet->SetActive(false);
-			enemy_->SetPosition({ 0.0f, 10.0f, 200.0f });
-			enemy_->ResetApproach(); // 敵をリスポーン
+			enemy_->OnDeath();
+			
+			// フェーズ切り替え開始
+			isPhaseChanging_ = true;
+			phaseChangeTimer_ = 0.0f;
 		}
 	}
     // =============================================================================
+
+	// フェーズ移行処理
+	if (isPhaseChanging_) {
+		phaseChangeTimer_ += 1.0f;
+
+		if (phaseChangeTimer_ > 120.0f) { 
+			phase_++;
+			isPhaseChanging_ = false;
+			InitializePhase();
+		}
+	}
 
 	worldTransform_.UpdateMatrix();
 	worldTransform_.TransferMatrix();
@@ -307,4 +321,30 @@ void GameScene::Draw()
 
 	// 3Dモデル描画後処理
 	Model2::PostDraw();
+}
+
+void GameScene::InitializePhase()
+{
+	// フェーズごとに設定を変える
+	switch (phase_) {
+	case 1:
+		enemy_->SetPosition({ 0.0f, 10.0f, 200.0f });
+		enemy_->ResetApproach();
+		break;
+
+	case 2:
+		enemy_->SetPosition({ 10.0f, 20.0f, 250.0f });
+		enemy_->ResetApproach();
+		break;
+
+	case 3:
+		enemy_->SetPosition({ -15.0f, 25.0f, 300.0f });
+		enemy_->ResetApproach();
+		break;
+
+	default:
+		// それ以上のフェーズはクリア扱い
+		isGameOver_ = true;
+		break;
+	}
 }
