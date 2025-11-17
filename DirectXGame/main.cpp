@@ -1,20 +1,24 @@
 #include "KamataEngine.h"
 #include "DirectXGame/engine/secne/GameScene.h"
 #include "DirectXGame/engine/secne/TitleScene.h"
-#include "DirectXGame/engine/2d/Fade.h"     // ← フェード用クラス追加
+#include "DirectXGame/engine/2d/Fade.h"
+#include "DirectXGame/engine/secne/GameClearScene.h"
 #include <Windows.h>
 
 using namespace KamataEngine;
 
 GameScene* gameScene = nullptr;
 TitleScene* titleScene = nullptr;
+GameClearScene* gameClearScene = nullptr;
 Fade fade;  // フェード用インスタンス
 
 enum class Scene {
     kUnknown = 0,
     kTitleScene,
     kGame,
+    kGameClear,
 };
+
 
 // 現在シーン
 Scene scene = Scene::kUnknown;
@@ -51,9 +55,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
         // フェード更新
         fade.Update();
 
-        // 🔸 フェード中は全シーンの更新を止める
+        // フェード中は全シーンの更新を止める
         if (fade.IsFading()) {
-            // ただし ChangeScene は動かす（フェード完了を検知するため）
+            // ChangeScene は動かす
             ChangeScene();
 
             // --- 描画だけは行う ---
@@ -61,7 +65,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
             DrawScene();  // 現在のシーンを描画
             fade.Draw();  // その上にフェードを描画
             dxCommon->PostDraw();
-            continue;  // ← 更新スキップ
+            continue;  // 更新スキップ
         }
 
         // シーン切り替え処理
@@ -75,7 +79,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
         DrawScene();
 
-        // 🔸 フェード描画（最後に上に重ねる）
+        // フェード描画
         fade.Draw();
 
         // 描画終了
@@ -106,6 +110,7 @@ void ChangeScene() {
             isTransitioning = true;
         }
         if (isTransitioning && fade.IsFadeOutEnd()) {
+
             delete titleScene;
             titleScene = nullptr;
 
@@ -120,14 +125,62 @@ void ChangeScene() {
         break;
 
     case Scene::kGame:
-        if (!isTransitioning && gameScene->IsGameOver() && Input::GetInstance()->TriggerKey(DIK_RETURN)) {
+        if (!gameScene) break; // nullptrチェック
+
+        // --------------------- クリアしたらクリア画面へ ---------------------
+        if (!isTransitioning && gameScene->IsGameClear()) {
             fade.StartFadeOut();
             isTransitioning = true;
         }
+        if (isTransitioning && fade.IsFadeOutEnd() && gameScene->IsGameClear()) {
 
-        if (isTransitioning && fade.IsFadeOutEnd()) {
             delete gameScene;
             gameScene = nullptr;
+
+            gameClearScene = new GameClearScene();
+            gameClearScene->Initialize();
+
+            scene = Scene::kGameClear;
+
+            fade.StartFadeIn();
+            isTransitioning = false;
+        }
+
+        // --------------------- ゲームオーバーへ---------------------
+        if (!isTransitioning && gameScene && gameScene->IsGameOver()) {
+            // まずゲームオーバー画像表示だけ
+            // ENTER を待つ
+            if (Input::GetInstance()->TriggerKey(DIK_RETURN)) {
+                fade.StartFadeOut();
+                isTransitioning = true;
+            }
+        }
+
+        if (isTransitioning && fade.IsFadeOutEnd() && gameScene && gameScene->IsGameOver()) {
+
+            delete gameScene;
+            gameScene = nullptr;
+
+            titleScene = new TitleScene();
+            titleScene->Initialize();
+
+            scene = Scene::kTitleScene;
+
+            fade.StartFadeIn();
+            isTransitioning = false;
+        }
+        break;
+
+        // --------------------- クリア画面からタイトルへ ---------------------
+    case Scene::kGameClear:
+        if (!isTransitioning && Input::GetInstance()->TriggerKey(DIK_RETURN)) {
+            fade.StartFadeOut();
+            isTransitioning = true;
+        }
+        if (isTransitioning && fade.IsFadeOutEnd()) {
+
+            delete gameClearScene;
+            gameClearScene = nullptr;
 
             titleScene = new TitleScene();
             titleScene->Initialize();
@@ -146,11 +199,15 @@ void UpdateScene()
     switch (scene)
     {
     case Scene::kTitleScene:
-        titleScene->Update();
+        if (titleScene) titleScene->Update();
         break;
     case Scene::kGame:
-        gameScene->Update();
+        if (gameScene) gameScene->Update();
         break;
+    case Scene::kGameClear:
+        if (gameClearScene) gameClearScene->Update();
+        break;
+
     }
 }
 
@@ -159,10 +216,13 @@ void DrawScene()
     switch (scene)
     {
     case Scene::kTitleScene:
-        titleScene->Draw();
+        if (titleScene) titleScene->Draw();
         break;
     case Scene::kGame:
-        gameScene->Draw();
+        if (gameScene) gameScene->Draw();
+        break;
+    case Scene::kGameClear:
+        if (gameClearScene) gameClearScene->Draw();
         break;
     }
 }

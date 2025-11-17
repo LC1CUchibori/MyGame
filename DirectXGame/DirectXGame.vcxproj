@@ -112,7 +112,7 @@
     <ClCompile Include="DirectXGame\engine\2d\Fade.cpp" />
     <ClCompile Include="DirectXGame\engine\secne\GameScene.cpp" />
     <ClCompile Include="DirectXGame\application\EnemyBullet.cpp" />
-    <ClCompile Include="DirectXGame\engine\secne\GameOverScene.cpp" />
+    <ClCompile Include="DirectXGame\engine\secne\GameClearScene.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="DirectXGame\engine\math\math.cpp" />
     <ClCompile Include="DirectXGame\engine\3d\Model2.cpp" />
@@ -215,6 +215,7 @@
     <ClInclude Include="DirectXGame\engine\3d\SharkTop.h" />
     <ClInclude Include="DirectXGame\engine\secne\GameOverScene.h" />
     <ClInclude Include="DirectXGame\application\PlayerBullet.h" />
+    <ClInclude Include="DirectXGame\engine\secne\GameClearScene.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

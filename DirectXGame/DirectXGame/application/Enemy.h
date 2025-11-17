@@ -62,6 +62,12 @@ public:
 		worldTransform_.TransferMatrix();
 	}
 
+	void StopMoving() {
+		isApproaching_ = false;
+		speed_ = 0;
+		approachSpeed_ = 0;
+	}
+
 private:
 	// ワールド変換データ
 	KamataEngine::WorldTransform worldTransform_;

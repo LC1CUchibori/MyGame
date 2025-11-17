@@ -2,12 +2,9 @@
 
 using namespace KamataEngine;
 
-GameScene::GameScene()
-{
-}
+GameScene::GameScene() {}
 
-GameScene::~GameScene()
-{
+GameScene::~GameScene() {
 	delete effectModel_;
 	delete model_;
 	delete player_;
@@ -16,8 +13,7 @@ GameScene::~GameScene()
 	Model2::StaticFinalize();
 }
 
-void GameScene::Initialize()
-{
+void GameScene::Initialize() {
 	// Model2の初期化
 	Model2::StaticInitialize();
 
@@ -28,11 +24,11 @@ void GameScene::Initialize()
 	playerTextureHandle_ = TextureManager::Load("BlackORE.png");
 	playerModel_ = Model::Create();
 	player_ = new Player();
-	player_->Initialize(playerModel_,playerTextureHandle_,&camera_);
+	player_->Initialize(playerModel_, playerTextureHandle_, &camera_);
 
 	enemyModel_ = Model::CreateFromOBJ("Enemy");
 	enemy_ = new Enemy();
-	enemy_->Initialize(enemyModel_,&camera_);
+	enemy_->Initialize(enemyModel_, &camera_);
 
 	// ===============================背景演出の初期化================================
 	backEffectTextureHandle_ = TextureManager::Load("white1x1.png");
@@ -51,7 +47,7 @@ void GameScene::Initialize()
 		// 画面左端の少し外から出現
 		float x = -50.0f - static_cast<float>(std::rand() % 20);
 
-		backEffect->SetPosition({ x, y, 60.0f });
+		backEffect->SetPosition({x, y, 60.0f});
 		backEffect->SetDirection(direction);
 		backEffect->SetSpeed(0.2f + static_cast<float>(std::rand()) / RAND_MAX * 0.5f);
 
@@ -65,7 +61,7 @@ void GameScene::Initialize()
 	stage->Initialize();
 
 	// 照準
-	crosshairModel_ = Model::CreateFromOBJ("CrossHair"); 
+	crosshairModel_ = Model::CreateFromOBJ("CrossHair");
 	crosshair_ = new Crosshair3D();
 	crosshair_->Initialize(crosshairModel_);
 
@@ -75,11 +71,11 @@ void GameScene::Initialize()
 	sharkTop_->Initialize(sharkTopModel_);
 
 	gameOverTextureHandle_ = TextureManager::Load("GameOver.png");
-	gameOverSprite_ = KamataEngine::Sprite::Create(gameOverTextureHandle_, { 400.0f, 200.0f });
+	gameOverSprite_ = KamataEngine::Sprite::Create(gameOverTextureHandle_, {400.0f, 200.0f});
 
 	// 出現スプライト初期化
 	spawnTextureHandle_ = TextureManager::Load("spawn.png");
-	spawnSprite_ = KamataEngine::Sprite::Create(spawnTextureHandle_, { spawnX_, 300.0f });
+	spawnSprite_ = KamataEngine::Sprite::Create(spawnTextureHandle_, {spawnX_, 300.0f});
 
 	isSpawnActive_ = true;
 	spawnTimer_ = 0.0f;
@@ -87,18 +83,21 @@ void GameScene::Initialize()
 
 	fade.Initialize();
 
+	// ボタンPUSHスプライト
+	pushSpriteTextureHandle_ = TextureManager::Load("ButtonPush.png");
+	pushSprite_ = KamataEngine::Sprite::Create(pushSpriteTextureHandle_, {640.0f, 360.0f}); // 画面中央
+
 	worldTransform_.Initialize();
-	 // カメラの初期化
+	// カメラの初期化
 	camera_.Initialize();
 }
 
-void GameScene::Update()
-{
+void GameScene::Update() {
 	// 背景ステージ
 	stage->Update();
 
 	// ==========================背景演出の処理===========================
-	//for (BackEffect* backEffect : backEffects_) {
+	// for (BackEffect* backEffect : backEffects_) {
 	//	backEffect->Update();
 
 	//	// 背景演出の位置を取得
@@ -113,11 +112,10 @@ void GameScene::Update()
 	//		backEffect->SetSpeed(0.2f + static_cast<float>(std::rand()) / RAND_MAX * 0.5f);
 	//	}
 	//}
-    // ===============================================================
-
+	// ===============================================================
 
 	// =========================照準更新===============================
-	//crosshair_->Update();
+	// crosshair_->Update();
 
 	Vector3 crossPos = crosshair_->GetPosition();
 	Vector3 playerPos = player_->GetPosition();
@@ -135,53 +133,54 @@ void GameScene::Update()
 		// 距離が一定以内なら命中
 		if (dist < 3.0f) {
 			// 命中処理：リスポーンさせる
-			enemy_->SetPosition({ 0.0f, 10.0f, 200.0f });
+			enemy_->SetPosition({0.0f, 10.0f, 200.0f});
 			enemy_->ResetApproach(); // ← 後述（Enemyに追加する関数）
 		}
 	}
 	// ========================================================================
-	
-	// プレイヤー更新
-	player_->Update();
 
-	if (player_->IsDead()) {
+	// プレイヤー更新
+	if (player_) {
+		player_->Update();
+	}
+
+	// sharkTop更新
+	if (player_ && player_->IsDead() && sharkTop_) {
 		sharkTop_->Update();
 	}
 
 	// 敵の更新
-	if (enemy_ && !(player_->IsDead() && sharkTop_->HasReturned())) {
+	if (enemy_ && player_ && sharkTop_ && !(player_->IsDead() && sharkTop_->HasReturned())) {
 		enemy_->Update();
 	}
 
 	// ゲームオーバーシーンに移行
-	if (player_->IsDead()) {
-		sharkTop_->Update();
-
-		if (sharkTop_->HasReturned()) {
-			isGameOver_ = true;
-		}
+	if (player_ && sharkTop_ && player_->IsDead() && sharkTop_->HasReturned()) {
+		isGameOver_ = true;
 	}
 
 	if (enemy_) {
 		enemy_->SetInactive();
 	}
 
+	if (enemy_ && player_) {
+		for (auto& bullet : enemy_->GetBullets()) {
+			if (!bullet->IsActive())
+				continue;
+			bullet->Update();
+			Vector3 bulletPos = bullet->GetPosition();
 
-	for (auto& bullet : enemy_->GetBullets()) {
-		if (!bullet->IsActive()) continue;
-		bullet->Update();
-		Vector3 bulletPos = bullet->GetPosition();
+			float dx = bulletPos.x - playerPos.x;
+			float dy = bulletPos.y - playerPos.y;
+			float dz = bulletPos.z - playerPos.z;
+			float distance = sqrtf(dx * dx + dy * dy + dz * dz);
 
-		float dx = bulletPos.x - playerPos.x;
-		float dy = bulletPos.y - playerPos.y;
-		float dz = bulletPos.z - playerPos.z;
-		float distance = sqrtf(dx*dx + dy*dy + dz*dz);
+			float hitRadius = 2.0f;
 
-		float hitRadius = 2.0f;
-
-		if (distance < hitRadius && !player_->IsDead()) {
-			player_->Kill();
-			bullet->SetInactive();
+			if (distance < hitRadius && !player_->IsDead()) {
+				player_->Kill();
+				bullet->SetInactive();
+			}
 		}
 	}
 
@@ -190,49 +189,56 @@ void GameScene::Update()
 		spawnTimer_ += 1.0f;
 
 		// 出現演出
-		float startX = -500.0f;  // 左外
-		float centerX = 390.0f;  // 画面中央
-		float endX = 1280.0f;    // 右外
+		float startX = -500.0f; // 左外
+		float centerX = 390.0f; // 画面中央
+		float endX = 1280.0f;   // 右外
 
 		if (spawnTimer_ < 90) {
 			// 左→中央へ移動
 			float t = spawnTimer_ / 90.0f;
 			spawnX_ = startX + (centerX - startX) * t;
-		}
-		else if (spawnTimer_ < 240) {
+		} else if (spawnTimer_ < 240) {
 			// 中央で停止
 			spawnX_ = centerX;
-		}
-		else if (spawnTimer_ < 360) {
+		} else if (spawnTimer_ < 360) {
 			// 中央→右へ移動
 			float t = (spawnTimer_ - 240.0f) / 120.0f;
 			spawnX_ = centerX + (endX - centerX) * t;
-		}
-		else {
+		} else {
 			// 終了
 			isSpawnActive_ = false;
 		}
 
-		spawnSprite_->SetPosition({ spawnX_, 300.0f });
+		spawnSprite_->SetPosition({spawnX_, 300.0f});
 	}
-    // ==============================================================================
+	// ==============================================================================
 
 	// =====================プレイヤーの弾と敵の当たり判定======================
 	// プレイヤーの弾と敵の当たり判定
-	for (auto* bullet : player_->GetBullets()) {
-		if (!bullet->IsActive() || !enemy_) continue;
+	if (player_ && enemy_) {
+		for (auto* bullet : player_->GetBullets()) {
+			if (!bullet->IsActive() || !enemy_)
+				continue;
 
-		Vector3 bulletPos = bullet->GetPosition();
-		Vector3 enemyPos = enemy_->GetPosition();
+			Vector3 bulletPos = bullet->GetPosition();
+			Vector3 enemyPos = enemy_->GetPosition();
 
-		float dx = bulletPos.x - enemyPos.x;
-		float dy = bulletPos.y - enemyPos.y;
-		float dz = bulletPos.z - enemyPos.z;
-		float dist = sqrtf(dx * dx + dy * dy + dz * dz);
+			float dx = bulletPos.x - enemyPos.x;
+			float dy = bulletPos.y - enemyPos.y;
+			float dz = bulletPos.z - enemyPos.z;
+			float dist = sqrtf(dx * dx + dy * dy + dz * dz);
 
-		if (dist < 3.0f && !enemy_->IsDead()) {
-			bullet->SetActive(false);
-			enemy_->OnDeath();
+			if (dist < 3.0f && !enemy_->IsDead()) {
+				bullet->SetActive(false);
+				if (phase_ == 5) {
+					isBossHit_ = true;    // ボスヒットフラグ
+					enemy_->StopMoving(); // 敵を停止させる新関数
+					bossState_ = BossChallengeState::Start;
+				} else {
+					enemy_->OnDeath(); // 通常敵処理
+					defeatCount_++;
+				}
+			}
 		}
 	}
 
@@ -245,15 +251,81 @@ void GameScene::Update()
 	if (isFadeActive_) {
 		fade.Update();
 
-		if (fade.IsFadeOutEnd()) {  
+		if (fade.IsFadeOutEnd()) {
 			phase_++;
-			InitializePhase();      
+			InitializePhase();
 			fade.StartFadeIn();
 		}
 
-		if (fade.IsFadeInEnd()) {   
+		if (fade.IsFadeInEnd()) {
 			isFadeActive_ = false;
 			isPhaseChanging_ = false;
+		}
+	}
+
+	// ボスフェーズ攻撃ヒット後にStart状態にする
+	if (bossState_ == BossChallengeState::Start) {
+		bossPushStarted_ = false;
+		bossPushTimer_ = 0.0f;
+		isBossChallengeResult_ = false;
+		bossState_ = BossChallengeState::Challenge;
+	}
+
+	// PUSHチャレンジ中
+	if (bossState_ == BossChallengeState::Challenge) {
+
+		// ボタン押し開始
+		if (!bossPushStarted_ && input->TriggerKey(DIK_SPACE)) {
+			bossPushStarted_ = true;
+
+			// ここで成功判定（51%）
+			int r = std::rand() % 100;
+			isBossChallengeSuccess_ = (r < 1);
+			isBossChallengeResult_ = true;
+		}
+
+		if (bossPushStarted_) {
+			bossPushTimer_++;
+
+			// 5秒経過で結果反映
+			if (bossPushTimer_ >= bossPushDuration_) {
+				if (isBossChallengeSuccess_) {
+					bossState_ = BossChallengeState::Success;
+				} else {
+					bossState_ = BossChallengeState::Failed;
+				}
+			}
+		}
+
+		// スプライトは常に中央表示
+		pushSprite_->SetPosition({640.0f, 360.0f});
+	}
+
+	// 成功時の処理
+	if (bossState_ == BossChallengeState::Success) {
+		// ここで敵を倒した扱いにする
+		if (enemy_ && !enemy_->IsDead()) {
+			enemy_->OnDeath(); // 敵死亡処理
+			defeatCount_ = 5;  // 敵撃破カウント
+		}
+		if (enemy_ && enemy_->IsDead()) {
+			isGameClear_ = true;
+		}
+	}
+
+	// 失敗時の処理
+	if (bossState_ == BossChallengeState::Failed) {
+		if (player_ && !player_->IsDead()) {
+			player_->Kill(); // プレイヤー死亡にする
+		}
+
+		// ゲームオーバーシーンに移行
+		if (player_ && sharkTop_ && player_->IsDead()) {
+			sharkTop_->Update();
+
+			if (sharkTop_->HasReturned()) {
+				isGameOver_ = true;
+			}
 		}
 	}
 
@@ -261,9 +333,7 @@ void GameScene::Update()
 	worldTransform_.TransferMatrix();
 }
 
-
-void GameScene::Draw()
-{
+void GameScene::Draw() {
 	// DirectXCommon インスタンスの取得
 	DirectXCommon* dxCommn = DirectXCommon::GetInstance();
 
@@ -292,6 +362,10 @@ void GameScene::Draw()
 		gameOverSprite_->Draw();
 	}
 
+	if (bossState_ == BossChallengeState::Challenge && pushSprite_) {
+		pushSprite_->Draw();
+	}
+
 	Sprite::PostDraw();
 
 #pragma region 3Dオブジェクト描画
@@ -300,22 +374,26 @@ void GameScene::Draw()
 	Model::PreDraw(dxCommn->GetCommandList());
 
 	// プレイヤーの描画
-	player_->Draw(&camera_, playerTextureHandle_);
+	if (player_) {
+		player_->Draw(&camera_, playerTextureHandle_);
+	}
 
-	if (!(player_->IsDead())) {
+	if (enemy_ && player_ && !(player_->IsDead())) {
 		// 敵の描画
 		enemy_->Draw(&camera_);
 	}
 
-	sharkTop_->Draw(&camera_);
+	if (sharkTop_) {
+		sharkTop_->Draw(&camera_);
+	}
 
 	// 背景演出の描画
 	/*for (BackEffect* backEffect : backEffects_) {
-		backEffect->Draw(&camera_, backEffectTextureHandle_);
+	    backEffect->Draw(&camera_, backEffectTextureHandle_);
 	}*/
 
 	// 照準の描画
-	//crosshair_->Draw(&camera_);
+	// crosshair_->Draw(&camera_);
 
 	fade.Draw();
 
@@ -330,20 +408,24 @@ void GameScene::Draw()
 	Model2::PostDraw();
 }
 
-void GameScene::InitializePhase()
-{
+void GameScene::InitializePhase() {
 	switch (phase_) {
 	case 1:
-		enemy_->ResetForPhase({ 0.0f, 10.0f, 200.0f });
+		enemy_->ResetForPhase({0.0f, 10.0f, 200.0f});
 		break;
 	case 2:
-		enemy_->ResetForPhase({ 0.0f, 10.0f, 200.0f });
+		enemy_->ResetForPhase({0.0f, 10.0f, 200.0f});
 		break;
 	case 3:
-		enemy_->ResetForPhase({ -15.0f, 25.0f, 300.0f });
+		enemy_->ResetForPhase({0.0f, 10.0f, 200.0f});
+		break;
+	case 4:
+		enemy_->ResetForPhase({0.0f, 10.0f, 200.0f});
+		break;
+	case 5:
+		enemy_->ResetForPhase({0.0f, 10.0f, 200.0f});
 		break;
 	default:
 		break;
 	}
 }
-

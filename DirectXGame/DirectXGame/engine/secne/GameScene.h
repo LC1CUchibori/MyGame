@@ -30,10 +30,12 @@ public:
 	void InitializePhase();
 
 	bool IsGameOver() const {
-		return (player_->IsDead() && sharkTop_->HasReturned());
+		return (player_ && sharkTop_ && player_->IsDead() && sharkTop_->HasReturned());
 	}
 
 	bool IsSceneReturnRequested() const { return isSceneReturnRequested_; }
+
+	bool IsGameClear() const { return isGameClear_; }
 
 private:
 	KamataEngine::Model* model_ = nullptr;
@@ -97,9 +99,33 @@ private:
 	uint32_t gameOverTextureHandle_;
 	KamataEngine::Sprite* gameOverSprite_ = nullptr;
 
-	int phase_ = 1;
+	int phase_ = 5;
 	bool isPhaseChanging_ = false;
 	bool isFadeActive_ = false; // フェード開始フラグ
 	float phaseChangeTimer_ = 0.0f;
+
+	// 敵のフェーズ回数
+	int defeatCount_ = 0;
+	bool isGameClear_ = false;
+
+	bool isBossHit_ = false;
+	float challengeGauge_ = 0.0f;
+	float challengeTimer_ = 0.0f;
+
+	KamataEngine::Sprite* pushSprite_ = nullptr;
+	int pushSpriteTextureHandle_ = 0;
+
+	bool isBossChallengeResultDecided_ = false; // 成功・失敗判定済みか
+
+	// GameScene.h に追加
+	enum class BossChallengeState { None, Start, Challenge, Success, Failed };
+
+	BossChallengeState bossState_ = BossChallengeState::None;
+	bool isBossChallengeResult_ = false;   // 成功判定済みか
+	bool isBossChallengeSuccess_ = false;  // 成功か失敗か
+	bool bossPushStarted_ = false;         // ボタン押し開始
+	float bossPushTimer_ = 0.0f;           // 5秒間カウント
+	const float bossPushDuration_ = 300.0f; // 5秒 = 60fps x 5秒
+
 };
 

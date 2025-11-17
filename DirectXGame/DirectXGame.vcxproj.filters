@@ -102,11 +102,11 @@
     <ClCompile Include="DirectXGame\engine\3d\SharkTop.cpp">
       <Filter>ソース ファイル\engine\3d</Filter>
     </ClCompile>
-    <ClCompile Include="DirectXGame\engine\secne\GameOverScene.cpp">
-      <Filter>ソース ファイル\engine\scene</Filter>
-    </ClCompile>
     <ClCompile Include="DirectXGame\application\PlayerBullet.cpp">
       <Filter>ソース ファイル\application</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectXGame\engine\secne\GameClearScene.cpp">
+      <Filter>ソース ファイル\engine\scene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -203,6 +203,9 @@
     </ClInclude>
     <ClInclude Include="DirectXGame\application\PlayerBullet.h">
       <Filter>ヘッダー ファイル\application</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXGame\engine\secne\GameClearScene.h">
+      <Filter>ヘッダー ファイル\engine\scene</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
