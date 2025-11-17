@@ -113,6 +113,7 @@
     <ClCompile Include="DirectXGame\engine\secne\GameScene.cpp" />
     <ClCompile Include="DirectXGame\application\EnemyBullet.cpp" />
     <ClCompile Include="DirectXGame\engine\secne\GameClearScene.cpp" />
+    <ClCompile Include="DirectXGame\application\Graph.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="DirectXGame\engine\math\math.cpp" />
     <ClCompile Include="DirectXGame\engine\3d\Model2.cpp" />
@@ -216,6 +217,7 @@
     <ClInclude Include="DirectXGame\engine\secne\GameOverScene.h" />
     <ClInclude Include="DirectXGame\application\PlayerBullet.h" />
     <ClInclude Include="DirectXGame\engine\secne\GameClearScene.h" />
+    <ClInclude Include="DirectXGame\application\Graph.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

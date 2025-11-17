@@ -108,6 +108,9 @@
     <ClCompile Include="DirectXGame\engine\secne\GameClearScene.cpp">
       <Filter>ソース ファイル\engine\scene</Filter>
     </ClCompile>
+    <ClCompile Include="DirectXGame\application\Graph.cpp">
+      <Filter>ソース ファイル\application</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\SpritePS.hlsl">
@@ -206,6 +209,9 @@
     </ClInclude>
     <ClInclude Include="DirectXGame\engine\secne\GameClearScene.h">
       <Filter>ヘッダー ファイル\engine\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXGame\application\Graph.h">
+      <Filter>ヘッダー ファイル\application</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

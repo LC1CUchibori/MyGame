@@ -87,6 +87,20 @@ void GameScene::Initialize() {
 	pushSpriteTextureHandle_ = TextureManager::Load("ButtonPush.png");
 	pushSprite_ = KamataEngine::Sprite::Create(pushSpriteTextureHandle_, {640.0f, 360.0f}); // 画面中央
 
+	// PushButtonバーの生成と初期化
+	RedGraph_ = new Graph();
+	RedGraph_->Initialize();
+	//  グラフ生成
+	RedGraph_->SetSize({300.0f,30.0f});
+	RedGraph_->SetColor({ 1.0f, 0.0f, 0.0f, 0.5f });
+	RedGraph_->SetPosition({ 500.0f,260.0f });
+
+	GreenGraph_ = new Graph();
+	GreenGraph_->Initialize();
+	GreenGraph_->SetSize({300.0f,30.0f});
+	GreenGraph_->SetColor({ 0.0f, 1.0f, 0.0f, 0.5f });
+	GreenGraph_->SetPosition({ 500.0f,260.0f });
+
 	worldTransform_.Initialize();
 	// カメラの初期化
 	camera_.Initialize();
@@ -95,24 +109,6 @@ void GameScene::Initialize() {
 void GameScene::Update() {
 	// 背景ステージ
 	stage->Update();
-
-	// ==========================背景演出の処理===========================
-	// for (BackEffect* backEffect : backEffects_) {
-	//	backEffect->Update();
-
-	//	// 背景演出の位置を取得
-	//	KamataEngine::Vector3 pos = backEffect->GetPosition();
-
-	//	if (pos.x > 80.0f) {  // 80は画面右端目安
-	//		float y = -15.0f + static_cast<float>(std::rand()) / RAND_MAX * 50.0f;
-	//		float x = -80.0f - static_cast<float>(std::rand() % 20); // 左端外
-
-	//		backEffect->SetPosition({ x, y, 60.0f });
-	//		backEffect->SetDirection(1); // 左から右
-	//		backEffect->SetSpeed(0.2f + static_cast<float>(std::rand()) / RAND_MAX * 0.5f);
-	//	}
-	//}
-	// ===============================================================
 
 	// =========================照準更新===============================
 	// crosshair_->Update();
@@ -268,38 +264,40 @@ void GameScene::Update() {
 		bossPushStarted_ = false;
 		bossPushTimer_ = 0.0f;
 		isBossChallengeResult_ = false;
+
+		GreenGraph_->SetSize({300.0f, 30.0f});
 		bossState_ = BossChallengeState::Challenge;
 	}
 
-	// PUSHチャレンジ中
 	if (bossState_ == BossChallengeState::Challenge) {
 
-		// ボタン押し開始
-		if (!bossPushStarted_ && input->TriggerKey(DIK_SPACE)) {
-			bossPushStarted_ = true;
-
-			// ここで成功判定（51%）
+		// Spaceで成功確率だけ決める
+		if (!isBossChallengeResult_ && input->TriggerKey(DIK_SPACE)) {
 			int r = std::rand() % 100;
-			isBossChallengeSuccess_ = (r < 1);
+			isBossChallengeSuccess_ = (r < 51);
 			isBossChallengeResult_ = true;
 		}
 
-		if (bossPushStarted_) {
-			bossPushTimer_++;
+		// 常にゲージは動く
+		bossPushTimer_++;
 
-			// 5秒経過で結果反映
-			if (bossPushTimer_ >= bossPushDuration_) {
-				if (isBossChallengeSuccess_) {
-					bossState_ = BossChallengeState::Success;
-				} else {
-					bossState_ = BossChallengeState::Failed;
-				}
-			}
+		float per = bossPushTimer_ / bossPushDuration_;
+		if (per > 1.0f) per = 1.0f;
+
+		float maxWidth = 300.0f;
+		float currentWidth = maxWidth * (1.0f - per);
+		GreenGraph_->SetSize({ currentWidth, 30.0f });
+
+		// 時間切れ判定
+		if (bossPushTimer_ >= bossPushDuration_) {
+			if (isBossChallengeSuccess_) bossState_ = BossChallengeState::Success;
+			else bossState_ = BossChallengeState::Failed;
 		}
 
-		// スプライトは常に中央表示
-		pushSprite_->SetPosition({640.0f, 360.0f});
+		// スプライト中央表示
+		pushSprite_->SetPosition({400.0f, 150.0f});
 	}
+
 
 	// 成功時の処理
 	if (bossState_ == BossChallengeState::Success) {
@@ -328,7 +326,6 @@ void GameScene::Update() {
 			}
 		}
 	}
-
 	worldTransform_.UpdateMatrix();
 	worldTransform_.TransferMatrix();
 }
@@ -365,6 +362,10 @@ void GameScene::Draw() {
 	if (bossState_ == BossChallengeState::Challenge && pushSprite_) {
 		pushSprite_->Draw();
 	}
+
+	// グラフの描画
+	RedGraph_->Draw();
+	GreenGraph_->Draw();
 
 	Sprite::PostDraw();
 

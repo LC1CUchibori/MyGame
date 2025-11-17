@@ -10,6 +10,7 @@
 #include "../3d/CrossHair3D.h"
 #include "../3d/SharkTop.h"
 #include "DirectXGame/engine/2d/Fade.h" 
+#include <DirectXGame/application/Graph.h>
 
 class GameScene
 {
@@ -67,12 +68,19 @@ private:
 
 	Stage* stage = nullptr;
 
+	// pushタイムバー
+	Graph* RedGraph_ = nullptr;
+	Graph* GreenGraph_ = nullptr;
+	KamataEngine::Sprite* sprite_ = nullptr;
+	bool isDamageActive_ = false; 
+	float hp_ = 100.0f;
+
 	KamataEngine::Vector3 cursorPos_{0.0f, 0.0f, 30.0f}; // 初期位置
 	float cursorSpeed_ = 0.5f; // 移動速度
 
 	uint32_t crossTexture_;// 標準
 	KamataEngine::Sprite* cursorSprite_ = nullptr;
-	float cursorX_ = 400.0f; // 初期位置（画面中央など）
+	float cursorX_ = 400.0f; // 初期位置
 	float cursorY_ = 300.0f;
 
 	Crosshair3D* crosshair_ = nullptr;
@@ -117,9 +125,9 @@ private:
 
 	bool isBossChallengeResultDecided_ = false; // 成功・失敗判定済みか
 
-	// GameScene.h に追加
 	enum class BossChallengeState { None, Start, Challenge, Success, Failed };
 
+	// pushButton
 	BossChallengeState bossState_ = BossChallengeState::None;
 	bool isBossChallengeResult_ = false;   // 成功判定済みか
 	bool isBossChallengeSuccess_ = false;  // 成功か失敗か
