@@ -343,7 +343,6 @@ void GameScene::InitializePhase()
 		enemy_->ResetForPhase({ -15.0f, 25.0f, 300.0f });
 		break;
 	default:
-		isGameOver_ = true;
 		break;
 	}
 }
