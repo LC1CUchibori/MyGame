@@ -123,6 +123,16 @@ void GameScene::Initialize() {
 	pushPromptTextureHandle_ = TextureManager::Load("PushPrompt.png");
 	pushPromptSprite_ = KamataEngine::Sprite::Create(pushPromptTextureHandle_, {400.0f, 150.0f});
 
+	// エフェクト
+	bossEffectTextures_[0] = TextureManager::Load("BlueEffect.png");
+	bossEffectTextures_[1] = TextureManager::Load("GreenEffect.png");
+	bossEffectTextures_[2] = TextureManager::Load("PurpleEffect.png");
+	bossEffectTextures_[3] = TextureManager::Load("RedEffect.png");
+	bossEffectTextures_[4] = TextureManager::Load("RainbowEffect.png");
+
+	for (int i = 0; i < 5; ++i) {
+		bossEffectSprites_[i] = KamataEngine::Sprite::Create(bossEffectTextures_[i], {0.0f, 0.0f});
+	}
 
 	worldTransform_.Initialize();
 	// カメラの初期化
@@ -267,7 +277,9 @@ void GameScene::Update() {
 			}
 		}
 	}
+	// ============================================================================
 
+	// ===========================フェードの処理===================================
 	if (enemy_ && enemy_->HasEscaped() && !isFadeActive_ && !isPhaseChanging_) {
 		isFadeActive_ = true;
 		isPhaseChanging_ = true;
@@ -288,7 +300,9 @@ void GameScene::Update() {
 			isPhaseChanging_ = false;
 		}
 	}
+	// ==============================================================================
 
+	// =====================================フェーズ処理======================================
 	// ボスフェーズ攻撃ヒット後にStart状態にする
 	if (bossState_ == BossChallengeState::Start) {
 		bossPushStarted_ = false;
@@ -320,6 +334,43 @@ void GameScene::Update() {
 		float currentWidth = maxWidth * (1.0f - per);
 		GreenGraph_->SetSize({ currentWidth, 30.0f });
 
+		// 初期化
+		effectDisplayTimes_[0] = 0.0f;  // 青
+		effectDisplayTimes_[1] = 0.25f; // 緑
+		effectDisplayTimes_[2] = 0.5f;  // 紫
+		effectDisplayTimes_[3] = 0.75f; // 赤
+		effectDisplayTimes_[4] = 0.9f;  // 虹
+
+		// エフェクト
+		int effectIndex = 0;
+		if (isBossChallengeResult_) {
+			if (isBossChallengeSuccess_) {
+				// 成功：虹まで
+				for (int i = 0; i < 5; ++i) {
+					if (per >= effectDisplayTimes_[i]) {
+						effectIndex = i;
+					}
+				}
+				if (per >= 1.0f) effectIndex = 4;
+			} else {
+				// 失敗：赤まで
+				for (int i = 0; i < 4; ++i) {
+					if (per >= effectDisplayTimes_[i]) {
+						effectIndex = i;
+					}
+				}
+			}
+		} else {
+			// 赤まで
+			for (int i = 0; i < 4; ++i) {
+				if (per >= effectDisplayTimes_[i]) {
+					effectIndex = i;
+				}
+			}
+		}
+		currentEffectIndex_ = effectIndex;
+
+
 		// 時間切れ判定
 		if (bossPushTimer_ >= bossPushDuration_) {
 			if (isBossChallengeSuccess_) bossState_ = BossChallengeState::Success;
@@ -349,7 +400,6 @@ void GameScene::Update() {
 			player_->Kill(); // プレイヤー死亡にする
 		}
 
-		// ゲームオーバーシーンに移行
 		if (player_ && sharkTop_ && player_->IsDead()) {
 			sharkTop_->Update();
 
@@ -368,7 +418,7 @@ void GameScene::Update() {
 			isPushSpriteVisible_ = true;
 		}
 	}
-
+// ======================================================================================
 	worldTransform_.UpdateMatrix();
 	worldTransform_.TransferMatrix();
 }
@@ -408,8 +458,14 @@ void GameScene::Draw() {
 
 	if (bossState_ == BossChallengeState::Challenge && pushSprite_ && isPushSpriteVisible_) {
 		pushSprite_->Draw();
+		// バー
 		RedGraph_->Draw();
 		GreenGraph_->Draw();
+
+		// エフェクト
+		if (currentEffectIndex_ >= 0 && currentEffectIndex_ < 5) {
+			bossEffectSprites_[currentEffectIndex_]->Draw();
+		}
 	}
 
 

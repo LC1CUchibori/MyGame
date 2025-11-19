@@ -146,5 +146,12 @@ private:
 	// 表示状態
 	bool isPushPromptActive_ = false;
 	bool isPushSpriteVisible_ = false; 
+
+	// エフェクトカラー
+	uint32_t bossEffectTextures_[5];
+	KamataEngine::Sprite* bossEffectSprites_[5];
+	float effectDisplayTimes_[5] = {0.0f, 0.25f, 0.5f, 0.75f, 1.0f};
+
+	int currentEffectIndex_ = 0;
 };
 
