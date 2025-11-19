@@ -43,7 +43,7 @@ void Player::Update()
 	if (input->PushKey(DIK_D)) worldTransform_.translation_.x += speed_;
 
 	// ===== 弾発射 =====
-	if (input->TriggerKey(DIK_SPACE)) {
+	if (canShoot_ && input->TriggerKey(DIK_SPACE)) {
 		Fire();
 	}
 

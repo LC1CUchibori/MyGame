@@ -16,6 +16,9 @@ private:
     uint32_t gameClearTextureHandle_ = 0;
     KamataEngine::Sprite* gameClearSprite_ = nullptr;
 
+    uint32_t gameClearBGTextureHandle_ = 0;
+    KamataEngine::Sprite* gameClearBGSprite_ = nullptr;
+
     bool isFinished_ = false;
     float timer_ = 0.0f;
 };

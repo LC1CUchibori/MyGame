@@ -20,6 +20,9 @@ public:
     void Kill() { isDead_ = true; }
     bool IsDead() const { return isDead_; }
 
+    void SetCanShoot(bool canShoot) { canShoot_ = canShoot; }
+    bool CanShoot() const { return canShoot_; }
+
     // 座標取得
     const KamataEngine::Vector3& GetPosition() const { return worldTransform_.translation_; }
 
@@ -39,4 +42,6 @@ private:
     float yaw_ = 0.0f;
 
     bool isDead_ = false;  // 死亡フラグ
+
+    bool canShoot_ = true;
 };

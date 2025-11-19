@@ -9,7 +9,8 @@ TitleScene::TitleScene()
 
 TitleScene::~TitleScene()
 {
-	delete titleModel_;
+	delete title_;
+	delete stage1;
 }
 
 void TitleScene::Initialize()

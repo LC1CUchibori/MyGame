@@ -77,12 +77,14 @@ void Enemy::Update() {
     }
 
     // 弾の発射
-    fireTimer_++;
-    if (fireTimer_ > 120) {
-        EnemyBullet* bullet = new EnemyBullet();
-        bullet->Initialize(bulletModel_, camera_, position_);
-        bullets_.push_back(bullet);
-        fireTimer_ = 0;
+    if (canShoot_) {
+        fireTimer_++;
+        if (fireTimer_ > 120) {
+            EnemyBullet* bullet = new EnemyBullet();
+            bullet->Initialize(bulletModel_, camera_, position_);
+            bullets_.push_back(bullet);
+            fireTimer_ = 0;
+        }
     }
 
     // 弾の更新

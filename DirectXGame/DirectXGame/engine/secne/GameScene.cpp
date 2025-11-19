@@ -8,7 +8,25 @@ GameScene::~GameScene() {
 	delete effectModel_;
 	delete model_;
 	delete player_;
-	delete crosshairModel_;
+	delete sharkTop_;
+	delete stage;
+	delete enemy_;
+
+	// BackEffect 全部破棄
+	for (BackEffect* e : backEffects_) {
+		delete e;
+	}
+	backEffects_.clear();
+
+	// Sprite 破棄
+	delete gameOverSprite_;
+	delete spawnSprite_;
+	delete pushSprite_;
+
+	// PushButton ゲージ
+	delete RedGraph_;
+	delete GreenGraph_;
+
 
 	Model2::StaticFinalize();
 }
@@ -93,13 +111,18 @@ void GameScene::Initialize() {
 	//  グラフ生成
 	RedGraph_->SetSize({300.0f,30.0f});
 	RedGraph_->SetColor({ 1.0f, 0.0f, 0.0f, 0.5f });
-	RedGraph_->SetPosition({ 500.0f,260.0f });
+	RedGraph_->SetPosition({ 500.0f,280.0f });
 
 	GreenGraph_ = new Graph();
 	GreenGraph_->Initialize();
 	GreenGraph_->SetSize({300.0f,30.0f});
 	GreenGraph_->SetColor({ 0.0f, 1.0f, 0.0f, 0.5f });
-	GreenGraph_->SetPosition({ 500.0f,260.0f });
+	GreenGraph_->SetPosition({ 500.0f,280.0f });
+
+	// 「敵をPushで倒せ」スプライト
+	pushPromptTextureHandle_ = TextureManager::Load("PushPrompt.png");
+	pushPromptSprite_ = KamataEngine::Sprite::Create(pushPromptTextureHandle_, {400.0f, 150.0f});
+
 
 	worldTransform_.Initialize();
 	// カメラの初期化
@@ -229,6 +252,13 @@ void GameScene::Update() {
 				if (phase_ == 5) {
 					isBossHit_ = true;    // ボスヒットフラグ
 					enemy_->StopMoving(); // 敵を停止させる新関数
+					enemy_->SetCanShoot(false); 
+					player_->SetCanShoot(false);
+
+					// Push表示開始
+					isPushPromptActive_ = true;
+					pushPromptTimer_ = 0.0f;
+
 					bossState_ = BossChallengeState::Start;
 				} else {
 					enemy_->OnDeath(); // 通常敵処理
@@ -279,7 +309,9 @@ void GameScene::Update() {
 		}
 
 		// 常にゲージは動く
-		bossPushTimer_++;
+		if (isPushSpriteVisible_) {
+			bossPushTimer_++;
+		}
 
 		float per = bossPushTimer_ / bossPushDuration_;
 		if (per > 1.0f) per = 1.0f;
@@ -326,6 +358,17 @@ void GameScene::Update() {
 			}
 		}
 	}
+
+	if (isPushPromptActive_) {
+		pushPromptTimer_ += 1.0f; // フレーム単位
+
+		if (pushPromptTimer_ >= pushPromptDuration_) {
+			// 1秒経過したら Pushスプライト表示
+			isPushPromptActive_ = false;
+			isPushSpriteVisible_ = true;
+		}
+	}
+
 	worldTransform_.UpdateMatrix();
 	worldTransform_.TransferMatrix();
 }
@@ -359,13 +402,16 @@ void GameScene::Draw() {
 		gameOverSprite_->Draw();
 	}
 
-	if (bossState_ == BossChallengeState::Challenge && pushSprite_) {
-		pushSprite_->Draw();
+	if (isPushPromptActive_ && pushPromptSprite_) {
+		pushPromptSprite_->Draw();
 	}
 
-	// グラフの描画
-	RedGraph_->Draw();
-	GreenGraph_->Draw();
+	if (bossState_ == BossChallengeState::Challenge && pushSprite_ && isPushSpriteVisible_) {
+		pushSprite_->Draw();
+		RedGraph_->Draw();
+		GreenGraph_->Draw();
+	}
+
 
 	Sprite::PostDraw();
 

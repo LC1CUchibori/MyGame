@@ -97,6 +97,10 @@ private:
 	uint32_t spawnTextureHandle_ = 0;
 	KamataEngine::Sprite* spawnSprite_ = nullptr;
 
+	// 「敵をPushで倒せ」スプライト
+	KamataEngine::Sprite* pushPromptSprite_ = nullptr;
+	uint32_t pushPromptTextureHandle_;
+
 	// 出現アニメーション制御用
 	bool isSpawnActive_ = false;
 	float spawnTimer_ = 0.0f;
@@ -135,5 +139,12 @@ private:
 	float bossPushTimer_ = 0.0f;           // 5秒間カウント
 	const float bossPushDuration_ = 300.0f; // 5秒 = 60fps x 5秒
 
+	// タイマー
+	float pushPromptTimer_ = 0.0f;
+	float pushPromptDuration_ = 60.0f; // 60フレーム = 1秒
+
+	// 表示状態
+	bool isPushPromptActive_ = false;
+	bool isPushSpriteVisible_ = false; 
 };
 

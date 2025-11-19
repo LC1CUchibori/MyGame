@@ -45,6 +45,9 @@ public:
 
 	void SetAlive();
 
+	void SetCanShoot(bool canShoot) { canShoot_ = canShoot; }
+	bool CanShoot() const { return canShoot_; }
+
 	bool HasEscaped() const {
 		return isDead_ && position_.y > 150.0f; // 逃げ上昇完了の目安高さ
 	}
@@ -101,5 +104,6 @@ private:
 	int shakeTimer_ = 0;
 	float escapeSpeed_ = 2.0f;
 
+	bool canShoot_ = true;
 };
 
