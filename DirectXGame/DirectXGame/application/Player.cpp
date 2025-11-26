@@ -25,7 +25,7 @@ void Player::Initialize(KamataEngine::Model* model,uint32_t textureHandle,Kamata
 	worldTransform_.Initialize();
 
 	// 弾モデル作成
-	bulletModel_ = KamataEngine::Model::CreateFromOBJ("Enemy");
+	bulletModel_ = KamataEngine::Model::CreateFromOBJ("EnemyBullet");
 
 	// パーティクル
 	particleModel_ = Model::CreateFromOBJ("ParticleBall");
@@ -92,8 +92,6 @@ void Player::Update()
 			return false;
 		}), 
 		bullets_.end());
-
-
 
 	//worldTransform_.translation_ = position_;
 	worldTransform_.UpdateMatrix();

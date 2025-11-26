@@ -352,7 +352,8 @@ void GameScene::Update() {
 					}
 				}
 				if (per >= 1.0f) effectIndex = 4;
-			} else {
+			}
+			else {
 				// 失敗：赤まで
 				for (int i = 0; i < 4; ++i) {
 					if (per >= effectDisplayTimes_[i]) {
@@ -360,7 +361,8 @@ void GameScene::Update() {
 					}
 				}
 			}
-		} else {
+		}
+		else {
 			// 赤まで
 			for (int i = 0; i < 4; ++i) {
 				if (per >= effectDisplayTimes_[i]) {
@@ -380,7 +382,6 @@ void GameScene::Update() {
 		// スプライト中央表示
 		pushSprite_->SetPosition({400.0f, 150.0f});
 	}
-
 
 	// 成功時の処理
 	if (bossState_ == BossChallengeState::Success) {
@@ -467,7 +468,6 @@ void GameScene::Draw() {
 			bossEffectSprites_[currentEffectIndex_]->Draw();
 		}
 	}
-
 
 	Sprite::PostDraw();
 

@@ -65,7 +65,7 @@ void Particle::Draw()
     }
 
     color = {1.0f, 1.0f, 1.0f, alpha};
-     objColor.SetColor(color); 
+    objColor.SetColor(color); 
 
     float scaleFactor = alpha;
     worldTransform_.scale_ = { scaleFactor, scaleFactor, scaleFactor };

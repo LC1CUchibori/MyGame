@@ -1,6 +1,6 @@
 #include "Enemy.h"
 #include <cassert>
-#include <cmath> // sin, cosなどの揺れ用
+#include <cmath>
 
 Enemy::Enemy() {
 }
@@ -30,7 +30,7 @@ void Enemy::Initialize(KamataEngine::Model* model, KamataEngine::Camera* camera)
     stopZ_ = -10.0f;
     stopY_ = 10.0f;
 
-    bulletModel_ = KamataEngine::Model::CreateFromOBJ("Enemy");
+    bulletModel_ = KamataEngine::Model::CreateFromOBJ("EnemyBullet");
 
     // 新しいフラグ類
     isDead_ = false;
@@ -45,7 +45,7 @@ void Enemy::Update() {
     if (isDead_) {
 
         if (shakeTimer_ < 60) {
-            // その場で震える（sin波でランダムっぽい揺れ）
+            // その場で震える
             position_.x += std::sin(shakeTimer_ * 0.5f) * 0.3f;
             position_.y += std::cos(shakeTimer_ * 0.7f) * 0.3f;
             shakeTimer_++;
