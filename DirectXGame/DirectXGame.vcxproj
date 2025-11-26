@@ -124,6 +124,7 @@
     <ClCompile Include="DirectXGame\engine\math\WorldTransformEx.cpp" />
     <ClCompile Include="DirectXGame\engine\3d\SharkTop.cpp" />
     <ClCompile Include="DirectXGame\application\PlayerBullet.cpp" />
+    <ClCompile Include="DirectXGame\application\Particle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\TerrainPS.hlsl">
@@ -218,6 +219,7 @@
     <ClInclude Include="DirectXGame\application\PlayerBullet.h" />
     <ClInclude Include="DirectXGame\engine\secne\GameClearScene.h" />
     <ClInclude Include="DirectXGame\application\Graph.h" />
+    <ClInclude Include="DirectXGame\application\Particle.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

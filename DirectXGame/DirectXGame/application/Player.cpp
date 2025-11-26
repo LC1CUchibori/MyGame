@@ -27,6 +27,9 @@ void Player::Initialize(KamataEngine::Model* model,uint32_t textureHandle,Kamata
 	// 弾モデル作成
 	bulletModel_ = KamataEngine::Model::CreateFromOBJ("Enemy");
 
+	// パーティクル
+	particleModel_ = Model::CreateFromOBJ("ParticleBall");
+
 	worldTransform_.translation_ = position_;
 	worldTransform_.UpdateMatrix();
 	// 行列を定数バッファに転送
@@ -35,12 +38,38 @@ void Player::Initialize(KamataEngine::Model* model,uint32_t textureHandle,Kamata
 
 void Player::Update()
 {
+	Vector3 oldPos = worldTransform_.translation_;
+
 	if (isDead_) return;
 
 	if (input->PushKey(DIK_W))    worldTransform_.translation_.y += speed_;
 	if (input->PushKey(DIK_S))  worldTransform_.translation_.y -= speed_;
 	if (input->PushKey(DIK_A))  worldTransform_.translation_.x -= speed_;
 	if (input->PushKey(DIK_D)) worldTransform_.translation_.x += speed_;
+
+	// WASDで移動後に追従パーティクル発生
+	if (oldPos.x != worldTransform_.translation_.x ||
+		oldPos.y != worldTransform_.translation_.y)
+	{
+		Particle* p = new Particle();
+		p->Initialize(particleModel_, camera_, worldTransform_.translation_);
+		particles_.push_back(p);
+	}
+
+	for (auto* p : particles_) {
+		p->Update();
+	}
+
+	particles_.erase(
+		std::remove_if(particles_.begin(), particles_.end(),
+			[](Particle* p) {
+				if (!p->IsAlive()) {
+					delete p;
+					return true;
+				}
+				return false;
+			}),
+		particles_.end());
 
 	// ===== 弾発射 =====
 	if (canShoot_ && input->TriggerKey(DIK_SPACE)) {
@@ -65,6 +94,7 @@ void Player::Update()
 		bullets_.end());
 
 
+
 	//worldTransform_.translation_ = position_;
 	worldTransform_.UpdateMatrix();
 	// 行列を定数バッファに転送
@@ -80,6 +110,11 @@ void Player::Draw(KamataEngine::Camera* camera, uint32_t textureHandle)
 			bullet->Draw(camera);
 		}
 	}
+
+	for (auto* p : particles_) {
+		p->Draw();
+	}
+
 }
 
 void Player::SetYaw(float yaw)

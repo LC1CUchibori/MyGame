@@ -111,6 +111,9 @@
     <ClCompile Include="DirectXGame\application\Graph.cpp">
       <Filter>ソース ファイル\application</Filter>
     </ClCompile>
+    <ClCompile Include="DirectXGame\application\Particle.cpp">
+      <Filter>ソース ファイル\application</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\SpritePS.hlsl">
@@ -211,6 +214,9 @@
       <Filter>ヘッダー ファイル\engine\scene</Filter>
     </ClInclude>
     <ClInclude Include="DirectXGame\application\Graph.h">
+      <Filter>ヘッダー ファイル\application</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXGame\application\Particle.h">
       <Filter>ヘッダー ファイル\application</Filter>
     </ClInclude>
   </ItemGroup>
