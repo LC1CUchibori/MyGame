@@ -22,11 +22,11 @@ private:
 
     KamataEngine::Vector3 velocity_{};
     float lifetime_ = 0.0f;
-    float maxLifetime_ = 0.3f;
+    float maxLifetime_ = 0.5f;
 
     bool alive_ = true;
 
-    float alpha = 0.0f;
+    float alpha=0.0f;
     KamataEngine::Vector4 color = {};
     KamataEngine::ObjectColor objColor;
 };
