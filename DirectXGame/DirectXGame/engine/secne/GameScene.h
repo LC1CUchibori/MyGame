@@ -5,6 +5,7 @@
 #include "../../application/Player.h"
 #include "../../application/Enemy.h"
 #include "../../application/BackEffect.h"
+#include "../../application/Particle.h"
 #include <cstdlib>
 #include <ctime>
 #include "../3d/CrossHair3D.h"
@@ -68,6 +69,8 @@ private:
 
 	Stage* stage = nullptr;
 
+	std::vector<Particle*> particles_;
+
 	// pushタイムバー
 	Graph* RedGraph_ = nullptr;
 	Graph* GreenGraph_ = nullptr;
@@ -111,7 +114,7 @@ private:
 	uint32_t gameOverTextureHandle_;
 	KamataEngine::Sprite* gameOverSprite_ = nullptr;
 
-	int phase_ = 5;
+	int phase_ = 1;
 	bool isPhaseChanging_ = false;
 	bool isFadeActive_ = false; // フェード開始フラグ
 	float phaseChangeTimer_ = 0.0f;

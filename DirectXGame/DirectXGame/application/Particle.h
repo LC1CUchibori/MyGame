@@ -15,6 +15,9 @@ public:
 
     bool IsAlive() const { return alive_; }
 
+    void Kill() { alive_ = false; }
+
+
 private:
     KamataEngine::WorldTransform worldTransform_;
     KamataEngine::Model* model_ = nullptr;

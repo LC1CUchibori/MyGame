@@ -131,3 +131,12 @@ void Player::Fire()
 	bullet->Initialize(bulletModel_, camera_, worldTransform_.translation_);
 	bullets_.push_back(bullet);
 }
+
+// 死亡処理
+void Player::Kill() {
+	isDead_ = true;
+
+	for (auto& particle : particles_) {
+		particle->Kill();
+	}
+}

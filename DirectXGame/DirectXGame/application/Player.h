@@ -18,7 +18,7 @@ public:
     const std::vector<PlayerBullet*>& GetBullets() const { return bullets_; }
 
     // 死亡処理
-    void Kill() { isDead_ = true; }
+    void Kill();
     bool IsDead() const { return isDead_; }
 
     void SetCanShoot(bool canShoot) { canShoot_ = canShoot; }
