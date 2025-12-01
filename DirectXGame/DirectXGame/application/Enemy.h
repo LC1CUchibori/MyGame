@@ -129,13 +129,13 @@ private:
 	struct Move
 	{
 		float speed_ = 0.2f;            // スピード
-		float direction_ = -1;          // 移動範囲
 		float approachSpeed_ = 0.0f;    // 接近速度
-		bool isApproaching_ = true;     // 接近フラグ
+		float escapeSpeed_ = 2.0f;      // 離脱速度
+		float direction_ = -1;          // 移動範囲
 		float stopZ_ = -10.0f;          // z座標停止位置
 		float stopY_ = 10.0f;           // y座標停止位置
-		bool isActive_;               
-		float escapeSpeed_ = 2.0f;
+		bool isApproaching_ = true;     // 接近フラグ
+		bool isActive_;         
 	};
 	Move move_;
 

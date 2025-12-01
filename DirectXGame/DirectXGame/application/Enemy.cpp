@@ -121,7 +121,7 @@ void Enemy::SetState()
                 state_ = attack;
                 dash_.isDashing = true;
                 dash_.timer = 0;        // 突進用タイマー
-                dash_.duration = 60;   // 2秒
+                dash_.duration = 60;    // 2秒
                 // プレイヤー方向に移動
                 direction.x = targetPos_->x - position_.x;
                 direction.y = targetPos_->y - position_.y;
@@ -146,14 +146,14 @@ void Enemy::SetState()
 
             bool outOfRange = false;
 
-            // X方向の範囲チェック
+            // X方向の範囲
             if (position_.x >= 30.0f) {
                 position_.x = 30.0f; outOfRange = true; 
             }
             else if (position_.x <= -30.0f) {
                 position_.x = -30.0f; outOfRange = true; 
             }
-            // Y方向の範囲チェック
+            // Y方向の範囲
             if (position_.y >= 15.0f) {
                 position_.y = 15.0f; outOfRange = true; 
             }
@@ -161,7 +161,7 @@ void Enemy::SetState()
                 position_.y = -15.0f; outOfRange = true; 
             }
 
-            // 範囲外なら突進終了
+            // 突進終了
             if (outOfRange) {
                 dash_.isDashing = false;
                 state_ = move;
