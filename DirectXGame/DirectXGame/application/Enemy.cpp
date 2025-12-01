@@ -23,19 +23,19 @@ void Enemy::Initialize(KamataEngine::Model* model, KamataEngine::Camera* camera)
     worldTransform_.TransferMatrix();
 
     // 移動速度設定
-    speed_ = 0.2f;       // 左右移動の速度
-    approachSpeed_ = 0.8f; // 手前に来る速度
-    direction_ = 1.0f;   // 初期は右方向
-    isApproaching_ = true; // 最初は接近中
-    stopZ_ = -10.0f;
-    stopY_ = 10.0f;
+    move_.speed_ = 0.2f;       // 左右移動の速度
+    move_.approachSpeed_ = 0.8f; // 手前に来る速度
+    move_.direction_ = 1.0f;   // 初期は右方向
+    move_.isApproaching_ = true; // 最初は接近中
+    move_.stopZ_ = -10.0f;
+    move_.stopY_ = 10.0f;
 
 
     // 新しいフラグ類
     isDead_ = false;
     isEscaping_ = false;
     shakeTimer_ = 0;
-    escapeSpeed_ = 2.0f;
+    move_.escapeSpeed_ = 2.0f;
 }
 
 void Enemy::Update() {
@@ -48,7 +48,7 @@ void Enemy::Update() {
     
     // ワールド変換更新
     worldTransform_.translation_ = position_;
-    if (isApproaching_) {
+    if (move_.isApproaching_) {
         worldTransform_.rotation_.x = (3.14f / 2.0f);
         worldTransform_.rotation_.z = (3.14f);
     }
@@ -90,34 +90,34 @@ void Enemy::SetState()
                 position_.y += std::cos(shakeTimer_ * 0.7f) * 0.3f;
                 shakeTimer_++;
             } else {
-                position_.y += escapeSpeed_;
+                position_.y += move_.escapeSpeed_;
             }
             return;
         }
 
-        if (isApproaching_) {
-            position_.z -= approachSpeed_;
-            float t = (200.0f - position_.z) / (200.0f - stopZ_);
-            position_.y = 60.0f + t * (stopY_ - 60.0f);
+        if (move_.isApproaching_) {
+            position_.z -= move_.approachSpeed_;
+            float t = (200.0f - position_.z) / (200.0f - move_.stopZ_);
+            position_.y = 60.0f + t * (move_.stopY_ - 60.0f);
 
-            if (position_.z <= stopZ_) {
-                position_.z = stopZ_;
-                position_.y = stopY_;
-                isApproaching_ = false;
+            if (position_.z <= move_.stopZ_) {
+                position_.z = move_.stopZ_;
+                position_.y = move_.stopY_;
+                move_.isApproaching_ = false;
             }
         } else {
             // 左右移動
-            position_.x += speed_ * direction_;
-            stateTimer_++;
+            position_.x += move_.speed_ * move_.direction_;
+            dash_.stateTimer_++;
             if (position_.x > 30.0f) {
-                position_.x = 30.0f; direction_ = -1.0f; 
+                position_.x = 30.0f; move_.direction_ = -1.0f; 
             }
             else if (position_.x < -30.0f) {
-                position_.x = -30.0f; direction_ = 1.0f; 
+                position_.x = -30.0f; move_.direction_ = 1.0f; 
             }
 
             // 5秒に一回攻撃
-            if (stateTimer_ >= 300) {
+            if (dash_.stateTimer_ >= 300) {
                 state_ = attack;
                 dash_.isDashing = true;
                 dash_.timer = 0;        // 突進用タイマー
@@ -165,7 +165,7 @@ void Enemy::SetState()
             if (outOfRange) {
                 dash_.isDashing = false;
                 state_ = move;
-                stateTimer_ = 0;
+                dash_.stateTimer_ = 0;
             }
         }
         break;

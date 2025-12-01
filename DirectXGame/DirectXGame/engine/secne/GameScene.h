@@ -40,13 +40,14 @@ public:
 	bool IsGameClear() const { return isGameClear_; }
 
 private:
+	// モデル
 	KamataEngine::Model* model_ = nullptr;
+	// ワールドトランスフォーム
 	KamataEngine::WorldTransform worldTransform_;
+	// インプット
 	KamataEngine::Input* input = KamataEngine::Input::GetInstance();
-
 	// カメラ
 	KamataEngine::Camera camera_;
-
 	// エフェクトモデル描画
 	KamataEngine::Model2* effectModel_ = nullptr;
 
@@ -66,9 +67,9 @@ private:
 	std::vector<BackEffect*> backEffects_; 
 	KamataEngine::Model* backEffectModel_ = nullptr;
 	uint32_t backEffectTextureHandle_ = 0;
-
 	Stage* stage = nullptr;
 
+	// パーティクル
 	std::vector<Particle*> particles_;
 
 	// pushタイムバー
@@ -80,12 +81,10 @@ private:
 
 	KamataEngine::Vector3 cursorPos_{0.0f, 0.0f, 30.0f}; // 初期位置
 	float cursorSpeed_ = 0.5f; // 移動速度
-
 	uint32_t crossTexture_;// 標準
 	KamataEngine::Sprite* cursorSprite_ = nullptr;
 	float cursorX_ = 400.0f; // 初期位置
 	float cursorY_ = 300.0f;
-
 	Crosshair3D* crosshair_ = nullptr;
 	KamataEngine::Model* crosshairModel_ = nullptr;
 
@@ -109,11 +108,13 @@ private:
 	float spawnTimer_ = 0.0f;
 	float spawnX_ = -300.0f; //
 
+	// ゲームオーバーフラグ
 	bool isGameOver_ = false;
 
 	uint32_t gameOverTextureHandle_;
 	KamataEngine::Sprite* gameOverSprite_ = nullptr;
 
+	// フェーズ
 	int phase_ = 1;
 	bool isPhaseChanging_ = false;
 	bool isFadeActive_ = false; // フェード開始フラグ
@@ -144,7 +145,7 @@ private:
 
 	// タイマー
 	float pushPromptTimer_ = 0.0f;
-	float pushPromptDuration_ = 60.0f; // 60フレーム = 1秒
+	float pushPromptDuration_ = 60.0f; // 60フレーム
 
 	// 表示状態
 	bool isPushPromptActive_ = false;
