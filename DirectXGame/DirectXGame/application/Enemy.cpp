@@ -109,8 +109,12 @@ void Enemy::SetState()
             // 左右移動
             position_.x += speed_ * direction_;
             stateTimer_++;
-            if (position_.x > 30.0f) { position_.x = 30.0f; direction_ = -1.0f; }
-            else if (position_.x < -30.0f) { position_.x = -30.0f; direction_ = 1.0f; }
+            if (position_.x > 30.0f) {
+                position_.x = 30.0f; direction_ = -1.0f; 
+            }
+            else if (position_.x < -30.0f) {
+                position_.x = -30.0f; direction_ = 1.0f; 
+            }
 
             // 5秒に一回攻撃
             if (stateTimer_ >= 300) {
@@ -140,8 +144,25 @@ void Enemy::SetState()
             position_.y += direction.y * dashSpeed;
             position_.z += direction.z * dashSpeed;
 
-            dash_.timer++;
-            if (dash_.timer >= dash_.duration) {
+            bool outOfRange = false;
+
+            // X方向の範囲チェック
+            if (position_.x >= 30.0f) {
+                position_.x = 30.0f; outOfRange = true; 
+            }
+            else if (position_.x <= -30.0f) {
+                position_.x = -30.0f; outOfRange = true; 
+            }
+            // Y方向の範囲チェック
+            if (position_.y >= 15.0f) {
+                position_.y = 15.0f; outOfRange = true; 
+            }
+            else if (position_.y <= -15.0f) {
+                position_.y = -15.0f; outOfRange = true; 
+            }
+
+            // 範囲外なら突進終了
+            if (outOfRange) {
                 dash_.isDashing = false;
                 state_ = move;
                 stateTimer_ = 0;
