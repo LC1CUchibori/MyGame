@@ -47,6 +47,8 @@ void GameScene::Initialize() {
 	enemyModel_ = Model::CreateFromOBJ("Enemy");
 	enemy_ = new Enemy();
 	enemy_->Initialize(enemyModel_, &camera_);
+	enemy_->SetTarget(&player_->GetPosition());
+
 
 	// ===============================背景演出の初期化================================
 	backEffectTextureHandle_ = TextureManager::Load("white1x1.png");
@@ -192,7 +194,7 @@ void GameScene::Update() {
 		enemy_->SetInactive();
 	}
 
-	if (enemy_ && player_) {
+	/*if (enemy_ && player_) {
 		for (auto& bullet : enemy_->GetBullets()) {
 			if (!bullet->IsActive())
 				continue;
@@ -211,7 +213,27 @@ void GameScene::Update() {
 				bullet->SetInactive();
 			}
 		}
-	}
+	}*/
+
+	// ================== プレイヤーと敵本体の当たり判定 ==================
+if (player_ && enemy_ && !player_->IsDead() && !enemy_->IsDead()) {
+
+    playerPos = player_->GetPosition();
+    Vector3 enemyPos  = enemy_->GetPosition();
+
+    float dx = playerPos.x - enemyPos.x;
+    float dy = playerPos.y - enemyPos.y;
+    float dz = playerPos.z - enemyPos.z;
+
+    float dist = sqrtf(dx*dx + dy*dy + dz*dz);
+
+    float hitRadius = 3.0f; // 当たり判定の大きさ（調整可）
+
+    if (dist < hitRadius) {
+        // プレイヤー死亡
+        player_->Kill();
+    }
+}
 
 	// ===================== 出現スプライトのアニメーション =====================
 	if (isSpawnActive_) {

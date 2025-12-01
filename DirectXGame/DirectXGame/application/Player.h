@@ -24,6 +24,7 @@ public:
     void SetCanShoot(bool canShoot) { canShoot_ = canShoot; }
     bool CanShoot() const { return canShoot_; }
 
+
     // 座標取得
     const KamataEngine::Vector3& GetPosition() const { return worldTransform_.translation_; }
 

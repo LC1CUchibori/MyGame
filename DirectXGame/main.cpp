@@ -38,6 +38,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
     KamataEngine::Initialize(L"LE3C_02_ウチボリ_ユウタ");
     DirectXCommon* dxCommon = DirectXCommon::GetInstance();
 
+    //WinApp::GetInstance()->SetFullscreen(true);
+
     // フェード初期化
     fade.Initialize();
 
