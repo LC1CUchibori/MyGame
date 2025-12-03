@@ -49,6 +49,8 @@ public:
 		canShoot_ = canShoot; 
 	}
 
+	void SetForceMove(bool flag) { forceMove_ = flag; }
+
 	void ResetForPhase(const KamataEngine::Vector3& pos) {
 		position_ = pos;
 		isDead_ = false;
@@ -112,6 +114,7 @@ private:
 		int cooldown = 300;          // 突進クールダウン
 		int cooldownTimer = 0;       // クールダウン用タイマー
 		int stateTimer_ = 0;         // 5秒タイマー
+		bool justFinished_ = false;
 	};
 	DashData dash_;                  // 突進データ
 
@@ -136,6 +139,7 @@ private:
 		float stopY_ = 10.0f;           // y座標停止位置
 		bool isApproaching_ = true;     // 接近フラグ
 		bool isActive_;         
+		bool verticalOnly_ = false;
 	};
 	Move move_;
 
@@ -151,6 +155,8 @@ private:
 
 	// その他タイマー
 	int shakeTimer_ = 0;
+
+	bool forceMove_ = false; 
 
 	// その他フラグ類
 	bool isDead_ = false;

@@ -29,7 +29,7 @@ void Enemy::Initialize(KamataEngine::Model* model, KamataEngine::Camera* camera)
     move_.isApproaching_ = true; // 最初は接近中
     move_.stopZ_ = -10.0f;
     move_.stopY_ = 10.0f;
-
+    move_.verticalOnly_ = false;
 
     // 新しいフラグ類
     isDead_ = false;
@@ -53,8 +53,16 @@ void Enemy::Update() {
         worldTransform_.rotation_.z = (3.14f);
     }
     else {
-        worldTransform_.rotation_.x = 0.0f;
-        worldTransform_.rotation_.z = 0.0f;
+        // プレイヤー方向を向く
+        if (targetPos_) {
+            float dx = targetPos_->x - position_.x;
+            float dy = targetPos_->y - position_.y;
+            float angle = std::atan2(dy, dx);
+
+            worldTransform_.rotation_.z = (angle - 3.14f * 1.5f) * (-1.0f);
+        }
+
+       worldTransform_.rotation_.x = 0.0f;
     }
     worldTransform_.UpdateMatrix();
     worldTransform_.TransferMatrix();
@@ -78,13 +86,10 @@ void Enemy::SetAlive()
     shakeTimer_ = 0;
 }
 
-void Enemy::SetState()
-{
-    switch (state_)
-    {
+void Enemy::SetState() {
+    switch (state_) {
     case move:
         if (isDead_) {
-            // 死亡時の挙動
             if (shakeTimer_ < 60) {
                 position_.x += std::sin(shakeTimer_ * 0.5f) * 0.3f;
                 position_.y += std::cos(shakeTimer_ * 0.7f) * 0.3f;
@@ -95,6 +100,7 @@ void Enemy::SetState()
             return;
         }
 
+        // 接近中
         if (move_.isApproaching_) {
             position_.z -= move_.approachSpeed_;
             float t = (200.0f - position_.z) / (200.0f - move_.stopZ_);
@@ -106,31 +112,66 @@ void Enemy::SetState()
                 move_.isApproaching_ = false;
             }
         } else {
-            // 左右移動
-            position_.x += move_.speed_ * move_.direction_;
             dash_.stateTimer_++;
-            if (position_.x > 30.0f) {
-                position_.x = 30.0f; move_.direction_ = -1.0f; 
-            }
-            else if (position_.x < -30.0f) {
-                position_.x = -30.0f; move_.direction_ = 1.0f; 
+
+            if (!move_.verticalOnly_) {
+                // 左右移動
+                position_.x += move_.speed_ * move_.direction_;
+
+                // 左右端到達時
+                if (position_.x >= 25.0f) {
+                    position_.x = 25.0f;
+                    move_.direction_ = -1.0f;
+                    if (dash_.justFinished_) {
+                        move_.verticalOnly_ = true;   // 上下移動に切替
+                        dash_.justFinished_ = false;
+                        move_.direction_ = 1.0f; 
+                    }
+                } else if (position_.x <= -25.0f) {
+                    position_.x = -25.0f;
+                    move_.direction_ = 1.0f;
+                    if (dash_.justFinished_) {
+                        move_.verticalOnly_ = true;
+                        dash_.justFinished_ = false;
+                        move_.direction_ = 1.0f;
+                    }
+                }
+            } else {
+                // 上下移動
+                position_.y += move_.speed_ * move_.direction_;
+
+                // 上下端到達時
+                if (position_.y >= 15.0f) {
+                    position_.y = 15.0f;
+                    move_.verticalOnly_ = false; // 左右移動に戻す
+                    move_.direction_ = -1.0f;    // 左右方向初期化
+                }
+                else if (position_.y <= -15.0f) {
+                    position_.y = -15.0f;
+                    move_.verticalOnly_ = false; // 左右移動に戻す
+                    move_.direction_ = 1.0f;     // 左右方向初期化
+                }
             }
 
-            // 5秒に一回攻撃
-            if (dash_.stateTimer_ >= 300) {
+
+            // 突進開始
+            if (!forceMove_&&dash_.stateTimer_ >= 300 && !dash_.isDashing) {
                 state_ = attack;
                 dash_.isDashing = true;
-                dash_.timer = 0;        // 突進用タイマー
-                dash_.duration = 60;    // 2秒
-                // プレイヤー方向に移動
-                direction.x = targetPos_->x - position_.x;
-                direction.y = targetPos_->y - position_.y;
-                direction.z = 0.0f;
-                float length = std::sqrt(direction.x*direction.x + direction.y*direction.y + direction.z*direction.z);
-                if (length > 0.001f) {
-                    direction.z /= length;
-                    direction.x /= length;
-                    direction.y /= length;
+                dash_.timer = 0;
+                dash_.duration = 60;
+                dash_.justFinished_ = false;
+
+                if (targetPos_) {
+                    direction.x = targetPos_->x - position_.x;
+                    direction.y = targetPos_->y - position_.y;
+                    direction.z = 0.0f;
+                    float length = std::sqrt(direction.x*direction.x + direction.y*direction.y + direction.z*direction.z);
+                    if (length > 0.001f) {
+                        direction.x /= length;
+                        direction.y /= length;
+                        direction.z /= length;
+                    }
                 }
             }
         }
@@ -138,34 +179,22 @@ void Enemy::SetState()
 
     case attack:
         if (dash_.isDashing && targetPos_) {
-          
-            float dashSpeed = 0.5f; // 突進速度
+            float dashSpeed = 0.5f;
             position_.x += direction.x * dashSpeed;
             position_.y += direction.y * dashSpeed;
             position_.z += direction.z * dashSpeed;
 
             bool outOfRange = false;
+            if (position_.x >= 25.0f) { position_.x = 25.0f; outOfRange = true; }
+            if (position_.x <= -25.0f) { position_.x = -25.0f; outOfRange = true; }
+            if (position_.y >= 15.0f) { position_.y = 15.0f; outOfRange = true; }
+            if (position_.y <= -15.0f) { position_.y = -15.0f; outOfRange = true; }
 
-            // X方向の範囲
-            if (position_.x >= 30.0f) {
-                position_.x = 30.0f; outOfRange = true; 
-            }
-            else if (position_.x <= -30.0f) {
-                position_.x = -30.0f; outOfRange = true; 
-            }
-            // Y方向の範囲
-            if (position_.y >= 15.0f) {
-                position_.y = 15.0f; outOfRange = true; 
-            }
-            else if (position_.y <= -15.0f) {
-                position_.y = -15.0f; outOfRange = true; 
-            }
-
-            // 突進終了
             if (outOfRange) {
                 dash_.isDashing = false;
                 state_ = move;
                 dash_.stateTimer_ = 0;
+                dash_.justFinished_ = true;
             }
         }
         break;

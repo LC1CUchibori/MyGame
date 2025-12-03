@@ -115,7 +115,7 @@ private:
 	KamataEngine::Sprite* gameOverSprite_ = nullptr;
 
 	// フェーズ
-	int phase_ = 1;
+	int phase_ = 5;
 	bool isPhaseChanging_ = false;
 	bool isFadeActive_ = false; // フェード開始フラグ
 	float phaseChangeTimer_ = 0.0f;

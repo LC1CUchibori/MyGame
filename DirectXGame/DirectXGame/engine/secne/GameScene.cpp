@@ -324,6 +324,15 @@ if (player_ && enemy_ && !player_->IsDead() && !enemy_->IsDead()) {
 	}
 	// ==============================================================================
 
+	// ----------------- チャレンジ中は敵を move 固定 -----------------
+	if (phase_ == 5 && bossState_ == BossChallengeState::Challenge && enemy_) {
+		enemy_->SetForceMove(true);
+	} else if (enemy_) {
+		// チャレンジが終わったら元に戻す
+		enemy_->SetForceMove(false);
+	}
+	// ---------------------------------------------------------------
+
 	// =====================================フェーズ処理======================================
 	// ボスフェーズ攻撃ヒット後にStart状態にする
 	if (bossState_ == BossChallengeState::Start) {
