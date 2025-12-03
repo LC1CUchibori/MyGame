@@ -115,6 +115,9 @@ private:
 		int cooldownTimer = 0;       // クールダウン用タイマー
 		int stateTimer_ = 0;         // 5秒タイマー
 		bool justFinished_ = false;
+
+		bool isPreDashShaking_ = false;
+		float preShakeTimer_ = 0.0f;
 	};
 	DashData dash_;                  // 突進データ
 
@@ -144,7 +147,7 @@ private:
 	Move move_;
 
 	// state構造体
-	enum State
+	enum class State:uint8_t
 	{
 		move,   // 移動
 		attack, // 突進

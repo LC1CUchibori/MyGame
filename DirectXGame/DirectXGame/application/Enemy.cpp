@@ -88,7 +88,7 @@ void Enemy::SetAlive()
 
 void Enemy::SetState() {
     switch (state_) {
-    case move:
+    case State::move:
         if (isDead_) {
             if (shakeTimer_ < 60) {
                 position_.x += std::sin(shakeTimer_ * 0.5f) * 0.3f;
@@ -98,6 +98,38 @@ void Enemy::SetState() {
                 position_.y += move_.escapeSpeed_;
             }
             return;
+        }
+
+        // 突進開始
+        if (!forceMove_&&dash_.stateTimer_ >= 300 && !dash_.isDashing) {
+
+            // 震え処理
+            if (dash_.preShakeTimer_ < 20) { // 20フレームだけ震える
+                position_.x += std::sin(dash_.preShakeTimer_ * 0.5f) * 0.3f;
+                position_.y += std::cos(dash_.preShakeTimer_ * 0.7f) * 0.3f;
+                dash_.preShakeTimer_++;
+            }
+            else {
+                state_ = State::attack;
+                dash_.isDashing = true;
+                dash_.timer = 0;
+                dash_.duration = 60;
+                dash_.justFinished_ = false;
+
+                // 突進方向設定
+                if (targetPos_) {
+                    direction.x = targetPos_->x - position_.x;
+                    direction.y = targetPos_->y - position_.y;
+                    direction.z = 0.0f;
+                    float length = std::sqrt(direction.x * direction.x + direction.y * direction.y + direction.z * direction.z);
+                    if (length > 0.001f) {
+                        direction.x /= length;
+                        direction.y /= length;
+                        direction.z /= length;
+                    }
+                }
+                dash_.preShakeTimer_ = 0; 
+            }
         }
 
         // 接近中
@@ -114,85 +146,50 @@ void Enemy::SetState() {
         } else {
             dash_.stateTimer_++;
 
-            if (!move_.verticalOnly_) {
-                // 左右移動
-                position_.x += move_.speed_ * move_.direction_;
-
-                // 左右端到達時
-                if (position_.x >= 25.0f) {
-                    position_.x = 25.0f;
-                    move_.direction_ = -1.0f;
-                    if (dash_.justFinished_) {
-                        move_.verticalOnly_ = true;   // 上下移動に切替
-                        dash_.justFinished_ = false;
-                        move_.direction_ = 1.0f; 
-                    }
-                } else if (position_.x <= -25.0f) {
-                    position_.x = -25.0f;
-                    move_.direction_ = 1.0f;
-                    if (dash_.justFinished_) {
-                        move_.verticalOnly_ = true;
-                        dash_.justFinished_ = false;
-                        move_.direction_ = 1.0f;
-                    }
-                }
-            } else {
-                // 上下移動
-                position_.y += move_.speed_ * move_.direction_;
-
-                // 上下端到達時
-                if (position_.y >= 15.0f) {
-                    position_.y = 15.0f;
-                    move_.verticalOnly_ = false; // 左右移動に戻す
-                    move_.direction_ = -1.0f;    // 左右方向初期化
-                }
-                else if (position_.y <= -15.0f) {
-                    position_.y = -15.0f;
-                    move_.verticalOnly_ = false; // 左右移動に戻す
-                    move_.direction_ = 1.0f;     // 左右方向初期化
-                }
-            }
-
-
-            // 突進開始
-            if (!forceMove_&&dash_.stateTimer_ >= 300 && !dash_.isDashing) {
-                state_ = attack;
-                dash_.isDashing = true;
-                dash_.timer = 0;
-                dash_.duration = 60;
-                dash_.justFinished_ = false;
-
-                if (targetPos_) {
-                    direction.x = targetPos_->x - position_.x;
-                    direction.y = targetPos_->y - position_.y;
-                    direction.z = 0.0f;
-                    float length = std::sqrt(direction.x*direction.x + direction.y*direction.y + direction.z*direction.z);
-                    if (length > 0.001f) {
-                        direction.x /= length;
-                        direction.y /= length;
-                        direction.z /= length;
-                    }
+            if (!dash_.isDashing) {
+                if (!move_.verticalOnly_) {
+                    position_.x += move_.speed_ * move_.direction_;
+                    if (position_.x >= 25.0f) { position_.x = 25.0f; move_.direction_ = -1.0f; }
+                    if (position_.x <= -25.0f) { position_.x = -25.0f; move_.direction_ = 1.0f; }
+                } else {
+                    position_.y += move_.speed_ * move_.direction_;
+                    if (position_.y >= 15.0f) { position_.y = 15.0f; move_.verticalOnly_ = false; move_.direction_ = -1.0f; }
+                    if (position_.y <= -15.0f) { position_.y = -15.0f; move_.verticalOnly_ = false; move_.direction_ = 1.0f; }
                 }
             }
         }
         break;
 
-    case attack:
-        if (dash_.isDashing && targetPos_) {
+    case State::attack:
+        if (dash_.isDashing) {
             float dashSpeed = 0.5f;
-            position_.x += direction.x * dashSpeed;
-            position_.y += direction.y * dashSpeed;
+
+            // X方向突進
+            if (direction.x > 0) {
+                position_.x += dashSpeed;
+                if (position_.x >= 25.0f) position_.x = 25.0f;
+            } else if (direction.x < 0) {
+                position_.x -= dashSpeed;
+                if (position_.x <= -25.0f) position_.x = -25.0f;
+            }
+
+            // Y方向突進
+            if (direction.y > 0) {
+                position_.y += dashSpeed;
+                if (position_.y >= 15.0f) position_.y = 15.0f;
+            } else if (direction.y < 0) {
+                position_.y -= dashSpeed;
+                if (position_.y <= -15.0f) position_.y = -15.0f;
+            }
+
+            // Z方向突進（必要なら）
             position_.z += direction.z * dashSpeed;
 
-            bool outOfRange = false;
-            if (position_.x >= 25.0f) { position_.x = 25.0f; outOfRange = true; }
-            if (position_.x <= -25.0f) { position_.x = -25.0f; outOfRange = true; }
-            if (position_.y >= 15.0f) { position_.y = 15.0f; outOfRange = true; }
-            if (position_.y <= -15.0f) { position_.y = -15.0f; outOfRange = true; }
-
-            if (outOfRange) {
+            // 画面端に到達したら突進終了
+            if (position_.x == 25.0f || position_.x == -25.0f ||
+                position_.y == 15.0f || position_.y == -15.0f) {
                 dash_.isDashing = false;
-                state_ = move;
+                state_ =State::move;
                 dash_.stateTimer_ = 0;
                 dash_.justFinished_ = true;
             }
