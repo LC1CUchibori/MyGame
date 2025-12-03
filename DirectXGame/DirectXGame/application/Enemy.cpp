@@ -161,35 +161,25 @@ void Enemy::SetState() {
         break;
 
     case State::attack:
-        if (dash_.isDashing) {
+        if (dash_.isDashing && targetPos_) {
             float dashSpeed = 0.5f;
 
-            // X方向突進
-            if (direction.x > 0) {
-                position_.x += dashSpeed;
-                if (position_.x >= 25.0f) position_.x = 25.0f;
-            } else if (direction.x < 0) {
-                position_.x -= dashSpeed;
-                if (position_.x <= -25.0f) position_.x = -25.0f;
-            }
-
-            // Y方向突進
-            if (direction.y > 0) {
-                position_.y += dashSpeed;
-                if (position_.y >= 15.0f) position_.y = 15.0f;
-            } else if (direction.y < 0) {
-                position_.y -= dashSpeed;
-                if (position_.y <= -15.0f) position_.y = -15.0f;
-            }
-
-            // Z方向突進（必要なら）
+            // 方向ベクトルそのまま使って突進
+            position_.x += direction.x * dashSpeed;
+            position_.y += direction.y * dashSpeed;
             position_.z += direction.z * dashSpeed;
 
-            // 画面端に到達したら突進終了
-            if (position_.x == 25.0f || position_.x == -25.0f ||
-                position_.y == 15.0f || position_.y == -15.0f) {
+            // 画面端で制限
+            bool reachedEdge = false;
+            if (position_.x >= 25.0f) { position_.x = 25.0f; reachedEdge = true; }
+            if (position_.x <= -25.0f) { position_.x = -25.0f; reachedEdge = true; }
+            if (position_.y >= 15.0f) { position_.y = 15.0f; reachedEdge = true; }
+            if (position_.y <= -15.0f) { position_.y = -15.0f; reachedEdge = true; }
+
+            // 突進終了は端に到達したら
+            if (reachedEdge) {
                 dash_.isDashing = false;
-                state_ =State::move;
+                state_ = State::move;
                 dash_.stateTimer_ = 0;
                 dash_.justFinished_ = true;
             }
