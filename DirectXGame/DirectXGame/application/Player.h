@@ -36,6 +36,13 @@ public:
     // 座標取得Getter
     const KamataEngine::Vector3& GetPosition() const { return worldTransform_.translation_; }
 
+    // ワールド座標 → スクリーン座標
+    KamataEngine::Vector2 WorldToScreen(const KamataEngine::Vector3& worldPos, KamataEngine::Camera* camera);
+
+
+    KamataEngine::Vector3 ScreenToWorld(int screenX, int screenY, float z, KamataEngine::Camera* camera);
+   
+
 private:
     // モデル
     KamataEngine::Model* model_ = nullptr;
@@ -71,12 +78,9 @@ private:
     bool isDead_ = false;  // 死亡フラグ
     bool canShoot_ = true; // 発射フラグ
 
+    // 追尾処理変数など
     float dx;
     float dy;
-    float yaww;
     float angle;
-
     POINT mousePos;
-
-    KamataEngine::Vector2 mouse;
 };

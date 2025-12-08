@@ -12,4 +12,5 @@ struct Vector4 final {
 	float w;
 };
 
+
 } // namespace KamataEngine

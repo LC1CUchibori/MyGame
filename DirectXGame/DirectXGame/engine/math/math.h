@@ -20,3 +20,7 @@ KamataEngine::Matrix4x4 MakeRotateYMatrix(float angle);
 
 // Z軸回転行列
 KamataEngine::Matrix4x4 MakeRotateZMatrix(float angle);
+
+// 行列とベクトルの積
+KamataEngine::Vector4 Multiply(const KamataEngine::Matrix4x4& m, const KamataEngine::Vector4& v);
+

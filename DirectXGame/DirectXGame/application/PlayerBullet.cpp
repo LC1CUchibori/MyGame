@@ -5,10 +5,11 @@ using namespace KamataEngine;
 PlayerBullet::PlayerBullet() {}
 PlayerBullet::~PlayerBullet() {}
 
-void PlayerBullet::Initialize(Model* model, Camera* camera, const Vector3& pos) {
+void PlayerBullet::Initialize(Model* model, Camera* camera, const Vector3& pos, const Vector3& direction) {
     model_ = model;
     camera_ = camera;
     position_ = pos;
+    direction_ = direction;
 
     worldTransform_.Initialize();
     worldTransform_.translation_ = position_;
@@ -18,10 +19,15 @@ void PlayerBullet::Initialize(Model* model, Camera* camera, const Vector3& pos) 
 void PlayerBullet::Update() {
     if (!isActive_) return;
 
-    position_.y += speed_;  // 前方に進む
+    // 弾にスピード付与
+    position_.x +=direction_.x* speed_;
+    position_.y +=direction_.y* speed_; 
 
-    if (position_.z > 250.0f) {
-        isActive_ = false;  // 画面外で消える
+    // 画面外にでたら削除
+    if (position_.x < -200.0f || position_.x > 200.0f ||
+        position_.y < -200.0f || position_.y > 200.0f)
+    {
+        isActive_ = false;
     }
 
     worldTransform_.translation_ = position_;

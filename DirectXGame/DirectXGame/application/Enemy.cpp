@@ -3,7 +3,9 @@
 #include <cmath>
 
 Enemy::Enemy() {}
-Enemy::~Enemy() {}
+Enemy::~Enemy() {
+    
+}
 
 void Enemy::Initialize(KamataEngine::Model* model, KamataEngine::Camera* camera) {
     assert(model);
@@ -11,7 +13,7 @@ void Enemy::Initialize(KamataEngine::Model* model, KamataEngine::Camera* camera)
     model_ = model;
     camera_ = camera;
 
-    // --- 初期位置（上空から登場） ---
+    // --- 初期位置 ---
     position_ = { 0.0f, 60.0f, 200.0f };
 
     worldTransform_.Initialize();
@@ -22,7 +24,7 @@ void Enemy::Initialize(KamataEngine::Model* model, KamataEngine::Camera* camera)
     // --- 移動基本設定 ---
     move_.speed_         = 0.2f;   // 通常の左右移動速度
     move_.approachSpeed_ = 0.8f;   // 最初にZ方向へ降りてくる速度
-    move_.direction_     = 1.0f;   // 左右移動方向（1=右, -1=左）
+    move_.direction_     = 1.0f;   // 左右移動方向
     move_.isApproaching_ = true;   // 上空から接近中か
     move_.stopZ_         = -10.0f; // 接近完了位置(Z)
     move_.stopY_         = 10.0f;  // 接近完了位置(Y)
@@ -34,7 +36,7 @@ void Enemy::Initialize(KamataEngine::Model* model, KamataEngine::Camera* camera)
     shakeTimer_  = 0;
     move_.escapeSpeed_ = 2.0f; // 死亡後に画面外へ飛んでいく速度
 
-    // --- 突進（ダッシュ）関連 ---
+    // --- 突進関連 ---
     dash_.stateTimer_    = 0;    // 次の突進までの経過時間
     dash_.isDashing      = false;
     dash_.duration       = 60;   // 突進の最大継続フレーム
@@ -77,7 +79,7 @@ void Enemy::Draw(KamataEngine::Camera* camera) {
     model_->Draw(worldTransform_, *camera);
 }
 
-// --- 敵撃破処理（震えてから逃走） ---
+// --- 敵撃破処理 ---
 void Enemy::OnDeath() {
     if (!isDead_) {
         isDead_ = true;
@@ -95,7 +97,7 @@ void Enemy::SetState() {
     switch (state_) {
 
         // =============================
-        //  ■ 移動ステート
+        //  移動ステート
         // =============================
     case State::move:
 
@@ -201,7 +203,7 @@ void Enemy::SetState() {
         break;
 
         // =============================
-        //  ■ 攻撃ステート
+        //  攻撃ステート
         // =============================
     case State::attack:
 
