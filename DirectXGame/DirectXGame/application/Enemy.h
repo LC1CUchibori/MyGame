@@ -110,7 +110,6 @@ private:
 		KamataEngine::Vector3 dir;   // 突進方向
 		float speed = 1.5f;          // 突進速度
 		int duration = 60;           // 突進持続フレーム
-		int timer = 0;               // 突進タイマー
 		int cooldown = 300;          // 突進クールダウン
 		int cooldownTimer = 0;       // クールダウン用タイマー
 		int stateTimer_ = 0;         // 5秒タイマー

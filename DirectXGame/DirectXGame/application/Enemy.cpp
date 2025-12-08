@@ -2,11 +2,8 @@
 #include <cassert>
 #include <cmath>
 
-Enemy::Enemy() {
-}
-
-Enemy::~Enemy() {
-}
+Enemy::Enemy() {}
+Enemy::~Enemy() {}
 
 void Enemy::Initialize(KamataEngine::Model* model, KamataEngine::Camera* camera) {
     assert(model);
@@ -14,56 +11,64 @@ void Enemy::Initialize(KamataEngine::Model* model, KamataEngine::Camera* camera)
     model_ = model;
     camera_ = camera;
 
-    // 敵の初期位置
-    position_ = { 0.0f, 60.0f, 200.0f }; 
+    // --- 初期位置（上空から登場） ---
+    position_ = { 0.0f, 60.0f, 200.0f };
 
     worldTransform_.Initialize();
     worldTransform_.translation_ = position_;
     worldTransform_.UpdateMatrix();
     worldTransform_.TransferMatrix();
 
-    // 移動速度設定
-    move_.speed_ = 0.2f;       // 左右移動の速度
-    move_.approachSpeed_ = 0.8f; // 手前に来る速度
-    move_.direction_ = 1.0f;   // 初期は右方向
-    move_.isApproaching_ = true; // 最初は接近中
-    move_.stopZ_ = -10.0f;
-    move_.stopY_ = 10.0f;
-    move_.verticalOnly_ = false;
+    // --- 移動基本設定 ---
+    move_.speed_         = 0.2f;   // 通常の左右移動速度
+    move_.approachSpeed_ = 0.8f;   // 最初にZ方向へ降りてくる速度
+    move_.direction_     = 1.0f;   // 左右移動方向（1=右, -1=左）
+    move_.isApproaching_ = true;   // 上空から接近中か
+    move_.stopZ_         = -10.0f; // 接近完了位置(Z)
+    move_.stopY_         = 10.0f;  // 接近完了位置(Y)
+    move_.verticalOnly_  = false;  // 上下のみ移動する特殊モード
 
-    // 新しいフラグ類
-    isDead_ = false;
-    isEscaping_ = false;
-    shakeTimer_ = 0;
-    move_.escapeSpeed_ = 2.0f;
+    // --- 状態フラグ ---
+    isDead_      = false;
+    isEscaping_  = false;
+    shakeTimer_  = 0;
+    move_.escapeSpeed_ = 2.0f; // 死亡後に画面外へ飛んでいく速度
+
+    // --- 突進（ダッシュ）関連 ---
+    dash_.stateTimer_    = 0;    // 次の突進までの経過時間
+    dash_.isDashing      = false;
+    dash_.duration       = 60;   // 突進の最大継続フレーム
+    dash_.preShakeTimer_ = 0;    // 突進前の震え演出
+    dash_.justFinished_  = false;
 }
 
 void Enemy::Update() {
 
-    worldTransform_.scale_.x = 2.0f;
-    worldTransform_.scale_.y = 2.0f;
-    worldTransform_.scale_.z = 2.0f;
+    // --- モデルのスケール ---
+    worldTransform_.scale_ = { 2.0f, 2.0f, 2.0f };
 
+    // --- 動作状態更新（移動・攻撃・死亡演出など） ---
     SetState();
-    
-    // ワールド変換更新
+
+    // --- ワールド行列更新 ---
     worldTransform_.translation_ = position_;
+
     if (move_.isApproaching_) {
-        worldTransform_.rotation_.x = (3.14f / 2.0f);
-        worldTransform_.rotation_.z = (3.14f);
+        // 接近中は体勢を倒す
+        worldTransform_.rotation_.x = 3.14f / 2.0f;
+        worldTransform_.rotation_.z = 3.14f;
     }
     else {
-        // プレイヤー方向を向く
+        // 接近後はプレイヤー方向へ向ける
         if (targetPos_) {
             float dx = targetPos_->x - position_.x;
             float dy = targetPos_->y - position_.y;
             float angle = std::atan2(dy, dx);
-
             worldTransform_.rotation_.z = (angle - 3.14f * 1.5f) * (-1.0f);
         }
-
-       worldTransform_.rotation_.x = 0.0f;
+        worldTransform_.rotation_.x = 0.0f;
     }
+
     worldTransform_.UpdateMatrix();
     worldTransform_.TransferMatrix();
 }
@@ -72,7 +77,7 @@ void Enemy::Draw(KamataEngine::Camera* camera) {
     model_->Draw(worldTransform_, *camera);
 }
 
-
+// --- 敵撃破処理（震えてから逃走） ---
 void Enemy::OnDeath() {
     if (!isDead_) {
         isDead_ = true;
@@ -80,108 +85,162 @@ void Enemy::OnDeath() {
     }
 }
 
-void Enemy::SetAlive()
-{
+void Enemy::SetAlive() {
     isDead_ = false;
     shakeTimer_ = 0;
 }
 
 void Enemy::SetState() {
+
     switch (state_) {
+
+        // =============================
+        //  ■ 移動ステート
+        // =============================
     case State::move:
+
+        // --- 死亡演出 ---
         if (isDead_) {
+            // 最初は震える
             if (shakeTimer_ < 60) {
                 position_.x += std::sin(shakeTimer_ * 0.5f) * 0.3f;
                 position_.y += std::cos(shakeTimer_ * 0.7f) * 0.3f;
                 shakeTimer_++;
-            } else {
+            }
+            // 震え後は上方向へ逃げる
+            else {
                 position_.y += move_.escapeSpeed_;
             }
             return;
         }
 
-        // 突進開始
-        if (!forceMove_&&dash_.stateTimer_ >= 300 && !dash_.isDashing) {
+        // --- 突進開始条件 ---
+        if (!forceMove_ && dash_.stateTimer_ >= 300 && !dash_.isDashing) {
 
-            // 震え処理
-            if (dash_.preShakeTimer_ < 20) { // 20フレームだけ震える
+            // 突進前の「震え予兆」
+            if (dash_.preShakeTimer_ < 20) {
                 position_.x += std::sin(dash_.preShakeTimer_ * 0.5f) * 0.3f;
                 position_.y += std::cos(dash_.preShakeTimer_ * 0.7f) * 0.3f;
                 dash_.preShakeTimer_++;
             }
+            // 震え終わったら突進開始
             else {
                 state_ = State::attack;
-                dash_.isDashing = true;
-                dash_.timer = 0;
-                dash_.duration = 60;
+                dash_.isDashing     = true;
                 dash_.justFinished_ = false;
+            
 
-                // 突進方向設定
+                // --- 突進方向をプレイヤーへ向けて正規化 ---
                 if (targetPos_) {
                     direction.x = targetPos_->x - position_.x;
                     direction.y = targetPos_->y - position_.y;
                     direction.z = 0.0f;
-                    float length = std::sqrt(direction.x * direction.x + direction.y * direction.y + direction.z * direction.z);
-                    if (length > 0.001f) {
-                        direction.x /= length;
-                        direction.y /= length;
-                        direction.z /= length;
+
+                    float len = std::sqrt(direction.x * direction.x + direction.y * direction.y);
+                    if (len > 0.001f) {
+                        direction.x /= len;
+                        direction.y /= len;
                     }
                 }
-                dash_.preShakeTimer_ = 0; 
+
+                dash_.preShakeTimer_ = 0;
             }
         }
 
-        // 接近中
+        // --- 上空からの接近シーン ---
         if (move_.isApproaching_) {
+
             position_.z -= move_.approachSpeed_;
+
+            // --- Y位置も線形補間で下げる ---
             float t = (200.0f - position_.z) / (200.0f - move_.stopZ_);
             position_.y = 60.0f + t * (move_.stopY_ - 60.0f);
 
+            // --- 接近完了 ---
             if (position_.z <= move_.stopZ_) {
                 position_.z = move_.stopZ_;
                 position_.y = move_.stopY_;
                 move_.isApproaching_ = false;
             }
-        } else {
+        }
+        else {
+            // --- 突進待ち時間カウント ---
             dash_.stateTimer_++;
 
+            // --- 通常移動 ---
             if (!dash_.isDashing) {
+
                 if (!move_.verticalOnly_) {
+                    // --- 左右移動 ---
                     position_.x += move_.speed_ * move_.direction_;
-                    if (position_.x >= 25.0f) { position_.x = 25.0f; move_.direction_ = -1.0f; }
-                    if (position_.x <= -25.0f) { position_.x = -25.0f; move_.direction_ = 1.0f; }
-                } else {
+
+                    if (position_.x >= 23.0f) { 
+                        position_.x = 23.0f; 
+                        move_.direction_ = -1.0f; 
+                    }
+                    if (position_.x <= -23.0f) { 
+                        position_.x = -23.0f; 
+                        move_.direction_ = 1.0f; 
+                    }
+                }
+                else {
+                    // --- 上下移動 --- 
                     position_.y += move_.speed_ * move_.direction_;
-                    if (position_.y >= 15.0f) { position_.y = 15.0f; move_.verticalOnly_ = false; move_.direction_ = -1.0f; }
-                    if (position_.y <= -15.0f) { position_.y = -15.0f; move_.verticalOnly_ = false; move_.direction_ = 1.0f; }
+
+                    if (position_.y >= 11.5f) {
+                        position_.y = 11.5f;
+                        move_.direction_ = -1.0f;
+                    }
+                    if (position_.y <= -11.5f) {
+                        position_.y = -11.5f;
+                        move_.direction_ = 1.0f;
+                    }
                 }
             }
         }
         break;
 
+        // =============================
+        //  ■ 攻撃ステート
+        // =============================
     case State::attack:
+
         if (dash_.isDashing && targetPos_) {
+
             float dashSpeed = 0.5f;
 
-            // 方向ベクトルそのまま使って突進
+            // --- プレイヤー方向へ直線突進 ---
             position_.x += direction.x * dashSpeed;
             position_.y += direction.y * dashSpeed;
             position_.z += direction.z * dashSpeed;
 
-            // 画面端で制限
-            bool reachedEdge = false;
-            if (position_.x >= 25.0f) { position_.x = 25.0f; reachedEdge = true; }
-            if (position_.x <= -25.0f) { position_.x = -25.0f; reachedEdge = true; }
-            if (position_.y >= 15.0f) { position_.y = 15.0f; reachedEdge = true; }
-            if (position_.y <= -15.0f) { position_.y = -15.0f; reachedEdge = true; }
 
-            // 突進終了は端に到達したら
-            if (reachedEdge) {
+            bool clampX = false;
+            bool clampY = false;
+
+            if (position_.x > 25.0f) { position_.x = 25.0f;  clampX = (direction.x > 0); }
+            if (position_.x < -25.0f){ position_.x = -25.0f; clampX = (direction.x < 0); }
+
+            if (position_.y > 13.5f) { position_.y = 13.5f;  clampY = (direction.y > 0); }
+            if (position_.y < -13.5f){ position_.y = -13.5f; clampY = (direction.y < 0); }
+
+            if (clampX || clampY) {
                 dash_.isDashing = false;
                 state_ = State::move;
                 dash_.stateTimer_ = 0;
                 dash_.justFinished_ = true;
+                if (clampX) {
+                    // ---左右の壁にぶつかった時の上下移動 ---
+                    move_.verticalOnly_ = true;
+                    move_.direction_ = (direction.y >= 0) ? 1.0f : -1.0f;
+                }
+                if (clampY) {
+                    // --- 上下の壁にぶつかった時の左右移動 ---
+                    move_.verticalOnly_ = false;
+                    move_.direction_ = (direction.x >= 0) ? 1.0f : -1.0f;
+                }
+
+                return;
             }
         }
         break;
