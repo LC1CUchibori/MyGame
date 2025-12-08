@@ -194,26 +194,7 @@ void GameScene::Update() {
 		enemy_->SetInactive();
 	}
 
-	/*if (enemy_ && player_) {
-		for (auto& bullet : enemy_->GetBullets()) {
-			if (!bullet->IsActive())
-				continue;
-			bullet->Update();
-			Vector3 bulletPos = bullet->GetPosition();
-
-			float dx = bulletPos.x - playerPos.x;
-			float dy = bulletPos.y - playerPos.y;
-			float dz = bulletPos.z - playerPos.z;
-			float distance = sqrtf(dx * dx + dy * dy + dz * dz);
-
-			float hitRadius = 2.0f;
-
-			if (distance < hitRadius && !player_->IsDead()) {
-				player_->Kill();
-				bullet->SetInactive();
-			}
-		}
-	}*/
+	
 
 	// ================== プレイヤーと敵本体の当たり判定 ==================
 if (player_ && enemy_ && !player_->IsDead() && !enemy_->IsDead()) {
