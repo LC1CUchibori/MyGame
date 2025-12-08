@@ -39,10 +39,10 @@ void GameScene::Initialize() {
 	std::srand(static_cast<unsigned int>(std::time(nullptr)));
 
 	// プレイヤー
-	playerTextureHandle_ = TextureManager::Load("BlackORE.png");
-	playerModel_ = Model::Create();
+	
+	playerModel_ = Model::CreateFromOBJ("Enemy");
 	player_ = new Player();
-	player_->Initialize(playerModel_, playerTextureHandle_, &camera_);
+	player_->Initialize(playerModel_, &camera_);
 
 	enemyModel_ = Model::CreateFromOBJ("Enemy");
 	enemy_ = new Enemy();
@@ -562,4 +562,9 @@ void GameScene::InitializePhase() {
 	default:
 		break;
 	}
+}
+
+void GameScene::DrawImGui()
+{
+	player_->DrawImGui();
 }

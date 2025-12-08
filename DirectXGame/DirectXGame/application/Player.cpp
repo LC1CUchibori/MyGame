@@ -1,6 +1,7 @@
 #include "Player.h"
 #include <cassert>
 #include "PlayerBullet.h"
+#include <algorithm>
 using namespace KamataEngine;
 
 Player::Player()
@@ -11,13 +12,12 @@ Player::~Player()
 {
 }
 
-void Player::Initialize(KamataEngine::Model* model,uint32_t textureHandle,KamataEngine::Camera*camera)
+void Player::Initialize(KamataEngine::Model* model,KamataEngine::Camera*camera)
 {
 	// NULLポインタチェック
 	assert(model);
 
 	model_ = model;
-	textureHandle_ = textureHandle;
 	camera_ = camera;
 	input = Input::GetInstance(); 
 
@@ -29,6 +29,11 @@ void Player::Initialize(KamataEngine::Model* model,uint32_t textureHandle,Kamata
 
 	// パーティクル
 	particleModel_ = Model::CreateFromOBJ("ParticleBall");
+
+    mousePosX = 0.0f;
+	mousePosY = 0.0f;
+
+	worldTransform_.rotation_.x = 3.14f / 1.0f;
 
 	worldTransform_.translation_ = position_;
 	worldTransform_.UpdateMatrix();
@@ -42,6 +47,7 @@ void Player::Update()
 
 	if (isDead_) return;
 
+	// --- プレイヤー移動 ---
 	if (input->PushKey(DIK_W))    worldTransform_.translation_.y += speed_;
 	if (input->PushKey(DIK_S))  worldTransform_.translation_.y -= speed_;
 	if (input->PushKey(DIK_A))  worldTransform_.translation_.x -= speed_;
@@ -71,6 +77,37 @@ void Player::Update()
 			}),
 		particles_.end());
 
+
+	// =====================
+	// プレイヤーの向きをマウスへ
+	// =====================
+	
+	// マウスのスクリーン位置を取得
+	GetCursorPos(&mousePos);
+	ScreenToClient(GetActiveWindow(), &mousePos);
+
+	mouse.x = (float)mousePos.x;
+	mouse.y = (float)mousePos.y;
+
+	//// 仮想スクリーン上のプレイヤー位置（画面中央に固定）
+	//float playerScreenX = 640.0f;
+	//float playerScreenY = 360.0f;
+
+    dx = mousePos.x - worldTransform_.translation_.x;
+    dy = mousePos.y - worldTransform_.translation_.y;
+    angle = std::atan2(dy, dx);
+	worldTransform_.rotation_.z = (angle - 3.14f * 1.5f) * (-1.0f);
+
+	// マウス方向ベクトル
+	//dx = static_cast<float>(mousePos.x) - worldTransform_.translation_.x;
+	//dy = static_cast<float>(mousePos.y) - worldTransform_.translation_.y;
+
+	//// プレイヤーの頭が常にマウス方向を向く
+	//yaww = std::atan2(dx, -dy);
+	//worldTransform_.rotation_.z = yaww;
+
+	
+
 	// ===== 弾発射 =====
 	if (canShoot_ && input->TriggerKey(DIK_SPACE)) {
 		Fire();
@@ -97,6 +134,7 @@ void Player::Update()
 	worldTransform_.UpdateMatrix();
 	// 行列を定数バッファに転送
 	worldTransform_.TransferMatrix();
+
 }
 
 void Player::Draw(KamataEngine::Camera* camera, uint32_t textureHandle)
@@ -137,4 +175,18 @@ void Player::Kill() {
 	for (auto& particle : particles_) {
 		particle->Kill();
 	}
+}
+
+void Player::DrawImGui()
+{
+	ImGui::Begin("Player Debug");
+	float r = angle * (180.0f / float(3.14f));
+	ImGui::DragFloat2("Mouse Cursol",&mouse.x,0.0f);
+	ImGui::DragFloat2("Player Position", &worldTransform_.translation_.x, 0.0f);
+	ImGui::DragFloat("Player Yaw: %.3f rad (%.1f deg)", &r);
+	ImGui::Text("Player Position: (%.1f, %.1f, %.1f)", 
+		worldTransform_.translation_.x, 
+		worldTransform_.translation_.y, 
+		worldTransform_.translation_.z);
+	ImGui::End();
 }

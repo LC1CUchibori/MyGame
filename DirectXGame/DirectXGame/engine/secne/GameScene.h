@@ -39,6 +39,8 @@ public:
 
 	bool IsGameClear() const { return isGameClear_; }
 
+	void DrawImGui();
+
 private:
 	// モデル
 	KamataEngine::Model* model_ = nullptr;

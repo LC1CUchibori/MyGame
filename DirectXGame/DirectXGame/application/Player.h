@@ -10,7 +10,7 @@ public:
 
     ~Player();
 
-    void Initialize(KamataEngine::Model* model, uint32_t textureHandle, KamataEngine::Camera* camera);
+    void Initialize(KamataEngine::Model* mode, KamataEngine::Camera* camera);
 
     void Update();
 
@@ -24,6 +24,8 @@ public:
     void Kill();
 
     void SetCanShoot(bool canShoot) { canShoot_ = canShoot; }
+
+    void DrawImGui();
 
 
     bool CanShoot() const { return canShoot_; }
@@ -46,6 +48,11 @@ private:
     KamataEngine::WorldTransform worldTransform_;
     // インプット
     KamataEngine::Input* input = nullptr;
+    // マウスカーソル
+    KamataEngine::Input::MouseMove GetMouseMove();
+
+    float mousePosX = 640.0f;
+    float mousePosY = 360.0f;
 
     // プレイヤー弾
     std::vector<PlayerBullet*> bullets_;
@@ -63,4 +70,13 @@ private:
     // フラグ類
     bool isDead_ = false;  // 死亡フラグ
     bool canShoot_ = true; // 発射フラグ
+
+    float dx;
+    float dy;
+    float yaww;
+    float angle;
+
+    POINT mousePos;
+
+    KamataEngine::Vector2 mouse;
 };

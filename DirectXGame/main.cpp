@@ -40,6 +40,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
     //WinApp::GetInstance()->SetFullscreen(true);
 
+    ImGuiManager* imGuiManger_ = ImGuiManager::GetInstance();
+
     // フェード初期化
     fade.Initialize();
 
@@ -56,6 +58,16 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
         // フェード更新
         fade.Update();
+
+
+        imGuiManger_->Begin();
+        if (scene==Scene::kGame)
+        {
+
+        gameScene->DrawImGui();
+        }
+
+        imGuiManger_->End();
 
         // フェード中は全シーンの更新を止める
         if (fade.IsFading()) {
@@ -83,6 +95,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
         // フェード描画
         fade.Draw();
+
+        imGuiManger_->Draw();
 
         // 描画終了
         dxCommon->PostDraw();
