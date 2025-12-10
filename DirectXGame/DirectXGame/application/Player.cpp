@@ -77,9 +77,9 @@ void Player::Update()
 	if (oldPos.x != worldTransform_.translation_.x ||
 		oldPos.y != worldTransform_.translation_.y)
 	{
-		Particle* p = new Particle();
-		p->Initialize(particleModel_, camera_, worldTransform_.translation_);
-		particles_.push_back(p);
+		Particle* particle_ = new Particle();
+		particle_->Initialize(particleModel_, camera_, worldTransform_.translation_);
+		particles_.push_back(particle_);
 	}
 
 	for (auto* p : particles_) {
@@ -157,6 +157,11 @@ void Player::Update()
 
 void Player::Draw(KamataEngine::Camera* camera, uint32_t textureHandle)
 {
+
+	for (auto* particle_ : particles_) {
+		particle_->Draw();
+	}
+
 	if (!isDead_) {
 		model_->Draw(worldTransform_, *camera, textureHandle);
 
@@ -164,11 +169,6 @@ void Player::Draw(KamataEngine::Camera* camera, uint32_t textureHandle)
 			bullet->Draw(camera);
 		}
 	}
-
-	for (auto* p : particles_) {
-		p->Draw();
-	}
-
 }
 
 void Player::SetYaw(float yaw)
@@ -205,9 +205,9 @@ void Player::Kill() {
 
 void Player::DrawImGui()
 {
-	ImGui::Begin("Player Debug");
+	/*ImGui::Begin("Player Debug");
 	
-	ImGui::End();
+	ImGui::End();*/
 }
 
 KamataEngine::Vector2 Player::WorldToScreen(const KamataEngine::Vector3& worldPos, KamataEngine::Camera* camera)

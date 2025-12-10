@@ -97,6 +97,8 @@ private:
 	bool isSceneReturnRequested_ = false; 
 	Fade fade;
 
+	// =============== スプライト類 ===========================
+
 	// 出現スプライト用
 	uint32_t spawnTextureHandle_ = 0;
 	KamataEngine::Sprite* spawnSprite_ = nullptr;
@@ -104,6 +106,21 @@ private:
 	// 「敵をPushで倒せ」スプライト
 	KamataEngine::Sprite* pushPromptSprite_ = nullptr;
 	uint32_t pushPromptTextureHandle_;
+
+	// 注意書きスプライト
+	uint32_t warningTextureHandle_ = 0;
+	KamataEngine::Sprite* warningSprite_ = nullptr;
+
+	// ゲームオーバースプライト
+	uint32_t gameOverTextureHandle_;
+	KamataEngine::Sprite* gameOverSprite_ = nullptr;
+
+	// エフェクトカラー
+	uint32_t bossEffectTextures_[5];
+	KamataEngine::Sprite* bossEffectSprites_[5];
+	float effectDisplayTimes_[5] = {0.0f, 0.25f, 0.5f, 0.75f, 1.0f};
+
+	// ========================================================
 
 	// 出現アニメーション制御用
 	bool isSpawnActive_ = false;
@@ -113,11 +130,8 @@ private:
 	// ゲームオーバーフラグ
 	bool isGameOver_ = false;
 
-	uint32_t gameOverTextureHandle_;
-	KamataEngine::Sprite* gameOverSprite_ = nullptr;
-
 	// フェーズ
-	int phase_ = 5;
+	int phase_ = 1;
 	bool isPhaseChanging_ = false;
 	bool isFadeActive_ = false; // フェード開始フラグ
 	float phaseChangeTimer_ = 0.0f;
@@ -152,11 +166,6 @@ private:
 	// 表示状態
 	bool isPushPromptActive_ = false;
 	bool isPushSpriteVisible_ = false; 
-
-	// エフェクトカラー
-	uint32_t bossEffectTextures_[5];
-	KamataEngine::Sprite* bossEffectSprites_[5];
-	float effectDisplayTimes_[5] = {0.0f, 0.25f, 0.5f, 0.75f, 1.0f};
 
 	int currentEffectIndex_ = 0;
 };

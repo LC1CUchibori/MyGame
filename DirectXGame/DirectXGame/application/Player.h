@@ -39,10 +39,8 @@ public:
     // ワールド座標 → スクリーン座標
     KamataEngine::Vector2 WorldToScreen(const KamataEngine::Vector3& worldPos, KamataEngine::Camera* camera);
 
-
     KamataEngine::Vector3 ScreenToWorld(int screenX, int screenY, float z, KamataEngine::Camera* camera);
    
-
 private:
     // モデル
     KamataEngine::Model* model_ = nullptr;

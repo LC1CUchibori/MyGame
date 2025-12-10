@@ -4,6 +4,7 @@
 #include <vector>
 #include "EnemyBullet.h"
 #include <vector>
+#include "Particle.h"
 
 
 class Enemy
@@ -154,6 +155,10 @@ private:
 	State state_;
 
 	KamataEngine::Vector3 direction;
+
+	// エネミーパーティクル
+	std::vector<Particle*> particles_;
+	KamataEngine::Model* particleModel_ = nullptr;
 
 	// その他タイマー
 	int shakeTimer_ = 0;

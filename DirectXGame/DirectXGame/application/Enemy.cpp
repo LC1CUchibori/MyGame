@@ -13,6 +13,9 @@ void Enemy::Initialize(KamataEngine::Model* model, KamataEngine::Camera* camera)
     model_ = model;
     camera_ = camera;
 
+    // パーティクル
+    particleModel_ = KamataEngine::Model::CreateFromOBJ("ParticleBall");
+
     // --- 初期位置 ---
     position_ = { 0.0f, 60.0f, 200.0f };
 
@@ -46,22 +49,71 @@ void Enemy::Initialize(KamataEngine::Model* model, KamataEngine::Camera* camera)
 
 void Enemy::Update() {
 
+    // --- 前フレーム位置を保存 ---
+    KamataEngine::Vector3 prevPos = position_;
+
     // --- モデルのスケール ---
     worldTransform_.scale_ = { 2.0f, 2.0f, 2.0f };
 
-    // --- 動作状態更新（移動・攻撃・死亡演出など） ---
+    // --- メイン挙動 ---
     SetState();
+
+    // ========== パーティクル処理（後方オフセット） ==========
+    {
+        //if (prevPos.x != position_.x ||
+        //    prevPos.y != position_.y ||
+        //    prevPos.z != position_.z)
+        //{
+        //    // 敵の向きから前後方向を算出
+        //    float angleZ = worldTransform_.rotation_.z;
+
+        //    float forwardX = std::cos(angleZ);
+        //    float forwardY = std::sin(angleZ);
+
+        //    float backX = -forwardX;
+        //    float backY = -forwardY;
+
+        //    // 後方への距離（必要に応じて調整）
+        //    float offset = 3.0f;
+        //    float zOffset = -1.5f; 
+
+        //    KamataEngine::Vector3 particlePos = {
+        //        position_.x + backX * offset,
+        //        position_.y + backY * offset,
+        //        position_.z + zOffset
+        //    };
+
+            Particle* p = new Particle();
+            // パーティクルをエネミーの後ろ（奥）に生成
+            KamataEngine::Vector3 particlePos = worldTransform_.translation_;
+            particlePos.z += 5.0f;  // カメラから見て奥にオフセット
+            p->Initialize(particleModel_, camera_, particlePos);
+            particles_.push_back(p);
+        }
+
+        for (auto* p : particles_) {
+            p->Update();
+        }
+
+        particles_.erase(
+            std::remove_if(particles_.begin(), particles_.end(),
+                [](Particle* p) {
+                    if (!p->IsAlive()) {
+                        delete p;
+                        return true;
+                    }
+                    return false;
+                }),
+            particles_.end());
+    // =========================================================
 
     // --- ワールド行列更新 ---
     worldTransform_.translation_ = position_;
 
     if (move_.isApproaching_) {
-        // 接近中は体勢を倒す
         worldTransform_.rotation_.x = 3.14f / 2.0f;
         worldTransform_.rotation_.z = 3.14f;
-    }
-    else {
-        // 接近後はプレイヤー方向へ向ける
+    } else {
         if (targetPos_) {
             float dx = targetPos_->x - position_.x;
             float dy = targetPos_->y - position_.y;
@@ -75,8 +127,15 @@ void Enemy::Update() {
     worldTransform_.TransferMatrix();
 }
 
+
 void Enemy::Draw(KamataEngine::Camera* camera) {
+    // エネミー本体を先に描画
     model_->Draw(worldTransform_, *camera);
+
+    // パーティクルを後に描画（エネミーの後ろに表示）
+    for (auto* particle_ : particles_) {
+        particle_->Draw();
+    }
 }
 
 // --- 敵撃破処理 ---

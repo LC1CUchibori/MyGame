@@ -39,7 +39,6 @@ void GameScene::Initialize() {
 	std::srand(static_cast<unsigned int>(std::time(nullptr)));
 
 	// プレイヤー
-	
 	playerModel_ = Model::CreateFromOBJ("Enemy");
 	player_ = new Player();
 	player_->Initialize(playerModel_, &camera_);
@@ -114,7 +113,6 @@ void GameScene::Initialize() {
 	RedGraph_->SetSize({300.0f,30.0f});
 	RedGraph_->SetColor({ 1.0f, 0.0f, 0.0f, 0.5f });
 	RedGraph_->SetPosition({ 500.0f,280.0f });
-
 	GreenGraph_ = new Graph();
 	GreenGraph_->Initialize();
 	GreenGraph_->SetSize({300.0f,30.0f});
@@ -131,6 +129,10 @@ void GameScene::Initialize() {
 	bossEffectTextures_[2] = TextureManager::Load("PurpleEffect.png");
 	bossEffectTextures_[3] = TextureManager::Load("RedEffect.png");
 	bossEffectTextures_[4] = TextureManager::Load("RainbowEffect.png");
+
+	// 注意書き
+	warningTextureHandle_ = TextureManager::Load("warning.png");
+	warningSprite_ = Sprite::Create(warningTextureHandle_, { 400.0f,100.0f });
 
 	for (int i = 0; i < 5; ++i) {
 		bossEffectSprites_[i] = KamataEngine::Sprite::Create(bossEffectTextures_[i], {0.0f, 0.0f});
@@ -463,6 +465,8 @@ void GameScene::Draw() {
 	// ゲームオーバー表示
 	if (isGameOver_ && gameOverSprite_) {
 		gameOverSprite_->Draw();
+
+		warningSprite_->Draw();
 	}
 
 	if (isPushPromptActive_ && pushPromptSprite_) {
