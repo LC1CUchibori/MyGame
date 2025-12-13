@@ -81,6 +81,11 @@ private:
 	bool isDamageActive_ = false; 
 	float hp_ = 100.0f;
 
+	// HPバー
+	Graph* enemyHpBack_ = nullptr;
+	Graph* enemyHpFront_ = nullptr;
+
+
 	KamataEngine::Vector3 cursorPos_{0.0f, 0.0f, 30.0f}; // 初期位置
 	float cursorSpeed_ = 0.5f; // 移動速度
 	uint32_t crossTexture_;// 標準

@@ -68,9 +68,12 @@ private:
     KamataEngine::Model* particleModel_ = nullptr;
 
     // 移動速度
-    float speed_ = 0.5f;
+    float speed_ = 0.2f;
     // 回転
     float yaw_ = 0.0f;
+
+    KamataEngine::Vector3 targetPos_;   // 目標位置
+    float moveLerp_ = 0.15f; // 補間係数
 
     // フラグ類
     bool isDead_ = false;  // 死亡フラグ

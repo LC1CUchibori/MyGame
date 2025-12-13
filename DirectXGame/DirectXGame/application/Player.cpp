@@ -52,6 +52,8 @@ void Player::Initialize(KamataEngine::Model* model,KamataEngine::Camera*camera)
 
 	worldTransform_.rotation_.x = 3.14f / 1.0f;
 
+	targetPos_ = worldTransform_.translation_;
+
 	worldTransform_.translation_ = position_;
 	worldTransform_.UpdateMatrix();
 	// 行列を定数バッファに転送
@@ -65,10 +67,15 @@ void Player::Update()
 	if (isDead_) return;
 
 	// --- プレイヤー移動 ---
-	if (input->PushKey(DIK_W))    worldTransform_.translation_.y += speed_;
-	if (input->PushKey(DIK_S))  worldTransform_.translation_.y -= speed_;
-	if (input->PushKey(DIK_A))  worldTransform_.translation_.x -= speed_;
-	if (input->PushKey(DIK_D)) worldTransform_.translation_.x += speed_;
+	if (input->PushKey(DIK_W)) targetPos_.y += speed_;
+	if (input->PushKey(DIK_S)) targetPos_.y -= speed_;
+	if (input->PushKey(DIK_A)) targetPos_.x -= speed_;
+	if (input->PushKey(DIK_D)) targetPos_.x += speed_;
+
+	worldTransform_.translation_.x =
+		Lerp(worldTransform_.translation_.x, targetPos_.x, moveLerp_);
+	worldTransform_.translation_.y =
+		Lerp(worldTransform_.translation_.y, targetPos_.y, moveLerp_);
 
 
 	// ========== パーティクル処理 =============

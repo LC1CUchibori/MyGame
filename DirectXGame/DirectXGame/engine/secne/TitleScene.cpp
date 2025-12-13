@@ -15,8 +15,11 @@ TitleScene::~TitleScene()
 
 void TitleScene::Initialize()
 {
-	HitTextureHandle_ = TextureManager::Load("Hit.png");
+	HitTextureHandle_ = TextureManager::Load("hit.png");
 	HitSprite_ = Sprite::Create(HitTextureHandle_, { 170,200 });
+
+	TitleTextureHandle_ = TextureManager::Load("Title.png");
+	TitleSprite_ = Sprite::Create(TitleTextureHandle_, { 525,250 });
 
 	titleModel_ = Model::CreateFromOBJ("Title");
 	title_ = new TitleModel();
@@ -35,19 +38,17 @@ void TitleScene::Initialize()
 
 void TitleScene::Update()
 {
-	//Input* input = Input::GetInstance();
-
 	// α値用タイマーを進める
-	hitAlphaTime_ += 1.0f / 60.0f;  // 60FPS前提
+	hitAlphaTime_ += 1.0f / 60.0f;
 
-	// α値をsin波で滑らかに変化（0.0～1.0）
+	// α値をsin波で滑らかに変化
 	float alpha = (std::sin(hitAlphaTime_ * 3.14f * 2.0f) + 1.0f) * 0.5f;
 
-	// スプライトに色設定（R,G,B=1.0f, αだけ変化）
+	// スプライトに色設定
 	HitSprite_->SetColor({ 1.0f, 1.0f, 1.0f, alpha });
 
 	//=======タイトルモデル移動処理===========
-	title_->Update();
+	//title_->Update();
 
 	stage1->Update();
 }
@@ -74,6 +75,8 @@ void TitleScene::Draw()
 	// 3Dモデル描画前処理
 	Sprite::PreDraw(dxCommn->GetCommandList());
 
+	TitleSprite_->Draw();
+
 	HitSprite_->Draw();
 
 	// 3Dモデル描画後処理
@@ -84,7 +87,7 @@ void TitleScene::Draw()
 	// 3Dオブジェクト描画前処理
 	Model::PreDraw(dxCommn->GetCommandList());
 
-	title_->Draw(&camera_);
+	//title_->Draw(&camera_);
 
 	Model::PostDraw();
 }

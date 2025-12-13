@@ -27,6 +27,8 @@ GameScene::~GameScene() {
 	delete RedGraph_;
 	delete GreenGraph_;
 
+	delete enemyHpBack_;
+	delete enemyHpFront_;
 
 	Model2::StaticFinalize();
 }
@@ -118,6 +120,18 @@ void GameScene::Initialize() {
 	GreenGraph_->SetSize({300.0f,30.0f});
 	GreenGraph_->SetColor({ 0.0f, 1.0f, 0.0f, 0.5f });
 	GreenGraph_->SetPosition({ 500.0f,280.0f });
+
+	// 敵HPバー（背景）
+	enemyHpBack_ = new Graph();
+	enemyHpBack_->Initialize();
+	enemyHpBack_->SetSize({ 60.0f, 6.0f });
+	enemyHpBack_->SetColor({ 1.0f, 0.0f, 0.0f, 1.0f });
+
+	// 敵HPバー（前景）
+	enemyHpFront_ = new Graph();
+	enemyHpFront_->Initialize();
+	enemyHpFront_->SetSize({ 60.0f, 6.0f });
+	enemyHpFront_->SetColor({ 0.0f, 1.0f, 0.0f, 1.0f });
 
 	// 「敵をPushで倒せ」スプライト
 	pushPromptTextureHandle_ = TextureManager::Load("PushPrompt.png");
@@ -276,8 +290,9 @@ if (player_ && enemy_ && !player_->IsDead() && !enemy_->IsDead()) {
 
 					bossState_ = BossChallengeState::Start;
 				} else {
-					enemy_->OnDeath(); // 通常敵処理
+					enemy_->TakeDamage(1); // 通常敵処理
 					defeatCount_++;
+					
 				}
 			}
 		}
@@ -434,6 +449,43 @@ if (player_ && enemy_ && !player_->IsDead() && !enemy_->IsDead()) {
 		}
 	}
 // ======================================================================================
+	
+// =========================== HPバー =================================
+	if (enemy_ && !enemy_->IsDead()) {
+
+		Vector3 enemyPos = enemy_->GetPosition();
+
+
+
+		float barX = enemyPos.x * 20.0f + 640.0f;
+		float barY = -enemyPos.y * 20.0f + 360.0f - 30.0f;
+
+		float maxWidth = 60.0f;
+		float height   = 6.0f;
+
+		float hpRate =
+			static_cast<float>(enemy_->GetHp()) /
+			static_cast<float>(enemy_->GetMaxHp());
+
+		if (hpRate < 0.0f) hpRate = 0.0f;
+		if (hpRate > 1.0f) hpRate = 1.0f;
+
+		float greenWidth = maxWidth * hpRate;
+
+		// 赤（背景
+		enemyHpBack_->SetSize({ maxWidth, height });
+		enemyHpBack_->SetPosition({ barX, barY });
+
+		// 緑（前
+		enemyHpFront_->SetSize({ greenWidth, height });
+
+		// 幅が減った分、中心を右にずらす
+		float offsetX = (maxWidth - greenWidth) * 0.5f;
+		enemyHpFront_->SetPosition({ barX - offsetX, barY });
+
+	}
+// ======================================================================
+	
 	worldTransform_.UpdateMatrix();
 	worldTransform_.TransferMatrix();
 }
@@ -520,6 +572,15 @@ void GameScene::Draw() {
 	Model::PostDraw();
 #pragma endregion
 
+	Sprite::PreDraw(dxCommn->GetCommandList());
+
+	if (enemy_ && !enemy_->IsDead()) {
+		enemyHpBack_->Draw();
+		enemyHpFront_->Draw();
+	}
+
+	Sprite::PostDraw();
+
 	// 3Dモデル描画前処理
 	Model2::PreDraw(dxCommn->GetCommandList());
 
@@ -552,4 +613,7 @@ void GameScene::InitializePhase() {
 void GameScene::DrawImGui()
 {
 	player_->DrawImGui();
+	ImGui::Text("Enemy HP : %d / %d",
+		enemy_->GetHp(),
+		enemy_->GetMaxHp());
 }

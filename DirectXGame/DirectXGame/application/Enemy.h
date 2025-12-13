@@ -31,6 +31,8 @@ public:
 
 	void SetAlive();
 
+	void TakeDamage(int damage);
+
 	// State関数
 	void SetState();
 
@@ -54,6 +56,8 @@ public:
 
 	void ResetForPhase(const KamataEngine::Vector3& pos) {
 		position_ = pos;
+		hp_ = 10;
+		maxHp_ = 10;
 		isDead_ = false;
 		isEscaping_ = false;
 		shakeTimer_ = 0;
@@ -90,6 +94,9 @@ public:
 	const KamataEngine::Vector3& GetPosition() const {
 		return position_;
 	}
+
+	int GetHp() const { return hp_; }
+	int GetMaxHp() const { return maxHp_; }
 
 private:
 	// ワールド変換データ
@@ -164,6 +171,9 @@ private:
 	int shakeTimer_ = 0;
 
 	bool forceMove_ = false; 
+
+	int hp_ = 0;
+	int maxHp_ = 0;
 
 	// その他フラグ類
 	bool isDead_ = false;

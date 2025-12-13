@@ -45,6 +45,10 @@ void Enemy::Initialize(KamataEngine::Model* model, KamataEngine::Camera* camera)
     dash_.duration       = 60;   // 突進の最大継続フレーム
     dash_.preShakeTimer_ = 0;    // 突進前の震え演出
     dash_.justFinished_  = false;
+
+
+    hp_ = 10;
+    maxHp_ = 10;
 }
 
 void Enemy::Update() {
@@ -60,51 +64,28 @@ void Enemy::Update() {
 
     // ========== パーティクル処理（後方オフセット） ==========
     {
-        //if (prevPos.x != position_.x ||
-        //    prevPos.y != position_.y ||
-        //    prevPos.z != position_.z)
-        //{
-        //    // 敵の向きから前後方向を算出
-        //    float angleZ = worldTransform_.rotation_.z;
+        Particle* p = new Particle();
+        // パーティクルをエネミーの後ろ（奥）に生成
+        KamataEngine::Vector3 particlePos = worldTransform_.translation_;
+        particlePos.z += 5.0f;  // カメラから見て奥にオフセット
+        p->Initialize(particleModel_, camera_, particlePos);
+        particles_.push_back(p);
+    }
 
-        //    float forwardX = std::cos(angleZ);
-        //    float forwardY = std::sin(angleZ);
+    for (auto* p : particles_) {
+        p->Update();
+    }
 
-        //    float backX = -forwardX;
-        //    float backY = -forwardY;
-
-        //    // 後方への距離（必要に応じて調整）
-        //    float offset = 3.0f;
-        //    float zOffset = -1.5f; 
-
-        //    KamataEngine::Vector3 particlePos = {
-        //        position_.x + backX * offset,
-        //        position_.y + backY * offset,
-        //        position_.z + zOffset
-        //    };
-
-            Particle* p = new Particle();
-            // パーティクルをエネミーの後ろ（奥）に生成
-            KamataEngine::Vector3 particlePos = worldTransform_.translation_;
-            particlePos.z += 5.0f;  // カメラから見て奥にオフセット
-            p->Initialize(particleModel_, camera_, particlePos);
-            particles_.push_back(p);
-        }
-
-        for (auto* p : particles_) {
-            p->Update();
-        }
-
-        particles_.erase(
-            std::remove_if(particles_.begin(), particles_.end(),
-                [](Particle* p) {
-                    if (!p->IsAlive()) {
-                        delete p;
-                        return true;
-                    }
-                    return false;
-                }),
-            particles_.end());
+    particles_.erase(
+        std::remove_if(particles_.begin(), particles_.end(),
+            [](Particle* p) {
+                if (!p->IsAlive()) {
+                    delete p;
+                    return true;
+                }
+                return false;
+            }),
+        particles_.end());
     // =========================================================
 
     // --- ワールド行列更新 ---
@@ -113,7 +94,8 @@ void Enemy::Update() {
     if (move_.isApproaching_) {
         worldTransform_.rotation_.x = 3.14f / 2.0f;
         worldTransform_.rotation_.z = 3.14f;
-    } else {
+    }
+    else {
         if (targetPos_) {
             float dx = targetPos_->x - position_.x;
             float dy = targetPos_->y - position_.y;
@@ -149,6 +131,18 @@ void Enemy::OnDeath() {
 void Enemy::SetAlive() {
     isDead_ = false;
     shakeTimer_ = 0;
+}
+
+void Enemy::TakeDamage(int damage)
+{
+    if (isDead_) return;
+
+    hp_ -= damage;
+
+    if (hp_ <= 0) {
+        hp_ = 0;
+        OnDeath();
+    }
 }
 
 void Enemy::SetState() {

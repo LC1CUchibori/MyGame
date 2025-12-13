@@ -29,6 +29,9 @@ private:
 	// タイトル操作スプライト
 	KamataEngine::Sprite* HitSprite_ = nullptr;
 
+	uint32_t TitleTextureHandle_ = 0;
+	KamataEngine::Sprite* TitleSprite_ = nullptr;
+
 	Stage* stage1 = nullptr;
 
 	TitleModel* title_ = nullptr;
