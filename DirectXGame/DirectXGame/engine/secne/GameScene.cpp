@@ -30,6 +30,13 @@ GameScene::~GameScene() {
 	delete enemyHpBack_;
 	delete enemyHpFront_;
 
+	for (TimeBomb* bomb : bombs_) {
+		delete bomb;
+	}
+	bombs_.clear();
+
+	delete bombModel_;
+
 	Model2::StaticFinalize();
 }
 
@@ -152,6 +159,10 @@ void GameScene::Initialize() {
 		bossEffectSprites_[i] = KamataEngine::Sprite::Create(bossEffectTextures_[i], {0.0f, 0.0f});
 	}
 
+	// 時限爆弾モデル
+	bombModel_ = Model::CreateFromOBJ("TimeBomb");
+
+
 	worldTransform_.Initialize();
 	// カメラの初期化
 	camera_.Initialize();
@@ -166,13 +177,25 @@ void GameScene::Update() {
 
 
 	if (player_ && enemy_) {
-		if (enemy_->IsApproachFinished()) {
-			player_->SetCanShoot(true);
-		}
-		else {
+
+		// 突破チャレンジ中は撃てない
+		if (phase_ == 5 &&
+			(bossState_ == BossChallengeState::Start ||
+				bossState_ == BossChallengeState::Challenge)) {
+
 			player_->SetCanShoot(false);
 		}
+		else {
+			// 通常時の射撃許可制御
+			if (enemy_->IsApproachFinished()) {
+				player_->SetCanShoot(true);
+			}
+			else {
+				player_->SetCanShoot(false);
+			}
+		}
 	}
+
 	// プレイヤー更新
 	if (player_) {
 		player_->Update();
@@ -273,7 +296,6 @@ void GameScene::Update() {
 		Vector3 enemyPos = enemy_->GetPosition();
 
 
-
 		float barX = enemyPos.x * 20.0f + 640.0f;
 		float barY = -enemyPos.y * 20.0f + 360.0f - 30.0f;
 
@@ -303,6 +325,19 @@ void GameScene::Update() {
  	}
     // ======================================================================
 	
+
+	if (enemy_->IsRequestBomb()) {
+		TimeBomb* bomb = new TimeBomb();
+		bomb->Initialize(bombModel_, &camera_, enemy_->GetPosition());
+		bombs_.push_back(bomb);
+
+		enemy_->ResetRequestBomb();
+	}
+
+	for (TimeBomb* bomb : bombs_) {
+		bomb->Update();
+	}
+
 	worldTransform_.UpdateMatrix();
 	worldTransform_.TransferMatrix();
 }
@@ -325,11 +360,6 @@ void GameScene::Draw() {
 #pragma endregion
 
 	Sprite::PreDraw(dxCommn->GetCommandList());
-
-	// 出現スプライト描画
-	if (isSpawnActive_) {
-		spawnSprite_->Draw();
-	}
 
 	// ゲームオーバー表示
 	if (isGameOver_ && gameOverSprite_) {
@@ -371,6 +401,10 @@ void GameScene::Draw() {
 		enemy_->Draw(&camera_);
 	}
 
+	for (TimeBomb* bomb : bombs_) {
+		bomb->Draw(&camera_);
+	}
+
 	if (sharkTop_) {
 		sharkTop_->Draw(&camera_);
 	}
@@ -384,7 +418,12 @@ void GameScene::Draw() {
 
 	Sprite::PreDraw(dxCommn->GetCommandList());
 
-	if (enemy_ && !enemy_->IsDead()) {
+	// 出現スプライト描画
+	if (isSpawnActive_) {
+		spawnSprite_->Draw();
+	}
+
+	if (enemy_ && !enemy_->IsDead()&& !player_->IsDead()) {
 		enemyHpBack_->Draw();
 		enemyHpFront_->Draw();
 	}
@@ -527,6 +566,7 @@ void GameScene::LastPhase()
 		bossPushTimer_ = 0.0f;
 		isBossChallengeResult_ = false;
 
+
 		GreenGraph_->SetSize({300.0f, 30.0f});
 		bossState_ = BossChallengeState::Challenge;
 	}
@@ -536,7 +576,7 @@ void GameScene::LastPhase()
 		// Spaceで成功確率だけ決める
 		if (!isBossChallengeResult_ && input->TriggerKey(DIK_SPACE)) {
 			int r = std::rand() % 100;
-			isBossChallengeSuccess_ = (r < 51);
+			isBossChallengeSuccess_ = (r < 100);
 			isBossChallengeResult_ = true;
 		}
 

@@ -87,6 +87,7 @@ void Player::Draw(KamataEngine::Camera* camera, uint32_t textureHandle)
 		model_->Draw(worldTransform_, *camera, textureHandle);
 
 		for (auto* bullet : bullets_) {
+			if (!bullet->IsActive()) continue;
 			bullet->Draw(camera);
 		}
 	}

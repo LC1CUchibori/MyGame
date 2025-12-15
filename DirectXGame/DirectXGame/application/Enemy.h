@@ -108,6 +108,9 @@ public:
 	int GetHp() const { return hp_; }
 	int GetMaxHp() const { return maxHp_; }
 
+	bool IsRequestBomb() const { return requestBomb_; }
+	void ResetRequestBomb() { requestBomb_ = false; }
+
 private:
 	// ワールド変換データ
 	KamataEngine::WorldTransform worldTransform_;
@@ -185,6 +188,8 @@ private:
 	int maxDashCount_ = 1;   // 最大突進回数
 	int currentDashCount_ = 0; // 今何回目の突進か
 
+	float moveLerp_ = 0.15f; // 補間係数
+
 	int hp_ = 0;
 	int maxHp_ = 0;
 
@@ -192,5 +197,7 @@ private:
 	bool isDead_ = false;
 	bool isEscaping_ = false;
 	bool canShoot_ = true;
+	
+	bool requestBomb_ = false;
 };
 

@@ -1,6 +1,7 @@
 #include "Enemy.h"
 #include <cassert>
 #include <cmath>
+#include "TimeBomb.h"
 
 Enemy::Enemy() {}
 Enemy::~Enemy() {
@@ -183,7 +184,7 @@ void Enemy::SetState() {
                 state_ = State::attack;
                 dash_.isDashing     = true;
                 dash_.justFinished_ = false;
-                currentDashCount_++; // 突進するカウント加算
+                currentDashCount_++; 
 
                 // --- 突進方向をプレイヤーへ向けて正規化 ---
                 if (targetPos_) {
@@ -260,6 +261,10 @@ void Enemy::SetState() {
         // =============================
     case State::attack:
 
+        if (!requestBomb_) {
+            requestBomb_ = true; // GameScene に通知
+        }
+
         if (dash_.isDashing && targetPos_) {
 
             float dashSpeed = 0.5f;
@@ -283,7 +288,7 @@ void Enemy::SetState() {
                 dash_.isDashing = false;
                 if (currentDashCount_ < maxDashCount_) {
                     // ===== 連続突進 =====
-                    state_ = State::move; // 少しmoveもどる
+                    state_ = State::move; // 少しmoveにする
                     dash_.stateTimer_ = 300;    // すぐ次の突進に入れる
                 }
                 else {
@@ -291,6 +296,7 @@ void Enemy::SetState() {
                     state_ = State::move;
                     dash_.stateTimer_ = 0;
                     currentDashCount_ = 0;
+                    requestBomb_ = false;
                 }
                 dash_.justFinished_ = true;
 

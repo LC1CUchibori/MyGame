@@ -12,6 +12,7 @@
 #include "../3d/SharkTop.h"
 #include "DirectXGame/engine/2d/Fade.h" 
 #include <DirectXGame/application/Graph.h>
+#include "../../application/TimeBomb.h"
 
 class GameScene
 {
@@ -91,6 +92,10 @@ private:
 	Graph* enemyHpBack_ = nullptr;
 	Graph* enemyHpFront_ = nullptr;
 
+	// 時限爆弾
+	std::vector<TimeBomb*>bombs_;
+	KamataEngine::Model* bombModel_ = nullptr;
+
 
 	KamataEngine::Vector3 cursorPos_{0.0f, 0.0f, 30.0f}; // 初期位置
 	float cursorSpeed_ = 0.5f; // 移動速度
@@ -142,7 +147,7 @@ private:
 	bool isGameOver_ = false;
 
 	// フェーズ
-	int phase_ = 3;
+	int phase_ = 5;
 	bool isPhaseChanging_ = false;
 	bool isFadeActive_ = false; // フェード開始フラグ
 	float phaseChangeTimer_ = 0.0f;

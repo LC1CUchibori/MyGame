@@ -1,0 +1,47 @@
+#pragma once
+#include <KamataEngine.h>
+#include "../engine/3d/Model2.h"
+#include <vector>
+
+class TimeBomb
+{
+public:
+	TimeBomb();
+	~TimeBomb();
+
+	void Initialize(KamataEngine::Model* model, KamataEngine::Camera* camera, const KamataEngine::Vector3& pos);
+
+	void Update();
+
+	void Draw(KamataEngine::Camera* camera);
+
+	bool IsAlive()const { return status_.isAlive_; }
+	bool IsExploatde()const { return status_.exploded_; }
+
+	void Kill();
+
+	KamataEngine::Vector3 GetPosition()const { return status_.position_; }
+
+private:
+	// ワールド変換データ
+	KamataEngine::WorldTransform worldTransform_;
+	// モデル
+	KamataEngine::Model* model_ = nullptr;
+	// テクスチャハンドル
+	uint32_t textureHandle_ = 0u;
+	// カメラ
+	KamataEngine::Camera* camera_ = nullptr;
+	// ポジション
+	KamataEngine::Vector3 position_;
+
+	struct BombStatus {
+		KamataEngine::Vector3 position_{};
+		int timer_ = 0;
+		bool isAlive_ = true;
+		bool exploded_ = false;
+	};
+	BombStatus status_;
+
+	const int explodeTime_ = 240;
+};
+
