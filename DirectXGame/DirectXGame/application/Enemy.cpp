@@ -183,7 +183,7 @@ void Enemy::SetState() {
                 state_ = State::attack;
                 dash_.isDashing     = true;
                 dash_.justFinished_ = false;
-            
+                currentDashCount_++; // 突進するカウント加算
 
                 // --- 突進方向をプレイヤーへ向けて正規化 ---
                 if (targetPos_) {
@@ -281,9 +281,19 @@ void Enemy::SetState() {
 
             if (clampX || clampY) {
                 dash_.isDashing = false;
-                state_ = State::move;
-                dash_.stateTimer_ = 0;
+                if (currentDashCount_ < maxDashCount_) {
+                    // ===== 連続突進 =====
+                    state_ = State::move; // 少しmoveもどる
+                    dash_.stateTimer_ = 300;    // すぐ次の突進に入れる
+                }
+                else {
+                    // ===== 突進終了 =====
+                    state_ = State::move;
+                    dash_.stateTimer_ = 0;
+                    currentDashCount_ = 0;
+                }
                 dash_.justFinished_ = true;
+
                 if (clampX) {
                     // ---左右の壁にぶつかった時の上下移動 ---
                     move_.verticalOnly_ = true;

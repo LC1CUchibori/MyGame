@@ -164,6 +164,15 @@ void GameScene::Update() {
 	Vector3 crossPos = crosshair_->GetPosition();
 	Vector3 playerPos = player_->GetPosition();
 
+
+	if (player_ && enemy_) {
+		if (enemy_->IsApproachFinished()) {
+			player_->SetCanShoot(true);
+		}
+		else {
+			player_->SetCanShoot(false);
+		}
+	}
 	// プレイヤー更新
 	if (player_) {
 		player_->Update();
@@ -390,6 +399,10 @@ void GameScene::Draw() {
 }
 
 void GameScene::InitializePhase() {
+	if (player_) {
+		player_->SetCanShoot(false);
+	}
+
 	switch (phase_) {
 	case 1:
 		enemy_->ResetForPhase({0.0f, 10.0f, 200.0f});
@@ -415,14 +428,19 @@ void GameScene::UpdatePhase()
 {
 	switch (phase_) {
 	case 1:
+		enemy_->SetMaxDashCount(1);
 		break;
 	case 2:
+		enemy_->SetMaxDashCount(2);
 		break;
 	case 3:
+		enemy_->SetMaxDashCount(3);
 		break;
 	case 4:
+		enemy_->SetMaxDashCount(4);
 		break;
 	case 5:
+		enemy_->SetMaxDashCount(5);
 		LastPhase();
 		break;
 	default:

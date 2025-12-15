@@ -142,7 +142,7 @@ private:
 	bool isGameOver_ = false;
 
 	// フェーズ
-	int phase_ = 5;
+	int phase_ = 3;
 	bool isPhaseChanging_ = false;
 	bool isFadeActive_ = false; // フェード開始フラグ
 	float phaseChangeTimer_ = 0.0f;

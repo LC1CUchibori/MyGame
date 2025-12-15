@@ -79,6 +79,12 @@ public:
 		targetPos_ = target; 
 	}
 
+	// 突進するカウント関数
+	void SetMaxDashCount(int count) {
+		maxDashCount_ = count;
+	}
+
+
 	bool CanShoot() const {
 		return canShoot_; 
 	}
@@ -89,6 +95,10 @@ public:
 
 	bool IsDead() const {
 		return isDead_; 
+	}
+
+	bool IsApproachFinished() const {
+		return !move_.isApproaching_;
 	}
 
 	const KamataEngine::Vector3& GetPosition() const {
@@ -171,6 +181,9 @@ private:
 	int shakeTimer_ = 0;
 
 	bool forceMove_ = false; 
+
+	int maxDashCount_ = 1;   // 最大突進回数
+	int currentDashCount_ = 0; // 今何回目の突進か
 
 	int hp_ = 0;
 	int maxHp_ = 0;
