@@ -7,6 +7,7 @@
 #include "math/Matrix4x4.h"
 #include "math/MathUtility.h"
 #include "../engine/math/math.h"
+
 using namespace KamataEngine::MathUtility;
 using namespace KamataEngine;
 
@@ -61,6 +62,76 @@ void Player::Initialize(KamataEngine::Model* model,KamataEngine::Camera*camera)
 }
 
 void Player::Update()
+{
+	// プレイヤーの移動処理
+	PlayerMove();
+
+	// 弾の処理
+	BulletUpdate();
+
+	//worldTransform_.translation_ = position_;
+	worldTransform_.UpdateMatrix();
+	// 行列を定数バッファに転送
+	worldTransform_.TransferMatrix();
+
+}
+
+void Player::Draw(KamataEngine::Camera* camera, uint32_t textureHandle)
+{
+
+	for (auto* particle_ : particles_) {
+		particle_->Draw();
+	}
+
+	if (!isDead_) {
+		model_->Draw(worldTransform_, *camera, textureHandle);
+
+		for (auto* bullet : bullets_) {
+			bullet->Draw(camera);
+		}
+	}
+}
+
+void Player::SetYaw(float yaw)
+{
+	yaw_ = yaw;
+	worldTransform_.rotation_ = { 0.0f,yaw_,0.0f };
+	worldTransform_.UpdateMatrix();
+	worldTransform_.TransferMatrix();
+}
+
+void Player::Fire()
+{
+	// プレイヤーの向いている方向
+	float fireAngle = worldTransform_.rotation_.z - 3.14f / 2.0f;
+	Vector3 direction = {
+		std::cos(fireAngle),
+		-std::sin(fireAngle),
+		0.0f
+	};
+
+	PlayerBullet* bullet = new PlayerBullet();
+	bullet->Initialize(bulletModel_, camera_, worldTransform_.translation_, direction);
+	bullets_.push_back(bullet);
+}
+
+// 死亡処理
+void Player::Kill() {
+	isDead_ = true;
+
+	for (auto& particle : particles_) {
+		particle->Kill();
+	}
+}
+
+void Player::DrawImGui()
+{
+	/*ImGui::Begin("Player Debug");
+	
+	ImGui::End();*/
+}
+
+void Player::PlayerMove()
 {
 	Vector3 oldPos = worldTransform_.translation_;
 
@@ -127,10 +198,10 @@ void Player::Update()
 	worldTransform_.rotation_.z = angle + 3.14f / 2.0f;
 
 	// ==================================================
+}
 
-
-	// =============== 弾の処理 ====================
-
+void Player::BulletUpdate()
+{
 	// --- 弾発射 ---
 	if (canShoot_ && input->TriggerKey(DIK_SPACE)) {
 		Fire();
@@ -144,77 +215,14 @@ void Player::Update()
 	// --- 弾を削除 ---
 	bullets_.erase(
 		std::remove_if(bullets_.begin(), bullets_.end(),
-		[](PlayerBullet* b) {
-			if (!b->IsActive()) {
-				delete b;
-				return true;
-			}
-			return false;
-		}), 
+			[](PlayerBullet* b) {
+				if (!b->IsActive()) {
+					delete b;
+					return true;
+				}
+				return false;
+			}), 
 		bullets_.end());
-
-	// =================================================
-
-	//worldTransform_.translation_ = position_;
-	worldTransform_.UpdateMatrix();
-	// 行列を定数バッファに転送
-	worldTransform_.TransferMatrix();
-
-}
-
-void Player::Draw(KamataEngine::Camera* camera, uint32_t textureHandle)
-{
-
-	for (auto* particle_ : particles_) {
-		particle_->Draw();
-	}
-
-	if (!isDead_) {
-		model_->Draw(worldTransform_, *camera, textureHandle);
-
-		for (auto* bullet : bullets_) {
-			bullet->Draw(camera);
-		}
-	}
-}
-
-void Player::SetYaw(float yaw)
-{
-	yaw_ = yaw;
-	worldTransform_.rotation_ = { 0.0f,yaw_,0.0f };
-	worldTransform_.UpdateMatrix();
-	worldTransform_.TransferMatrix();
-}
-
-void Player::Fire()
-{
-	// プレイヤーの向いている方向
-	float fireAngle = worldTransform_.rotation_.z - 3.14f / 2.0f;
-	Vector3 direction = {
-		std::cos(fireAngle),
-		-std::sin(fireAngle),
-		0.0f
-	};
-
-	PlayerBullet* bullet = new PlayerBullet();
-	bullet->Initialize(bulletModel_, camera_, worldTransform_.translation_, direction);
-	bullets_.push_back(bullet);
-}
-
-// 死亡処理
-void Player::Kill() {
-	isDead_ = true;
-
-	for (auto& particle : particles_) {
-		particle->Kill();
-	}
-}
-
-void Player::DrawImGui()
-{
-	/*ImGui::Begin("Player Debug");
-	
-	ImGui::End();*/
 }
 
 KamataEngine::Vector2 Player::WorldToScreen(const KamataEngine::Vector3& worldPos, KamataEngine::Camera* camera)

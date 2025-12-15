@@ -27,6 +27,10 @@ public:
 
     void DrawImGui();
 
+    void PlayerMove();
+
+    void BulletUpdate();
+
 
     bool CanShoot() const { return canShoot_; }
     bool IsDead() const { return isDead_; }

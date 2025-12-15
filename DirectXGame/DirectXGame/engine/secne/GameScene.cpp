@@ -161,30 +161,8 @@ void GameScene::Update() {
 	// 背景ステージ
 	stage->Update();
 
-	// =========================照準更新===============================
-	// crosshair_->Update();
-
 	Vector3 crossPos = crosshair_->GetPosition();
 	Vector3 playerPos = player_->GetPosition();
-
-	if (input->TriggerKey(DIK_SPACE) && enemy_) {
-
-		Vector3 enemyPos = enemy_->GetPosition();
-
-		// クロスヘアと敵の距離
-		float dx = enemyPos.x - crossPos.x;
-		float dy = enemyPos.y - crossPos.y;
-		float dz = enemyPos.z - crossPos.z;
-		float dist = sqrtf(dx * dx + dy * dy + dz * dz);
-
-		// 距離が一定以内なら命中
-		if (dist < 3.0f) {
-			// 命中処理：リスポーンさせる
-			enemy_->SetPosition({0.0f, 10.0f, 200.0f});
-			enemy_->ResetApproach(); // ← 後述（Enemyに追加する関数）
-		}
-	}
-	// ========================================================================
 
 	// プレイヤー更新
 	if (player_) {
@@ -210,27 +188,11 @@ void GameScene::Update() {
 		enemy_->SetInactive();
 	}
 
-	
+	// 当たり判定の処理
+	IsCollision();
 
-	// ================== プレイヤーと敵本体の当たり判定 ==================
-if (player_ && enemy_ && !player_->IsDead() && !enemy_->IsDead()) {
-
-    playerPos = player_->GetPosition();
-    Vector3 enemyPos  = enemy_->GetPosition();
-
-    float dx = playerPos.x - enemyPos.x;
-    float dy = playerPos.y - enemyPos.y;
-    float dz = playerPos.z - enemyPos.z;
-
-    float dist = sqrtf(dx*dx + dy*dy + dz*dz);
-
-    float hitRadius = 3.0f; // 当たり判定の大きさ（調整可）
-
-    if (dist < hitRadius) {
-        // プレイヤー死亡
-        player_->Kill();
-    }
-}
+	// フェーズの処理
+	UpdatePhase();
 
 	// ===================== 出現スプライトのアニメーション =====================
 	if (isSpawnActive_) {
@@ -260,6 +222,244 @@ if (player_ && enemy_ && !player_->IsDead() && !enemy_->IsDead()) {
 		spawnSprite_->SetPosition({spawnX_, 300.0f});
 	}
 	// ==============================================================================
+
+	
+	// ===========================フェードの処理===================================
+	if (enemy_ && enemy_->HasEscaped() && !isFadeActive_ && !isPhaseChanging_) {
+		isFadeActive_ = true;
+		isPhaseChanging_ = true;
+		fade.StartFadeOut();
+	}
+
+	if (isFadeActive_) {
+		fade.Update();
+
+		if (fade.IsFadeOutEnd()) {
+			phase_++;
+			InitializePhase();
+			fade.StartFadeIn();
+		}
+
+		if (fade.IsFadeInEnd()) {
+			isFadeActive_ = false;
+			isPhaseChanging_ = false;
+		}
+	}
+	// ==============================================================================
+
+
+	// ======================== チャレンジ中は敵を move 固定 ================================
+	if (phase_ == 5 && bossState_ == BossChallengeState::Challenge && enemy_) {
+		enemy_->SetForceMove(true);
+	} else if (enemy_) {
+		// チャレンジが終わったら元に戻す
+		enemy_->SetForceMove(false);
+	}
+	// ======================================================================================
+
+	
+    // =========================== HPバー =================================
+	if (enemy_ && !enemy_->IsDead()) {
+
+		Vector3 enemyPos = enemy_->GetPosition();
+
+
+
+		float barX = enemyPos.x * 20.0f + 640.0f;
+		float barY = -enemyPos.y * 20.0f + 360.0f - 30.0f;
+
+		float maxWidth = 60.0f;
+		float height   = 6.0f;
+
+		float hpRate =
+			static_cast<float>(enemy_->GetHp()) /
+			static_cast<float>(enemy_->GetMaxHp());
+
+		if (hpRate < 0.0f) hpRate = 0.0f;
+		if (hpRate > 1.0f) hpRate = 1.0f;
+
+		float greenWidth = maxWidth * hpRate;
+
+		// 赤（背景
+		enemyHpBack_->SetSize({ maxWidth, height });
+		enemyHpBack_->SetPosition({ barX, barY });
+
+		// 緑（前
+		enemyHpFront_->SetSize({ greenWidth, height });
+
+		// 幅が減った分、中心を右にずらす
+		float offsetX = (maxWidth - greenWidth) * 0.5f;
+		enemyHpFront_->SetPosition({ barX - offsetX, barY });
+
+ 	}
+    // ======================================================================
+	
+	worldTransform_.UpdateMatrix();
+	worldTransform_.TransferMatrix();
+}
+
+void GameScene::Draw() {
+	// DirectXCommon インスタンスの取得
+	DirectXCommon* dxCommn = DirectXCommon::GetInstance();
+
+#pragma region 背景スプライト描画
+	// 背景スプライト描画前処理
+	Sprite::PreDraw(dxCommn->GetCommandList());
+
+	/// <summary>
+	/// ここに背景スプライトの描画処理を追加できる
+	/// </summary>
+	stage->Draw();
+
+	// スプライト描画後処理
+	Sprite::PostDraw();
+#pragma endregion
+
+	Sprite::PreDraw(dxCommn->GetCommandList());
+
+	// 出現スプライト描画
+	if (isSpawnActive_) {
+		spawnSprite_->Draw();
+	}
+
+	// ゲームオーバー表示
+	if (isGameOver_ && gameOverSprite_) {
+		gameOverSprite_->Draw();
+
+		warningSprite_->Draw();
+	}
+
+	if (isPushPromptActive_ && pushPromptSprite_) {
+		pushPromptSprite_->Draw();
+	}
+
+	if (bossState_ == BossChallengeState::Challenge && pushSprite_ && isPushSpriteVisible_) {
+		pushSprite_->Draw();
+		// バー
+		RedGraph_->Draw();
+		GreenGraph_->Draw();
+
+		// エフェクト
+		if (currentEffectIndex_ >= 0 && currentEffectIndex_ < 5) {
+			bossEffectSprites_[currentEffectIndex_]->Draw();
+		}
+	}
+
+	Sprite::PostDraw();
+
+#pragma region 3Dオブジェクト描画
+	dxCommn->ClearDepthBuffer();
+	// 3Dオブジェクト描画前処理
+	Model::PreDraw(dxCommn->GetCommandList());
+
+	// プレイヤーの描画
+	if (player_) {
+		player_->Draw(&camera_, playerTextureHandle_);
+	}
+
+	if (enemy_ && player_ && !(player_->IsDead())) {
+		// 敵の描画
+		enemy_->Draw(&camera_);
+	}
+
+	if (sharkTop_) {
+		sharkTop_->Draw(&camera_);
+	}
+
+	fade.Draw();
+
+	// 3Dオブジェクト描画後処理
+	Model::PostDraw();
+
+#pragma endregion
+
+	Sprite::PreDraw(dxCommn->GetCommandList());
+
+	if (enemy_ && !enemy_->IsDead()) {
+		enemyHpBack_->Draw();
+		enemyHpFront_->Draw();
+	}
+
+	Sprite::PostDraw();
+
+	// 3Dモデル描画前処理
+	Model2::PreDraw(dxCommn->GetCommandList());
+
+	// 3Dモデル描画後処理
+	Model2::PostDraw();
+}
+
+void GameScene::InitializePhase() {
+	switch (phase_) {
+	case 1:
+		enemy_->ResetForPhase({0.0f, 10.0f, 200.0f});
+		break;
+	case 2:
+		enemy_->ResetForPhase({0.0f, 10.0f, 200.0f});
+		break;
+	case 3:
+		enemy_->ResetForPhase({0.0f, 10.0f, 200.0f});
+		break;
+	case 4:
+		enemy_->ResetForPhase({0.0f, 10.0f, 200.0f});
+		break;
+	case 5:
+		enemy_->ResetForPhase({0.0f, 10.0f, 200.0f});
+		break;
+	default:
+		break;
+	}
+}
+
+void GameScene::UpdatePhase()
+{
+	switch (phase_) {
+	case 1:
+		break;
+	case 2:
+		break;
+	case 3:
+		break;
+	case 4:
+		break;
+	case 5:
+		LastPhase();
+		break;
+	default:
+		break;
+	}
+}
+
+void GameScene::DrawImGui()
+{
+	player_->DrawImGui();
+	ImGui::Text("Enemy HP : %d / %d",
+		enemy_->GetHp(),
+		enemy_->GetMaxHp());
+}
+
+void GameScene::IsCollision()
+{
+	// ================== プレイヤーと敵本体の当たり判定 ==================
+	if (player_ && enemy_ && !player_->IsDead() && !enemy_->IsDead()) {
+		Vector3 playerPos = player_->GetPosition();
+		playerPos = player_->GetPosition();
+		Vector3 enemyPos  = enemy_->GetPosition();
+
+		float dx = playerPos.x - enemyPos.x;
+		float dy = playerPos.y - enemyPos.y;
+		float dz = playerPos.z - enemyPos.z;
+
+		float dist = sqrtf(dx*dx + dy*dy + dz*dz);
+
+		float hitRadius = 3.0f; // 当たり判定の大きさ（調整可）
+
+		if (dist < hitRadius) {
+			// プレイヤー死亡
+			player_->Kill();
+		}
+	}
+	// ====================================================================
 
 	// =====================プレイヤーの弾と敵の当たり判定======================
 	// プレイヤーの弾と敵の当たり判定
@@ -292,46 +492,17 @@ if (player_ && enemy_ && !player_->IsDead() && !enemy_->IsDead()) {
 				} else {
 					enemy_->TakeDamage(1); // 通常敵処理
 					defeatCount_++;
-					
+
 				}
 			}
 		}
 	}
 	// ============================================================================
+}
 
-	// ===========================フェードの処理===================================
-	if (enemy_ && enemy_->HasEscaped() && !isFadeActive_ && !isPhaseChanging_) {
-		isFadeActive_ = true;
-		isPhaseChanging_ = true;
-		fade.StartFadeOut();
-	}
+void GameScene::LastPhase()
+{
 
-	if (isFadeActive_) {
-		fade.Update();
-
-		if (fade.IsFadeOutEnd()) {
-			phase_++;
-			InitializePhase();
-			fade.StartFadeIn();
-		}
-
-		if (fade.IsFadeInEnd()) {
-			isFadeActive_ = false;
-			isPhaseChanging_ = false;
-		}
-	}
-	// ==============================================================================
-
-	// ----------------- チャレンジ中は敵を move 固定 -----------------
-	if (phase_ == 5 && bossState_ == BossChallengeState::Challenge && enemy_) {
-		enemy_->SetForceMove(true);
-	} else if (enemy_) {
-		// チャレンジが終わったら元に戻す
-		enemy_->SetForceMove(false);
-	}
-	// ---------------------------------------------------------------
-
-	// =====================================フェーズ処理======================================
 	// ボスフェーズ攻撃ヒット後にStart状態にする
 	if (bossState_ == BossChallengeState::Start) {
 		bossPushStarted_ = false;
@@ -448,172 +619,4 @@ if (player_ && enemy_ && !player_->IsDead() && !enemy_->IsDead()) {
 			isPushSpriteVisible_ = true;
 		}
 	}
-// ======================================================================================
-	
-// =========================== HPバー =================================
-	if (enemy_ && !enemy_->IsDead()) {
-
-		Vector3 enemyPos = enemy_->GetPosition();
-
-
-
-		float barX = enemyPos.x * 20.0f + 640.0f;
-		float barY = -enemyPos.y * 20.0f + 360.0f - 30.0f;
-
-		float maxWidth = 60.0f;
-		float height   = 6.0f;
-
-		float hpRate =
-			static_cast<float>(enemy_->GetHp()) /
-			static_cast<float>(enemy_->GetMaxHp());
-
-		if (hpRate < 0.0f) hpRate = 0.0f;
-		if (hpRate > 1.0f) hpRate = 1.0f;
-
-		float greenWidth = maxWidth * hpRate;
-
-		// 赤（背景
-		enemyHpBack_->SetSize({ maxWidth, height });
-		enemyHpBack_->SetPosition({ barX, barY });
-
-		// 緑（前
-		enemyHpFront_->SetSize({ greenWidth, height });
-
-		// 幅が減った分、中心を右にずらす
-		float offsetX = (maxWidth - greenWidth) * 0.5f;
-		enemyHpFront_->SetPosition({ barX - offsetX, barY });
-
-	}
-// ======================================================================
-	
-	worldTransform_.UpdateMatrix();
-	worldTransform_.TransferMatrix();
-}
-
-void GameScene::Draw() {
-	// DirectXCommon インスタンスの取得
-	DirectXCommon* dxCommn = DirectXCommon::GetInstance();
-
-#pragma region 背景スプライト描画
-	// 背景スプライト描画前処理
-	Sprite::PreDraw(dxCommn->GetCommandList());
-
-	/// <summary>
-	/// ここに背景スプライトの描画処理を追加できる
-	/// </summary>
-	stage->Draw();
-
-	// スプライト描画後処理
-	Sprite::PostDraw();
-#pragma endregion
-
-	Sprite::PreDraw(dxCommn->GetCommandList());
-
-	// 出現スプライト描画
-	if (isSpawnActive_) {
-		spawnSprite_->Draw();
-	}
-
-	// ゲームオーバー表示
-	if (isGameOver_ && gameOverSprite_) {
-		gameOverSprite_->Draw();
-
-		warningSprite_->Draw();
-	}
-
-	if (isPushPromptActive_ && pushPromptSprite_) {
-		pushPromptSprite_->Draw();
-	}
-
-	if (bossState_ == BossChallengeState::Challenge && pushSprite_ && isPushSpriteVisible_) {
-		pushSprite_->Draw();
-		// バー
-		RedGraph_->Draw();
-		GreenGraph_->Draw();
-
-		// エフェクト
-		if (currentEffectIndex_ >= 0 && currentEffectIndex_ < 5) {
-			bossEffectSprites_[currentEffectIndex_]->Draw();
-		}
-	}
-
-	Sprite::PostDraw();
-
-#pragma region 3Dオブジェクト描画
-	dxCommn->ClearDepthBuffer();
-	// 3Dオブジェクト描画前処理
-	Model::PreDraw(dxCommn->GetCommandList());
-
-	// プレイヤーの描画
-	if (player_) {
-		player_->Draw(&camera_, playerTextureHandle_);
-	}
-
-	if (enemy_ && player_ && !(player_->IsDead())) {
-		// 敵の描画
-		enemy_->Draw(&camera_);
-	}
-
-	if (sharkTop_) {
-		sharkTop_->Draw(&camera_);
-	}
-
-	// 背景演出の描画
-	/*for (BackEffect* backEffect : backEffects_) {
-	    backEffect->Draw(&camera_, backEffectTextureHandle_);
-	}*/
-
-	// 照準の描画
-	// crosshair_->Draw(&camera_);
-
-	fade.Draw();
-
-	// 3Dオブジェクト描画後処理
-	Model::PostDraw();
-#pragma endregion
-
-	Sprite::PreDraw(dxCommn->GetCommandList());
-
-	if (enemy_ && !enemy_->IsDead()) {
-		enemyHpBack_->Draw();
-		enemyHpFront_->Draw();
-	}
-
-	Sprite::PostDraw();
-
-	// 3Dモデル描画前処理
-	Model2::PreDraw(dxCommn->GetCommandList());
-
-	// 3Dモデル描画後処理
-	Model2::PostDraw();
-}
-
-void GameScene::InitializePhase() {
-	switch (phase_) {
-	case 1:
-		enemy_->ResetForPhase({0.0f, 10.0f, 200.0f});
-		break;
-	case 2:
-		enemy_->ResetForPhase({0.0f, 10.0f, 200.0f});
-		break;
-	case 3:
-		enemy_->ResetForPhase({0.0f, 10.0f, 200.0f});
-		break;
-	case 4:
-		enemy_->ResetForPhase({0.0f, 10.0f, 200.0f});
-		break;
-	case 5:
-		enemy_->ResetForPhase({0.0f, 10.0f, 200.0f});
-		break;
-	default:
-		break;
-	}
-}
-
-void GameScene::DrawImGui()
-{
-	player_->DrawImGui();
-	ImGui::Text("Enemy HP : %d / %d",
-		enemy_->GetHp(),
-		enemy_->GetMaxHp());
 }
