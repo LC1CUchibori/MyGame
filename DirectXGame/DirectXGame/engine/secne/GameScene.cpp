@@ -159,6 +159,7 @@ void GameScene::Initialize() {
 		bossEffectSprites_[i] = KamataEngine::Sprite::Create(bossEffectTextures_[i], {0.0f, 0.0f});
 	}
 
+
 	// 時限爆弾モデル
 	bombModel_ = Model::CreateFromOBJ("Enemy");
 	
@@ -204,6 +205,12 @@ void GameScene::Update() {
 	// sharkTop更新
 	if (player_ && player_->IsDead() && sharkTop_) {
 		sharkTop_->Update();
+
+		for (TimeBomb* bomb : bombs_) {
+			bomb->Kill();
+		}
+
+		bombs_.clear();
 	}
 
 	// 敵の更新
@@ -328,11 +335,16 @@ void GameScene::Update() {
 
 	if (enemy_->IsRequestBomb()) {
 		TimeBomb* bomb = new TimeBomb();
-		bomb->Initialize(bombModel_, &camera_, enemy_->GetPosition());
+
+		Vector3 pos = enemy_->GetPosition();
+		pos.z = player_->GetPosition().z;  // ★ これ！！！
+
+		bomb->Initialize(bombModel_, &camera_, pos);
 		bombs_.push_back(bomb);
 
 		enemy_->ResetRequestBomb();
 	}
+
 
 	for (TimeBomb* bomb : bombs_) {
 		bomb->Update();
@@ -518,7 +530,7 @@ void GameScene::IsCollision()
 	}
 	// ====================================================================
 
-	// =====================プレイヤーの弾と敵の当たり判定======================
+	// ===================== プレイヤーの弾と敵の当たり判定 ======================
 	// プレイヤーの弾と敵の当たり判定
 	if (player_ && enemy_) {
 		for (auto* bullet : player_->GetBullets()) {
@@ -555,6 +567,44 @@ void GameScene::IsCollision()
 		}
 	}
 	// ============================================================================
+
+	// =================== プレイヤーと爆弾の当たり判定 =======================
+	if (player_ && !player_->IsDead()) {
+		for (TimeBomb* bomb : bombs_) {
+
+			Vector3 bombPos   = bomb->GetPosition();
+			Vector3 playerPos = player_->GetPosition();
+
+			float dx = bombPos.x - playerPos.x;
+			float dy = bombPos.y - playerPos.y;
+			float dz = bombPos.z - playerPos.z; // ★ Zも必ず見る
+
+			float dist = std::sqrt(dx*dx + dy*dy + dz*dz);
+
+			// =========================
+			// ① 爆弾本体（爆発前でも即死）
+			// =========================
+			float bodyRadius = 2.0f * bomb->GetScale();
+
+			if (bomb->IsAlive() && dist <= bodyRadius) {
+				player_->Kill();
+				return;
+			}
+
+			// =========================
+			// ② 爆発中の爆風
+			// =========================
+			if (bomb->IsExplode()) {
+				float explosionRadius = 8.0f * bomb->GetScale();
+
+				if (dist <= explosionRadius) {
+					player_->Kill();
+					return;
+				}
+			}
+		}
+	}
+	// ===================================================================
 }
 
 void GameScene::LastPhase()

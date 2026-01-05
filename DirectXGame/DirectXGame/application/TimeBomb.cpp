@@ -15,10 +15,10 @@ void TimeBomb::Initialize(KamataEngine::Model* model, KamataEngine::Camera* came
     model_ = model;
     camera_ = camera;
 
-    position_ = pos;
+    status_.position_ = pos;
 
     worldTransform_.Initialize();
-    worldTransform_.translation_ = position_;
+    worldTransform_.translation_ = status_.position_;
 }
 
 void TimeBomb::Update()
@@ -44,11 +44,24 @@ void TimeBomb::Update()
     }
 
 
-    if (status_.timer_ >= explodeTime_) {
+    // ===== 爆発開始 =====
+    if (status_.timer_ == explodeTime_) {
         status_.exploded_ = true;
-        status_.isAlive_ = false;
+        status_.explodeTimer_ = 0;
     }
-    worldTransform_.translation_ = position_;
+
+    // ===== 爆発中 =====
+    if (status_.exploded_) {
+        status_.explodeTimer_++;
+        scale_ = 2.0f; // 爆発サイズ
+
+        if (status_.explodeTimer_ >= 5) {
+            status_.exploded_ = false;
+            status_.isAlive_ = false;
+            status_.exploded_ = true;
+        }
+    }
+    worldTransform_.translation_ = status_.position_;
 }
 
 void TimeBomb::Draw(KamataEngine::Camera* camera)

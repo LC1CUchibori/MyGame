@@ -16,7 +16,10 @@ public:
 	void Draw(KamataEngine::Camera* camera);
 
 	bool IsAlive()const { return status_.isAlive_; }
-	bool IsExploatde()const { return status_.exploded_; }
+
+	bool IsExplode()const { return status_.exploded_; }
+
+	bool GetScale() const { return scale_; }
 
 	void Kill();
 
@@ -31,14 +34,13 @@ private:
 	uint32_t textureHandle_ = 0u;
 	// カメラ
 	KamataEngine::Camera* camera_ = nullptr;
-	// ポジション
-	KamataEngine::Vector3 position_;
 
 	struct BombStatus {
 		KamataEngine::Vector3 position_{};
 		int timer_ = 0;
 		bool isAlive_ = true;
 		bool exploded_ = false;
+		int explodeTimer_ = 0;
 	};
 	BombStatus status_;
 
