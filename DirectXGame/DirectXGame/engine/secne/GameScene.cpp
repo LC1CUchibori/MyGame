@@ -160,8 +160,8 @@ void GameScene::Initialize() {
 	}
 
 	// 時限爆弾モデル
-	bombModel_ = Model::CreateFromOBJ("TimeBomb");
-
+	bombModel_ = Model::CreateFromOBJ("Enemy");
+	
 
 	worldTransform_.Initialize();
 	// カメラの初期化

@@ -30,6 +30,7 @@ public:
 	// 描画
 	void Draw();
 
+	// フェーズ初期化
 	void InitializePhase();
 
 	bool IsGameOver() const {
@@ -40,12 +41,16 @@ public:
 
 	bool IsGameClear() const { return isGameClear_; }
 
+	// ImGui描画
 	void DrawImGui();
 
+	// 当たり判定について
 	void IsCollision();
 
+	// フェーズ更新
 	void UpdatePhase();
 
+	// 最終ボス戦
 	void LastPhase();
 
 private:
@@ -147,7 +152,7 @@ private:
 	bool isGameOver_ = false;
 
 	// フェーズ
-	int phase_ = 5;
+	int phase_ = 1;
 	bool isPhaseChanging_ = false;
 	bool isFadeActive_ = false; // フェード開始フラグ
 	float phaseChangeTimer_ = 0.0f;

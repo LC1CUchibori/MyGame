@@ -13,47 +13,60 @@ public:
 	Enemy();
 	~Enemy();
 
+	// 初期化
 	void Initialize(KamataEngine::Model* model,KamataEngine::Camera* camera);
-
+	
+	// 更新
 	void Update();
-
+	
+	// 描画
 	void Draw(KamataEngine::Camera* camera);
-
+	
+	// スピードについて
 	void SetSpeed(float speed) {
 		move_.speed_ = speed; 
 	}
-
+	
+	// ポジションについて
 	void SetDirection(float dir) {
 		move_.direction_ = dir; 
 	}
-
+	
+	// 倒されているか
 	void OnDeath(); 
-
+	
+	// 生きているか
 	void SetAlive();
-
+	
+	// ダメージを与える
 	void TakeDamage(int damage);
 
 	// State関数
 	void SetState();
 
+	// 接近フラグ
 	void ResetApproach() {
 		move_.isApproaching_ = true;
 	}
 
+	// 動くかどうか
 	void SetInactive() {
 		move_.isActive_ = false;
 	}
 
+	// ポジションセット
 	void SetPosition(const KamataEngine::Vector3& pos) {
 		position_ = pos;
 	}
 
+	// 弾を打つか
 	void SetCanShoot(bool canShoot) {
 		canShoot_ = canShoot; 
 	}
 
 	void SetForceMove(bool flag) { forceMove_ = flag; }
 
+	// フェーズリセット
 	void ResetForPhase(const KamataEngine::Vector3& pos) {
 		position_ = pos;
 		hp_ = 10;
@@ -108,8 +121,10 @@ public:
 	int GetHp() const { return hp_; }
 	int GetMaxHp() const { return maxHp_; }
 
-	bool IsRequestBomb() const { return requestBomb_; }
-	void ResetRequestBomb() { requestBomb_ = false; }
+	bool IsRequestBomb() const { return bomb_.requestBomb_; }
+
+	void ResetRequestBomb() { bomb_.requestBomb_ = false; }
+
 
 private:
 	// ワールド変換データ
@@ -166,6 +181,14 @@ private:
 	};
 	Move move_;
 
+	struct Bomb
+	{
+		float bombTimer_ = 0.0f;
+		float bombInterval_ = 30.0f; 
+		bool requestBomb_ = false;
+	};
+	Bomb bomb_;
+
 	// state構造体
 	enum class State:uint8_t
 	{
@@ -198,6 +221,5 @@ private:
 	bool isEscaping_ = false;
 	bool canShoot_ = true;
 	
-	bool requestBomb_ = false;
 };
 

@@ -42,6 +42,8 @@ private:
 	};
 	BombStatus status_;
 
-	const int explodeTime_ = 240;
+	const float explodeTime_ = 300.0f;
+
+	float scale_ = 1.0f;
 };
 

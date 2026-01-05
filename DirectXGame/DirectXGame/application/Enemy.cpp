@@ -261,10 +261,6 @@ void Enemy::SetState() {
         // =============================
     case State::attack:
 
-        if (!requestBomb_) {
-            requestBomb_ = true; // GameScene に通知
-        }
-
         if (dash_.isDashing && targetPos_) {
 
             float dashSpeed = 0.5f;
@@ -274,6 +270,13 @@ void Enemy::SetState() {
             position_.y += direction.y * dashSpeed;
             position_.z += direction.z * dashSpeed;
 
+            // ===== 爆弾設置処理 =====
+            bomb_.bombTimer_++;
+
+            if (bomb_.bombTimer_ >= bomb_.bombInterval_) {
+                bomb_.requestBomb_ = true; // GameScene に通知
+                bomb_.bombTimer_ = 0;
+            }
 
             bool clampX = false;
             bool clampY = false;
@@ -285,7 +288,10 @@ void Enemy::SetState() {
             if (position_.y < -13.5f){ position_.y = -13.5f; clampY = (direction.y < 0); }
 
             if (clampX || clampY) {
+
                 dash_.isDashing = false;
+                bomb_.bombTimer_ = 0;
+
                 if (currentDashCount_ < maxDashCount_) {
                     // ===== 連続突進 =====
                     state_ = State::move; // 少しmoveにする
@@ -296,7 +302,7 @@ void Enemy::SetState() {
                     state_ = State::move;
                     dash_.stateTimer_ = 0;
                     currentDashCount_ = 0;
-                    requestBomb_ = false;
+                    bomb_.requestBomb_ = false;
                 }
                 dash_.justFinished_ = true;
 

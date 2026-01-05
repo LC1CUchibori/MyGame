@@ -10,25 +10,25 @@ public:
 
     ~Player();
 
+    // 初期化
     void Initialize(KamataEngine::Model* mode, KamataEngine::Camera* camera);
-
+    // 更新
     void Update();
-
+    // 描画
     void Draw(KamataEngine::Camera* camera, uint32_t textureHandle);
 
     void SetYaw(float yaw);
-
+    // 弾発射
     void Fire();
-
     // 死亡処理
     void Kill();
-
+    // 弾を打つかどうか
     void SetCanShoot(bool canShoot) { canShoot_ = canShoot; }
-
+    // ImGui描画
     void DrawImGui();
-
+    // プレイヤーの移動
     void PlayerMove();
-
+    // 弾の更新
     void BulletUpdate();
 
 
