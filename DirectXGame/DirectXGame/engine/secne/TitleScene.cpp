@@ -15,11 +15,17 @@ TitleScene::~TitleScene()
 
 void TitleScene::Initialize()
 {
+	// タイトルpushスプライト
 	HitTextureHandle_ = TextureManager::Load("hit.png");
 	HitSprite_ = Sprite::Create(HitTextureHandle_, { 170,200 });
 
+	// タイトルスプライト
 	TitleTextureHandle_ = TextureManager::Load("Title.png");
 	TitleSprite_ = Sprite::Create(TitleTextureHandle_, { 525,250 });
+
+	// ルール説明スプライト
+	ruleTextureHandle_ = TextureManager::Load("Rule.png");
+	ruleSprite_ = Sprite::Create(ruleTextureHandle_, { 0.0f,0.0f });
 
 	titleModel_ = Model::CreateFromOBJ("Title");
 	title_ = new TitleModel();
@@ -78,6 +84,13 @@ void TitleScene::Draw()
 	TitleSprite_->Draw();
 
 	HitSprite_->Draw();
+
+	if (input->TriggerKey(DIK_E)) {
+		isRule_ = !isRule_; // トグル（反転）
+	}
+	if (isRule_) {
+		ruleSprite_->Draw(); // 表示
+	}
 
 	// 3Dモデル描画後処理
 	Sprite::PostDraw();

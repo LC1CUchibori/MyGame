@@ -159,10 +159,8 @@ void GameScene::Initialize() {
 		bossEffectSprites_[i] = KamataEngine::Sprite::Create(bossEffectTextures_[i], {0.0f, 0.0f});
 	}
 
-
 	// 時限爆弾モデル
 	bombModel_ = Model::CreateFromOBJ("Enemy");
-	
 
 	worldTransform_.Initialize();
 	// カメラの初期化
@@ -205,11 +203,9 @@ void GameScene::Update() {
 	// sharkTop更新
 	if (player_ && player_->IsDead() && sharkTop_) {
 		sharkTop_->Update();
-
 		for (TimeBomb* bomb : bombs_) {
 			bomb->Kill();
 		}
-
 		bombs_.clear();
 	}
 
@@ -349,6 +345,8 @@ void GameScene::Update() {
 	for (TimeBomb* bomb : bombs_) {
 		bomb->Update();
 	}
+
+
 
 	worldTransform_.UpdateMatrix();
 	worldTransform_.TransferMatrix();
@@ -502,9 +500,9 @@ void GameScene::UpdatePhase()
 void GameScene::DrawImGui()
 {
 	player_->DrawImGui();
-	ImGui::Text("Enemy HP : %d / %d",
+	/*ImGui::Text("Enemy HP : %d / %d",
 		enemy_->GetHp(),
-		enemy_->GetMaxHp());
+		enemy_->GetMaxHp());*/
 }
 
 void GameScene::IsCollision()

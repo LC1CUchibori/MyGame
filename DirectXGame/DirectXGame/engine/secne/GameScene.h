@@ -111,6 +111,7 @@ private:
 	Crosshair3D* crosshair_ = nullptr;
 	KamataEngine::Model* crosshairModel_ = nullptr;
 
+	// サメの役物
 	SharkTop* sharkTop_ = nullptr;
 	KamataEngine::Model* sharkTopModel_ = nullptr;
 	bool isSharkTopActive_ = false;
@@ -152,7 +153,7 @@ private:
 	bool isGameOver_ = false;
 
 	// フェーズ
-	int phase_ = 1;
+	int phase_ = 5;
 	bool isPhaseChanging_ = false;
 	bool isFadeActive_ = false; // フェード開始フラグ
 	float phaseChangeTimer_ = 0.0f;

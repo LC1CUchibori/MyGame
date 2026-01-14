@@ -1,4 +1,5 @@
 #include "TimeBomb.h"
+#include <cassert>
 
 TimeBomb::TimeBomb()
 {
