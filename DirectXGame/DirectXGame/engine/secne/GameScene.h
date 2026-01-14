@@ -91,7 +91,8 @@ private:
 	Graph* GreenGraph_ = nullptr;
 	KamataEngine::Sprite* sprite_ = nullptr;
 	bool isDamageActive_ = false; 
-	float hp_ = 100.0f;
+	const float maxHP = 100.0f;
+	float hp_ = maxHP;
 
 	// HPバー
 	Graph* enemyHpBack_ = nullptr;
@@ -153,7 +154,8 @@ private:
 	bool isGameOver_ = false;
 
 	// フェーズ
-	int phase_ = 5;
+	int phaseCount_ = 1;
+	int phase_ = phaseCount_;
 	bool isPhaseChanging_ = false;
 	bool isFadeActive_ = false; // フェード開始フラグ
 	float phaseChangeTimer_ = 0.0f;
