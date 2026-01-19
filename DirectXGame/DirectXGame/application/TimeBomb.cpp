@@ -9,17 +9,22 @@ TimeBomb::~TimeBomb()
 {
 }
 
-void TimeBomb::Initialize(KamataEngine::Model* model, KamataEngine::Camera* camera, const KamataEngine::Vector3& pos)
+void TimeBomb::Initialize(KamataEngine::Model* model,KamataEngine::Model* insideModel, KamataEngine::Camera* camera, const KamataEngine::Vector3& pos)
 {
     assert(model);
 
     model_ = model;
+    insideModel_ = insideModel;
     camera_ = camera;
 
     status_.position_ = pos;
 
     worldTransform_.Initialize();
     worldTransform_.translation_ = status_.position_;
+
+    insideWorldTransform_.Initialize();
+    insideWorldTransform_.translation_ = pos;
+
 }
 
 void TimeBomb::Update()
@@ -29,11 +34,16 @@ void TimeBomb::Update()
     status_.timer_++;
 
     // ===== スケール演出 =====
-    if (status_.timer_ >= 255 && status_.timer_ < 285) {
-        // 膨らむ
-        float t = (status_.timer_ - 255) / 30.0f;
+    const float spikeStartTime = explodeTime_ - 40.0f;
+
+    if (status_.timer_ >= spikeStartTime) {
+        float t = (status_.timer_ - spikeStartTime) / 40.0f;
+        if (t > 1.0f) t = 1.0f;
+
         scale_ = 1.0f + t * 0.5f;
+        status_.showSpike_ = true;
     }
+
     else if (status_.timer_ >= 285 && status_.timer_ < 300) {
         // 縮む
         float t = (status_.timer_ - 285) / 15.0f;
@@ -49,6 +59,7 @@ void TimeBomb::Update()
     if (status_.timer_ == explodeTime_) {
         status_.exploded_ = true;
         status_.explodeTimer_ = 0;
+        status_.showSpike_ = true; 
     }
 
     // ===== 爆発中 =====
@@ -56,10 +67,12 @@ void TimeBomb::Update()
         status_.explodeTimer_++;
         scale_ = 2.0f; // 爆発サイズ
 
+        insideWorldTransform_.scale_ = { 2.5f, 2.5f, 2.5f }; // 爆発サイズ
+
         if (status_.explodeTimer_ >= 5) {
             status_.exploded_ = false;
             status_.isAlive_ = false;
-            status_.exploded_ = true;
+            status_.showSpike_ = false;
         }
     }
     worldTransform_.translation_ = status_.position_;
@@ -74,6 +87,14 @@ void TimeBomb::Draw(KamataEngine::Camera* camera)
     worldTransform_.UpdateMatrix();
     worldTransform_.TransferMatrix();
     model_->Draw(worldTransform_, *camera);
+
+    // 大きくなり始めたら棘を描画
+    if (status_.showSpike_ && insideModel_) {
+        insideWorldTransform_.translation_ = worldTransform_.translation_;
+        insideWorldTransform_.UpdateMatrix();
+        insideWorldTransform_.TransferMatrix();
+        insideModel_->Draw(insideWorldTransform_, *camera);
+    }
 }
 
 void TimeBomb::Kill()

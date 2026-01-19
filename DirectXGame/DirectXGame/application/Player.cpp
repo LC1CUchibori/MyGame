@@ -79,10 +79,6 @@ void Player::Update()
 void Player::Draw(KamataEngine::Camera* camera, uint32_t textureHandle)
 {
 
-	for (auto* particle_ : particles_) {
-		particle_->Draw();
-	}
-
 	if (!isDead_) {
 		model_->Draw(worldTransform_, *camera, textureHandle);
 
@@ -90,6 +86,10 @@ void Player::Draw(KamataEngine::Camera* camera, uint32_t textureHandle)
 			if (!bullet->IsActive()) continue;
 			bullet->Draw(camera);
 		}
+	}
+
+	for (auto* particle_ : particles_) {
+		particle_->Draw();
 	}
 }
 

@@ -160,7 +160,8 @@ void GameScene::Initialize() {
 	}
 
 	// 時限爆弾モデル
-	bombModel_ = Model::CreateFromOBJ("Enemy");
+	bombModel_ = Model::CreateFromOBJ("Hugu");
+	insideBombModel_ = Model::CreateFromOBJ("InsideHugu");
 
 	worldTransform_.Initialize();
 	// カメラの初期化
@@ -333,9 +334,9 @@ void GameScene::Update() {
 		TimeBomb* bomb = new TimeBomb();
 
 		Vector3 pos = enemy_->GetPosition();
-		pos.z = player_->GetPosition().z;  // ★ これ！！！
+		pos.z = player_->GetPosition().z;
 
-		bomb->Initialize(bombModel_, &camera_, pos);
+		bomb->Initialize(bombModel_, insideBombModel_,  &camera_, pos);
 		bombs_.push_back(bomb);
 
 		enemy_->ResetRequestBomb();
@@ -575,14 +576,14 @@ void GameScene::IsCollision()
 
 			float dx = bombPos.x - playerPos.x;
 			float dy = bombPos.y - playerPos.y;
-			float dz = bombPos.z - playerPos.z; // ★ Zも必ず見る
+			float dz = bombPos.z - playerPos.z;
 
 			float dist = std::sqrt(dx*dx + dy*dy + dz*dz);
 
 			// =========================
 			// ① 爆弾本体（爆発前でも即死）
 			// =========================
-			float bodyRadius = 2.0f * bomb->GetScale();
+			float bodyRadius = 2.0f * bomb->GetScale(); // 爆弾サイズ
 
 			if (bomb->IsAlive() && dist <= bodyRadius) {
 				player_->Kill();
@@ -592,8 +593,8 @@ void GameScene::IsCollision()
 			// =========================
 			// ② 爆発中の爆風
 			// =========================
-			if (bomb->IsExplode()) {
-				float explosionRadius = 8.0f * bomb->GetScale();
+			if (bomb->IsAlive() &&bomb->IsExplode()) {
+				float explosionRadius = 4.0f * bomb->GetScale(); // 爆風サイズ
 
 				if (dist <= explosionRadius) {
 					player_->Kill();

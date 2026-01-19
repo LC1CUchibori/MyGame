@@ -102,6 +102,9 @@ private:
 	std::vector<TimeBomb*>bombs_;
 	KamataEngine::Model* bombModel_ = nullptr;
 
+	std::vector<TimeBomb*>insideBombs_;
+	KamataEngine::Model* insideBombModel_ = nullptr;
+
 
 	KamataEngine::Vector3 cursorPos_{0.0f, 0.0f, 30.0f}; // 初期位置
 	float cursorSpeed_ = 0.5f; // 移動速度

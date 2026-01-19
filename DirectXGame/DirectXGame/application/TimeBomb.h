@@ -9,7 +9,7 @@ public:
 	TimeBomb();
 	~TimeBomb();
 
-	void Initialize(KamataEngine::Model* model, KamataEngine::Camera* camera, const KamataEngine::Vector3& pos);
+	void Initialize(KamataEngine::Model* model,KamataEngine::Model* insideModel,KamataEngine::Camera* camera, const KamataEngine::Vector3& pos);
 
 	void Update();
 
@@ -28,6 +28,9 @@ public:
 private:
 	// ワールド変換データ
 	KamataEngine::WorldTransform worldTransform_;
+
+	KamataEngine::WorldTransform insideWorldTransform_;
+
 	// モデル
 	KamataEngine::Model* model_ = nullptr;
 	// テクスチャハンドル
@@ -35,12 +38,16 @@ private:
 	// カメラ
 	KamataEngine::Camera* camera_ = nullptr;
 
+	// 棘モデル
+	KamataEngine::Model* insideModel_ = nullptr;
+
 	struct BombStatus {
 		KamataEngine::Vector3 position_{};
 		int timer_ = 0;
 		bool isAlive_ = true;
 		bool exploded_ = false;
 		int explodeTimer_ = 0;
+		bool showSpike_ = false;
 	};
 	BombStatus status_;
 
