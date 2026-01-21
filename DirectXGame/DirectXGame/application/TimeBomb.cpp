@@ -1,5 +1,8 @@
 #include "TimeBomb.h"
 #include <cassert>
+#include <algorithm>
+#include <cmath>
+
 
 TimeBomb::TimeBomb()
 {
@@ -41,6 +44,21 @@ void TimeBomb::Update()
         if (t > 1.0f) t = 1.0f;
 
         scale_ = 1.0f + t * 0.5f;
+
+        float spikeT = std::pow(t, 0.5f);
+        spikeT = std::clamp(spikeT, 0.0f, 1.0f);
+
+        const float minSpikeScale = 0.3f; // 
+
+        float spikeScale = minSpikeScale + spikeT * (1.0f - minSpikeScale);
+
+        insideWorldTransform_.scale_ = {
+            spikeScale,
+            spikeScale,
+            spikeScale
+        };
+
+
         status_.showSpike_ = true;
     }
 
@@ -76,6 +94,18 @@ void TimeBomb::Update()
         }
     }
     worldTransform_.translation_ = status_.position_;
+
+    // ===== 揺れ演出 =====
+    if (!status_.exploded_) {
+        const float shakeSpeed = 0.4f;   // ← 追加
+        const float shakePower = 0.15f;  // ← 追加
+
+        float shake =
+            std::sin(status_.timer_ * shakeSpeed) * shakePower;
+
+        worldTransform_.translation_.x += shake;
+    }
+
 }
 
 void TimeBomb::Draw(KamataEngine::Camera* camera)
