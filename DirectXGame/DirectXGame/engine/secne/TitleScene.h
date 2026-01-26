@@ -43,11 +43,11 @@ private:
 	bool isRule_ = false;
 
 	// ステージ
-	Stage* stage1 = nullptr;
+	std::unique_ptr<Stage> stage1;
 
 	// タイトルモデル
-	TitleModel* title_ = nullptr;
-	KamataEngine::Model* titleModel_ = nullptr;
+	std::unique_ptr<TitleModel> title_;
+	std::unique_ptr<KamataEngine::Model> titleModel_;
 
 	float hitAlphaTime_ = 0.0f;
 };

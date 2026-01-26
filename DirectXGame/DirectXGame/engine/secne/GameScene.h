@@ -14,6 +14,7 @@
 #include <DirectXGame/application/Graph.h>
 #include "../../application/TimeBomb.h"
 #include "../../application/Squid.h"
+#include <list>
 
 class GameScene
 {
@@ -58,7 +59,7 @@ public:
 
 private:
 	// モデル
-	KamataEngine::Model* model_ = nullptr;
+	std::unique_ptr<KamataEngine::Model> model_;
 	// ワールドトランスフォーム
 	KamataEngine::WorldTransform worldTransform_;
 	// インプット
@@ -66,44 +67,44 @@ private:
 	// カメラ
 	KamataEngine::Camera camera_;
 	// エフェクトモデル描画
-	KamataEngine::Model2* effectModel_ = nullptr;
+	std::unique_ptr<KamataEngine::Model2> effectModel_;
 
 	uint32_t textureHandle_ = 0;
 
 	// プレイヤー
-	Player* player_ = nullptr;
-	KamataEngine::Model* playerModel_ = nullptr;
+	std::unique_ptr<Player> player_;
+	std::unique_ptr<KamataEngine::Model> playerModel_;
 	uint32_t playerTextureHandle_ = 0;
 
 	// 敵
-	Enemy* enemy_; // 複数の敵
-	KamataEngine::Model* enemyModel_ = nullptr;
+	std::unique_ptr<Enemy> enemy_; // 複数の敵
+	std::unique_ptr<KamataEngine::Model> enemyModel_;
 	uint32_t enemyTextureHandle_ = 0;
 
 	// 背景演出
-	std::vector<BackEffect*> backEffects_; 
-	KamataEngine::Model* backEffectModel_ = nullptr;
+	std::vector<std::unique_ptr<BackEffect>> backEffects_; 
+	std::unique_ptr<KamataEngine::Model> backEffectModel_;
 	uint32_t backEffectTextureHandle_ = 0;
-	Stage* stage = nullptr;
+	std::unique_ptr<Stage> stage;
 
 	// パーティクル
 	std::vector<Particle*> particles_;
 
 	// pushタイムバー
-	Graph* RedGraph_ = nullptr;
-	Graph* GreenGraph_ = nullptr;
+	std::unique_ptr<Graph> RedGraph_;
+	std::unique_ptr<Graph> GreenGraph_;
 	KamataEngine::Sprite* sprite_ = nullptr;
 	bool isDamageActive_ = false; 
 	const float maxHP = 100.0f;
 	float hp_ = maxHP;
 
 	// HPバー
-	Graph* enemyHpBack_ = nullptr;
-	Graph* enemyHpFront_ = nullptr;
+	std::unique_ptr<Graph> enemyHpBack_ ;
+	std::unique_ptr<Graph> enemyHpFront_;
 
 	// ふぐ
 	std::vector<TimeBomb*>bombs_;
-	KamataEngine::Model* bombModel_ = nullptr;
+	std::unique_ptr<KamataEngine::Model> bombModel_;
 	// ふぐの棘
 	std::vector<TimeBomb*>insideBombs_;
 	KamataEngine::Model* insideBombModel_ = nullptr;
@@ -122,8 +123,8 @@ private:
 	KamataEngine::Model* crosshairModel_ = nullptr;
 
 	// サメの役物
-	SharkTop* sharkTop_ = nullptr;
-	KamataEngine::Model* sharkTopModel_ = nullptr;
+	std::unique_ptr<SharkTop> sharkTop_;
+	std::unique_ptr<KamataEngine::Model> sharkTopModel_;
 	bool isSharkTopActive_ = false;
 
 	bool isSceneReturnRequested_ = false; 
@@ -133,7 +134,7 @@ private:
 
 	// 出現スプライト用
 	uint32_t spawnTextureHandle_ = 0;
-	KamataEngine::Sprite* spawnSprite_ = nullptr;
+	std::unique_ptr<KamataEngine::Sprite> spawnSprite_;
 
 	// 「敵をPushで倒せ」スプライト
 	KamataEngine::Sprite* pushPromptSprite_ = nullptr;
@@ -145,7 +146,7 @@ private:
 
 	// ゲームオーバースプライト
 	uint32_t gameOverTextureHandle_;
-	KamataEngine::Sprite* gameOverSprite_ = nullptr;
+	std::unique_ptr<KamataEngine::Sprite> gameOverSprite_;
 
 	// エフェクトカラー
 	uint32_t bossEffectTextures_[5];
@@ -188,7 +189,7 @@ private:
 	float challengeGauge_ = 0.0f;
 	float challengeTimer_ = 0.0f;
 
-	KamataEngine::Sprite* pushSprite_ = nullptr;
+	std::unique_ptr<KamataEngine::Sprite> pushSprite_;
 	int pushSpriteTextureHandle_ = 0;
 
 	bool isBossChallengeResultDecided_ = false; // 成功・失敗判定済みか

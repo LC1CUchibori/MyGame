@@ -17,16 +17,8 @@ Player::Player()
 
 Player::~Player()
 {
-	// 弾をすべて解放
-	for (auto* bullet : bullets_) {
-		delete bullet;
-	}
 	bullets_.clear();
 
-	// パーティクルをすべて解放
-	for (auto* particle : particles_) {
-		delete particle;
-	}
 	particles_.clear();
 }
 
@@ -43,10 +35,10 @@ void Player::Initialize(KamataEngine::Model* model,KamataEngine::Camera*camera)
 	worldTransform_.Initialize();
 
 	// 弾モデル作成
-	bulletModel_ = KamataEngine::Model::CreateFromOBJ("EnemyBullet");
+	bulletModel_.reset(KamataEngine::Model::CreateFromOBJ("EnemyBullet"));
 
 	// パーティクル
-	particleModel_ = Model::CreateFromOBJ("ParticleBall");
+	particleModel_.reset(Model::CreateFromOBJ("ParticleBall"));
 
     mousePosX = 0.0f;
 	mousePosY = 0.0f;
@@ -112,7 +104,7 @@ void Player::Fire()
 	};
 
 	PlayerBullet* bullet = new PlayerBullet();
-	bullet->Initialize(bulletModel_, camera_, worldTransform_.translation_, direction);
+	bullet->Initialize(bulletModel_.get(), camera_, worldTransform_.translation_, direction);
 	bullets_.push_back(bullet);
 }
 
@@ -157,7 +149,7 @@ void Player::PlayerMove()
 		oldPos.y != worldTransform_.translation_.y)
 	{
 		Particle* particle_ = new Particle();
-		particle_->Initialize(particleModel_, camera_, worldTransform_.translation_);
+		particle_->Initialize(particleModel_.get(), camera_, worldTransform_.translation_);
 		particles_.push_back(particle_);
 	}
 

@@ -5,37 +5,10 @@ using namespace KamataEngine;
 GameScene::GameScene() {}
 
 GameScene::~GameScene() {
-	delete effectModel_;
-	delete model_;
-	delete player_;
-	delete sharkTop_;
-	delete stage;
-	delete enemy_;
 
-	// BackEffect 全部破棄
-	for (BackEffect* e : backEffects_) {
-		delete e;
-	}
 	backEffects_.clear();
 
-	// Sprite 破棄
-	delete gameOverSprite_;
-	delete spawnSprite_;
-	delete pushSprite_;
-
-	// PushButton ゲージ
-	delete RedGraph_;
-	delete GreenGraph_;
-
-	delete enemyHpBack_;
-	delete enemyHpFront_;
-
-	for (TimeBomb* bomb : bombs_) {
-		delete bomb;
-	}
 	bombs_.clear();
-
-	delete bombModel_;
 
 	Model2::StaticFinalize();
 }
@@ -48,23 +21,23 @@ void GameScene::Initialize() {
 	std::srand(static_cast<unsigned int>(std::time(nullptr)));
 
 	// プレイヤー
-	playerModel_ = Model::CreateFromOBJ("Enemy");
-	player_ = new Player();
-	player_->Initialize(playerModel_, &camera_);
+	playerModel_.reset(Model::CreateFromOBJ("Enemy"));
+	player_ = std::make_unique<Player>();
+	player_->Initialize(playerModel_.get(), &camera_);
 
-	enemyModel_ = Model::CreateFromOBJ("Enemy");
-	enemy_ = new Enemy();
-	enemy_->Initialize(enemyModel_, &camera_);
+	enemyModel_.reset(Model::CreateFromOBJ("Enemy"));
+	enemy_ = std::make_unique<Enemy>();
+	enemy_->Initialize(enemyModel_.get(), &camera_);
 	enemy_->SetTarget(&player_->GetPosition());
 
 
 	// ===============================背景演出の初期化================================
 	backEffectTextureHandle_ = TextureManager::Load("white1x1.png");
-	backEffectModel_ = Model::Create();
+	backEffectModel_.reset(Model::Create());
 
 	for (int i = 0; i < 20; ++i) {
 		BackEffect* backEffect = new BackEffect();
-		backEffect->Initialize(playerModel_, playerTextureHandle_, &camera_);
+		backEffect->Initialize(playerModel_.get(), playerTextureHandle_, &camera_);
 
 		// 左から右だけ
 		int direction = 1;
@@ -79,13 +52,13 @@ void GameScene::Initialize() {
 		backEffect->SetDirection(direction);
 		backEffect->SetSpeed(0.2f + static_cast<float>(std::rand()) / RAND_MAX * 0.5f);
 
-		backEffects_.push_back(backEffect);
+		backEffects_.emplace_back(backEffect);
 	}
 
 	//===================================================================
 
 	// ステージ
-	stage = new Stage;
+	stage = std::make_unique<Stage>();
 	stage->Initialize();
 
 	// 照準
@@ -94,16 +67,16 @@ void GameScene::Initialize() {
 	crosshair_->Initialize(crosshairModel_);
 
 	// 鮫役物落下
-	sharkTopModel_ = Model::CreateFromOBJ("sharkTop");
-	sharkTop_ = new SharkTop();
-	sharkTop_->Initialize(sharkTopModel_);
+	sharkTopModel_.reset(Model::CreateFromOBJ("sharkTop"));
+	sharkTop_ =std::make_unique<SharkTop>();
+	sharkTop_->Initialize(sharkTopModel_.get());
 
 	gameOverTextureHandle_ = TextureManager::Load("GameOver.png");
-	gameOverSprite_ = KamataEngine::Sprite::Create(gameOverTextureHandle_, {400.0f, 200.0f});
+	gameOverSprite_.reset(KamataEngine::Sprite::Create(gameOverTextureHandle_, {400.0f, 200.0f}));
 
 	// 出現スプライト初期化
 	spawnTextureHandle_ = TextureManager::Load("spawn.png");
-	spawnSprite_ = KamataEngine::Sprite::Create(spawnTextureHandle_, {spawnX_, 300.0f});
+	spawnSprite_.reset(KamataEngine::Sprite::Create(spawnTextureHandle_, {spawnX_, 300.0f}));
 
 	isSpawnActive_ = true;
 	spawnTimer_ = 0.0f;
@@ -113,29 +86,29 @@ void GameScene::Initialize() {
 
 	// ボタンPUSHスプライト
 	pushSpriteTextureHandle_ = TextureManager::Load("ButtonPush.png");
-	pushSprite_ = KamataEngine::Sprite::Create(pushSpriteTextureHandle_, {640.0f, 360.0f}); // 画面中央
+	pushSprite_.reset(KamataEngine::Sprite::Create(pushSpriteTextureHandle_, {640.0f, 360.0f})); // 画面中央
 
 	// PushButtonバーの生成と初期化
-	RedGraph_ = new Graph();
+	RedGraph_ = std::make_unique<Graph>();
 	RedGraph_->Initialize();
 	//  グラフ生成
 	RedGraph_->SetSize({300.0f,30.0f});
 	RedGraph_->SetColor({ 1.0f, 0.0f, 0.0f, 0.5f });
 	RedGraph_->SetPosition({ 500.0f,280.0f });
-	GreenGraph_ = new Graph();
+	GreenGraph_ = std::make_unique<Graph>();
 	GreenGraph_->Initialize();
 	GreenGraph_->SetSize({300.0f,30.0f});
 	GreenGraph_->SetColor({ 0.0f, 1.0f, 0.0f, 0.5f });
 	GreenGraph_->SetPosition({ 500.0f,280.0f });
 
 	// 敵HPバー（背景）
-	enemyHpBack_ = new Graph();
+	enemyHpBack_ = std::make_unique<Graph>();
 	enemyHpBack_->Initialize();
 	enemyHpBack_->SetSize({ 60.0f, 6.0f });
 	enemyHpBack_->SetColor({ 1.0f, 0.0f, 0.0f, 1.0f });
 
 	// 敵HPバー（前景）
-	enemyHpFront_ = new Graph();
+	enemyHpFront_ = std::make_unique<Graph>();
 	enemyHpFront_->Initialize();
 	enemyHpFront_->SetSize({ 60.0f, 6.0f });
 	enemyHpFront_->SetColor({ 0.0f, 1.0f, 0.0f, 1.0f });
@@ -161,7 +134,7 @@ void GameScene::Initialize() {
 
 
 	// 時限爆弾モデル
-	bombModel_ = Model::CreateFromOBJ("Hugu");
+	bombModel_.reset(Model::CreateFromOBJ("Hugu"));
 	insideBombModel_ = Model::CreateFromOBJ("InsideHugu");
 
 	// イカモデル
@@ -356,7 +329,7 @@ void GameScene::Update() {
 		Vector3 pos = enemy_->GetPosition();
 		pos.z = player_->GetPosition().z;
 
-		bomb->Initialize(bombModel_, insideBombModel_,  &camera_, pos);
+		bomb->Initialize(bombModel_.get(), insideBombModel_, &camera_, pos);
 		bombs_.push_back(bomb);
 
 		enemy_->ResetRequestBomb();
@@ -457,7 +430,7 @@ void GameScene::Draw() {
 		spawnSprite_->Draw();
 	}
 
-	if (enemy_ && !enemy_->IsDead()&& !player_->IsDead()) {
+	if (enemy_ && !enemy_->IsDead()&&player_&& !player_->IsDead()) {
 		enemyHpBack_->Draw();
 		enemyHpFront_->Draw();
 	}

@@ -9,8 +9,6 @@ TitleScene::TitleScene()
 
 TitleScene::~TitleScene()
 {
-	delete title_;
-	delete stage1;
 }
 
 void TitleScene::Initialize()
@@ -27,12 +25,12 @@ void TitleScene::Initialize()
 	ruleTextureHandle_ = TextureManager::Load("Rule.png");
 	ruleSprite_ = Sprite::Create(ruleTextureHandle_, { 0.0f,0.0f });
 
-	titleModel_ = Model::CreateFromOBJ("Title");
-	title_ = new TitleModel();
-	title_->Initialize(titleModel_);
+	titleModel_.reset(Model::CreateFromOBJ("Title"));
+	title_ = std::make_unique<TitleModel>();
+	title_->Initialize(titleModel_.get());
 
 	// 背景ステージ
-	stage1 = new Stage;
+	stage1 = std::make_unique<Stage>();
 	stage1->Initialize();
 
 	// 点滅タイマー

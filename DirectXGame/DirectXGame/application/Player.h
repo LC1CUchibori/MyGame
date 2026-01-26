@@ -65,11 +65,11 @@ private:
 
     // プレイヤー弾
     std::vector<PlayerBullet*> bullets_;
-    KamataEngine::Model* bulletModel_ = nullptr;
+    std::unique_ptr<KamataEngine::Model> bulletModel_;
 
     // プレイヤーパーティクル
     std::vector<Particle*> particles_;
-    KamataEngine::Model* particleModel_ = nullptr;
+    std::unique_ptr<KamataEngine::Model> particleModel_;
 
     // 移動速度
     float speed_ = 0.2f;
