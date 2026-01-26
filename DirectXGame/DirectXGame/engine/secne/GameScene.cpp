@@ -151,17 +151,35 @@ void GameScene::Initialize() {
 	bossEffectTextures_[3] = TextureManager::Load("RedEffect.png");
 	bossEffectTextures_[4] = TextureManager::Load("RainbowEffect.png");
 
-	// 注意書き
-	warningTextureHandle_ = TextureManager::Load("warning.png");
-	warningSprite_ = Sprite::Create(warningTextureHandle_, { 400.0f,100.0f });
-
 	for (int i = 0; i < 5; ++i) {
 		bossEffectSprites_[i] = KamataEngine::Sprite::Create(bossEffectTextures_[i], {0.0f, 0.0f});
 	}
 
+	// 注意書き
+	warningTextureHandle_ = TextureManager::Load("warning.png");
+	warningSprite_ = Sprite::Create(warningTextureHandle_, { 400.0f,100.0f });
+
+
 	// 時限爆弾モデル
 	bombModel_ = Model::CreateFromOBJ("Hugu");
 	insideBombModel_ = Model::CreateFromOBJ("InsideHugu");
+
+	// イカモデル
+	squidModel_ = Model::CreateFromOBJ("Squid");
+
+	// ============= イカ出現の動き ===============
+	squidTimer_ = 0;
+	isSquidSpawned_ = false;
+
+	// 5秒 + ランダム
+	squidAppearTime_ = 300 + rand() % 180;
+	// ============================================
+
+	inkTextureHandle_ = TextureManager::Load("Ink.png");
+	// Initialize 時
+	inkSprite_ = Sprite::Create(inkTextureHandle_, { 640.0f,360.0f });
+	inkSprite_->SetSize({ 0.1f, 0.1f });
+
 
 	worldTransform_.Initialize();
 	// カメラの初期化
@@ -223,6 +241,8 @@ void GameScene::Update() {
 	if (enemy_) {
 		enemy_->SetInactive();
 	}
+
+	SquidInitialize();
 
 	// 当たり判定の処理
 	IsCollision();
@@ -420,6 +440,9 @@ void GameScene::Draw() {
 		sharkTop_->Draw(&camera_);
 	}
 
+	// イカの描画
+	if (squid_) squid_->Draw(&camera_);
+
 	fade.Draw();
 
 	// 3Dオブジェクト描画後処理
@@ -437,6 +460,11 @@ void GameScene::Draw() {
 	if (enemy_ && !enemy_->IsDead()&& !player_->IsDead()) {
 		enemyHpBack_->Draw();
 		enemyHpFront_->Draw();
+	}
+
+	// イカ墨のスプライト
+	if (isInkActive_ && inkSprite_) {
+		inkSprite_->Draw();
 	}
 
 	Sprite::PostDraw();
@@ -725,5 +753,79 @@ void GameScene::LastPhase()
 			isPushPromptActive_ = false;
 			isPushSpriteVisible_ = true;
 		}
+	}
+}
+
+void GameScene::SquidInitialize()
+{
+	squidTimer_++;
+
+	if (!isSquidSpawned_ && squidTimer_ >= squidAppearTime_) {
+
+		squid_ = new Squid();
+		squid_->Initialize(
+			squidModel_,
+			&camera_,
+			{ 0.0f, 30.0f, 50.0f } // 上から出す
+		);
+
+		isSquidSpawned_ = true;
+	}
+
+	// イカの更新
+	if (squid_) {
+		squid_->Update();
+	}
+
+	if (squid_ && squid_->IsStopped() && !isInkActive_) {
+		isInkActive_ = true;
+		inkScale_ = 0.1f; // 初期サイズ
+
+		// ===== 吐き始め =====
+		Vector3 squidWorld = squid_->GetPosition();
+		inkSpawnPos_.x = squidWorld.x * 20.0f + 640.0f;
+		inkSpawnPos_.y = -squidWorld.y * 20.0f + 360.0f;
+
+		inkSprite_->SetPosition(inkSpawnPos_);
+
+		// ===== 毎回ランダムな最終位置を生成 =====
+		float maxSize = inkBaseSize_ * inkMaxScale_;
+		float half = maxSize * 0.5f;
+
+		// スプライトの中心を画面内に収める
+		float minX = 0.0f;
+		float maxX = 1280.0f - maxSize; // 左上基準なので右端は maxSize 分余裕を取る
+		float minY = 0.0f;
+		float maxY = 720.0f - maxSize;  // 下端も同様
+
+		inkTargetPos_.x = minX + static_cast<float>(rand()) / RAND_MAX * (maxX - minX);
+		inkTargetPos_.y = minY + static_cast<float>(rand()) / RAND_MAX * (maxY - minY);
+
+		// 実際の描画位置にスプライト中心を合わせる
+		inkSprite_->SetPosition({ inkTargetPos_.x + half, inkTargetPos_.y + half });
+
+	}
+
+	// 大きくなる
+	if (isInkActive_) {
+		// サイズ拡大
+		inkScale_ += inkGrowSpeed_;
+		if (inkScale_ > inkMaxScale_) {
+			inkScale_ = inkMaxScale_;
+		}
+
+		// 進行度
+		float t = inkScale_ / inkMaxScale_;
+		if (t > 1.0f) t = 1.0f;
+
+		// 吐き位置から最終位置へ補間
+		Vector2 pos;
+		pos.x = inkSpawnPos_.x + (inkTargetPos_.x - inkSpawnPos_.x) * t;
+		pos.y = inkSpawnPos_.y + (inkTargetPos_.y - inkSpawnPos_.y) * t;
+
+		inkSprite_->SetPosition(pos);
+
+		float size = inkBaseSize_ * inkScale_;
+		inkSprite_->SetSize({ size, size });
 	}
 }

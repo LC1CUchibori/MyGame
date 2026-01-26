@@ -13,6 +13,7 @@
 #include "DirectXGame/engine/2d/Fade.h" 
 #include <DirectXGame/application/Graph.h>
 #include "../../application/TimeBomb.h"
+#include "../../application/Squid.h"
 
 class GameScene
 {
@@ -52,6 +53,8 @@ public:
 
 	// 最終ボス戦
 	void LastPhase();
+
+	void SquidInitialize();
 
 private:
 	// モデル
@@ -98,13 +101,16 @@ private:
 	Graph* enemyHpBack_ = nullptr;
 	Graph* enemyHpFront_ = nullptr;
 
-	// 時限爆弾
+	// ふぐ
 	std::vector<TimeBomb*>bombs_;
 	KamataEngine::Model* bombModel_ = nullptr;
-
+	// ふぐの棘
 	std::vector<TimeBomb*>insideBombs_;
 	KamataEngine::Model* insideBombModel_ = nullptr;
 
+	// イカモデル
+	Squid* squid_ = nullptr;
+	KamataEngine::Model* squidModel_ = nullptr;
 
 	KamataEngine::Vector3 cursorPos_{0.0f, 0.0f, 30.0f}; // 初期位置
 	float cursorSpeed_ = 0.5f; // 移動速度
@@ -146,6 +152,16 @@ private:
 	KamataEngine::Sprite* bossEffectSprites_[5];
 	float effectDisplayTimes_[5] = {0.0f, 0.25f, 0.5f, 0.75f, 1.0f};
 
+	// イカ墨のスプライト
+	Sprite* inkSprite_ = nullptr;
+	uint32_t inkTextureHandle_ = 0;
+
+	bool isInkActive_ = false;
+	float inkScale_ = 0.1f;  // 墨の大きさ
+	float inkMaxScale_ = 1.5f;  // 墨のマックスサイズ
+	float inkGrowSpeed_ = 0.02f;  // 吐くスピード
+	const float inkBaseSize_ = 512.0f;  // 画像サイズ
+
 	// ========================================================
 
 	// 出現アニメーション制御用
@@ -167,6 +183,7 @@ private:
 	int defeatCount_ = 0;
 	bool isGameClear_ = false;
 
+	// 突破チャレンジタイマー
 	bool isBossHit_ = false;
 	float challengeGauge_ = 0.0f;
 	float challengeTimer_ = 0.0f;
@@ -195,5 +212,12 @@ private:
 	bool isPushSpriteVisible_ = false; 
 
 	int currentEffectIndex_ = 0;
+
+	// Squid 出現用
+	int squidTimer_ = 0;
+	int squidAppearTime_ = 0;
+	bool isSquidSpawned_ = false;
+	Vector2 inkSpawnPos_;   // 吐く位置
+	Vector2 inkTargetPos_;
 };
 

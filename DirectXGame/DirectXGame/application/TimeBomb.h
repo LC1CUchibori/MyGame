@@ -30,7 +30,6 @@ private:
 	KamataEngine::WorldTransform worldTransform_;
 
 	KamataEngine::WorldTransform insideWorldTransform_;
-
 	// モデル
 	KamataEngine::Model* model_ = nullptr;
 	// テクスチャハンドル

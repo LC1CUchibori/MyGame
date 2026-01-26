@@ -126,6 +126,7 @@
     <ClCompile Include="DirectXGame\application\PlayerBullet.cpp" />
     <ClCompile Include="DirectXGame\application\Particle.cpp" />
     <ClCompile Include="DirectXGame\application\TimeBomb.cpp" />
+    <ClCompile Include="DirectXGame\application\Squid.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\TerrainPS.hlsl">
@@ -222,6 +223,7 @@
     <ClInclude Include="DirectXGame\application\Graph.h" />
     <ClInclude Include="DirectXGame\application\Particle.h" />
     <ClInclude Include="DirectXGame\application\TimeBomb.h" />
+    <ClInclude Include="DirectXGame\application\Squid.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

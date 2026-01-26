@@ -97,8 +97,8 @@ void TimeBomb::Update()
 
     // ===== 揺れ演出 =====
     if (!status_.exploded_) {
-        const float shakeSpeed = 0.4f;   // ← 追加
-        const float shakePower = 0.15f;  // ← 追加
+        const float shakeSpeed = 0.4f;  
+        const float shakePower = 0.15f; 
 
         float shake =
             std::sin(status_.timer_ * shakeSpeed) * shakePower;
