@@ -220,5 +220,7 @@ private:
 	bool isSquidSpawned_ = false;
 	Vector2 inkSpawnPos_;   // 吐く位置
 	Vector2 inkTargetPos_;
+	bool hasInkSpawned_ = false; // 墨のスプライトフラグ
+	int squidPhaseTimer_ = 0;
 };
 

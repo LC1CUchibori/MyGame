@@ -4,8 +4,8 @@
 #include "TimeBomb.h"
 
 Enemy::Enemy() {}
+
 Enemy::~Enemy() {
-    
 }
 
 void Enemy::Initialize(KamataEngine::Model* model, KamataEngine::Camera* camera) {
@@ -325,4 +325,26 @@ void Enemy::SetState() {
     default:
         break;
     }
+}
+
+void Enemy::ResetDashTimer()
+{
+    // ===== 突進状態リセット =====
+    dash_.isDashing = false;
+    dash_.cooldownTimer = 0;
+    dash_.stateTimer_ = 0;
+    dash_.justFinished_ = false;
+
+    // 突進前の震え
+    dash_.isPreDashShaking_ = false;
+    dash_.preShakeTimer_ = 0.0f;
+
+    // ===== 突進回数リセット =====
+    currentDashCount_ = 0;
+
+    // ===== ステートを安全側に =====
+    state_ = State::move;
+
+    // ===== 移動も戻す（重要）=====
+    move_.isApproaching_ = true;
 }

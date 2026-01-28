@@ -51,3 +51,16 @@ void Squid::Draw(KamataEngine::Camera* camera)
 
     squidModel_->Draw(worldTransform_, *camera);
 }
+
+void Squid::Reset(const KamataEngine::Vector3& startPos)
+{
+    // 位置を必ず上に戻す
+    worldTransform_.translation_ = startPos;
+    worldTransform_.UpdateMatrix();
+
+    // 状態を「降下中」に戻す
+    state_ = SquidState::Descend;
+
+    // 落下速度も初期化
+    speed_ = 0.2f;
+}

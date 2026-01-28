@@ -125,6 +125,8 @@ public:
 
 	void ResetRequestBomb() { bomb_.requestBomb_ = false; }
 
+	void ResetDashTimer();
+
 
 private:
 	// ワールド変換データ

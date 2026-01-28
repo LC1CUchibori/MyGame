@@ -16,6 +16,8 @@ public:
 
 	void Draw(KamataEngine::Camera* camera);
 
+	void Reset(const KamataEngine::Vector3& startPos);
+
 	// 止まったかどうか
 	bool IsStopped() const { return state_ == SquidState::stop; }
 

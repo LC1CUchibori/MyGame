@@ -215,7 +215,10 @@ void GameScene::Update() {
 		enemy_->SetInactive();
 	}
 
-	SquidInitialize();
+	// フェード中・フェーズ切り替え中はイカ処理しない
+	if (!isFadeActive_ && !isPhaseChanging_) {
+		SquidInitialize();
+	}
 
 	// 当たり判定の処理
 	IsCollision();
@@ -452,6 +455,31 @@ void GameScene::Draw() {
 void GameScene::InitializePhase() {
 	if (player_) {
 		player_->SetCanShoot(false);
+	}
+
+	// ふぐ初期化
+	bombs_.clear();
+
+	// ================= イカ出現管理リセット =================
+	if (squid_) {
+		squid_->Reset({ 0.0f, 50.0f, 50.0f });
+	}
+	
+	squidPhaseTimer_ = 0;
+	isSquidSpawned_ = false;
+	squidAppearTime_ = 300 + rand() % 180;
+
+	// ================= イカ墨リセット =================
+	isInkActive_ = false;
+	hasInkSpawned_ = false;
+	inkScale_ = 0.1f;
+	if (inkSprite_) {
+		inkSprite_->SetSize({ 0.1f, 0.1f });
+	}
+
+	// ================= 敵の初期化 ======================
+	if (enemy_) {
+		enemy_->ResetDashTimer();
 	}
 
 	switch (phase_) {
@@ -731,9 +759,15 @@ void GameScene::LastPhase()
 
 void GameScene::SquidInitialize()
 {
-	squidTimer_++;
+	// フェーズ開始からの経過時間
+	squidPhaseTimer_++;
 
-	if (!isSquidSpawned_ && squidTimer_ >= squidAppearTime_) {
+	// まだ出現待ち時間に達していなければ何もしない
+	if (squidPhaseTimer_ < squidAppearTime_) {
+		return;
+	}
+
+	if (!isSquidSpawned_ ) {
 
 		squid_ = new Squid();
 		squid_->Initialize(
@@ -750,8 +784,9 @@ void GameScene::SquidInitialize()
 		squid_->Update();
 	}
 
-	if (squid_ && squid_->IsStopped() && !isInkActive_) {
+	if (squid_ && squid_->IsStopped() && !hasInkSpawned_) {
 		isInkActive_ = true;
+		hasInkSpawned_ = true;
 		inkScale_ = 0.1f; // 初期サイズ
 
 		// ===== 吐き始め =====
