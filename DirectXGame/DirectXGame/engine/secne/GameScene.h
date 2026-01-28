@@ -222,5 +222,17 @@ private:
 	Vector2 inkTargetPos_;
 	bool hasInkSpawned_ = false; // 墨のスプライトフラグ
 	int squidPhaseTimer_ = 0;
+
+	// ポーズ関連
+	bool isPause_ = false;
+
+	float pauseSpriteX_ = 0.0f;
+	float pauseTargetX_ = 800.0f;   // 表示位置（右寄り）
+	float pauseStartX_ = 1300.0f;   // 画面右外
+	float pauseSpeed_ = 20.0f;      // スライド速度
+
+	std::unique_ptr<KamataEngine::Sprite> pauseSprite_;
+	uint32_t pauseTextureHandle_;
+
 };
 

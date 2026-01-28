@@ -149,10 +149,17 @@ void GameScene::Initialize() {
 	// ============================================
 
 	inkTextureHandle_ = TextureManager::Load("Ink.png");
-	// Initialize 時
+	// Initialize
 	inkSprite_ = Sprite::Create(inkTextureHandle_, { 640.0f,360.0f });
 	inkSprite_->SetSize({ 0.1f, 0.1f });
 
+	pauseTextureHandle_ = TextureManager::Load("Pause.png");
+	pauseSprite_.reset(Sprite::Create(
+		pauseTextureHandle_,
+		{ pauseStartX_, 360.0f }
+	));
+
+	pauseSpriteX_ = pauseStartX_;
 
 	worldTransform_.Initialize();
 	// カメラの初期化
@@ -225,6 +232,28 @@ void GameScene::Update() {
 
 	// フェーズの処理
 	UpdatePhase();
+
+	if (input->TriggerKey(DIK_P)) {
+		isPause_ = !isPause_;
+
+		// ポーズON時は右外から出す
+		if (isPause_) {
+			pauseSpriteX_ = pauseStartX_;
+		}
+	}
+
+	if (isPause_) {
+		// 右からスライドイン
+		if (pauseSpriteX_ > pauseTargetX_) {
+			pauseSpriteX_ -= pauseSpeed_;
+			if (pauseSpriteX_ < pauseTargetX_) {
+				pauseSpriteX_ = pauseTargetX_;
+			}
+		}
+
+		pauseSprite_->SetPosition({ pauseSpriteX_, 180.0f });
+	}
+
 
 	// ===================== 出現スプライトのアニメーション =====================
 	if (isSpawnActive_) {
@@ -343,8 +372,6 @@ void GameScene::Update() {
 		bomb->Update();
 	}
 
-
-
 	worldTransform_.UpdateMatrix();
 	worldTransform_.TransferMatrix();
 }
@@ -390,6 +417,11 @@ void GameScene::Draw() {
 			bossEffectSprites_[currentEffectIndex_]->Draw();
 		}
 	}
+
+	if (isPause_) {
+		pauseSprite_->Draw();
+	}
+
 
 	Sprite::PostDraw();
 
