@@ -223,6 +223,14 @@ private:
 	bool hasInkSpawned_ = false; // 墨のスプライトフラグ
 	int squidPhaseTimer_ = 0;
 
+	// イカ墨フェード用
+	float inkTimer_ = 0.0f;
+	const float inkStayTime_ = 300.0f;   // 5秒
+	const float inkFadeTime_ = 120.0f;   // フェード時間（2秒）
+	float inkAlpha_ = 1.0f;
+	bool isInkFading_ = false;
+
+
 	// ポーズ関連
 	bool isPause_ = false;
 

@@ -819,7 +819,11 @@ void GameScene::SquidInitialize()
 	if (squid_ && squid_->IsStopped() && !hasInkSpawned_) {
 		isInkActive_ = true;
 		hasInkSpawned_ = true;
-		inkScale_ = 0.1f; // 初期サイズ
+		isInkFading_ = false;
+
+		inkScale_ = 0.1f;
+		inkAlpha_ = 1.0f;
+		inkTimer_ = 0.0f;
 
 		// ===== 吐き始め =====
 		Vector3 squidWorld = squid_->GetPosition();
@@ -868,4 +872,31 @@ void GameScene::SquidInitialize()
 		float size = inkBaseSize_ * inkScale_;
 		inkSprite_->SetSize({ size, size });
 	}
+
+	if (isInkActive_) {
+
+		inkTimer_++;
+
+		// 5秒経過したらフェード開始
+		if (inkTimer_ >= inkStayTime_) {
+			isInkFading_ = true;
+		}
+
+		// フェード処理
+		if (isInkFading_) {
+			float fadeT = (inkTimer_ - inkStayTime_) / inkFadeTime_;
+			if (fadeT > 1.0f) fadeT = 1.0f;
+
+			inkAlpha_ = 1.0f - fadeT;
+			inkSprite_->SetColor({ 1.0f, 1.0f, 1.0f, inkAlpha_ });
+
+			// 完全に消えたら終了
+			if (fadeT >= 1.0f) {
+				isInkActive_ = false;
+				hasInkSpawned_ = false;
+				inkSprite_->SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+			}
+		}
+	}
+
 }
