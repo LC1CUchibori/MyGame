@@ -18,6 +18,11 @@ public:
 
 	void Reset(const KamataEngine::Vector3& startPos);
 
+	void Deactivate();
+
+	bool IsActive() const { return isActive_; }
+
+
 	// 止まったかどうか
 	bool IsStopped() const { return state_ == SquidState::stop; }
 

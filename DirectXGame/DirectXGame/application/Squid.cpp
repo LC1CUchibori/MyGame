@@ -64,3 +64,8 @@ void Squid::Reset(const KamataEngine::Vector3& startPos)
     // 落下速度も初期化
     speed_ = 0.2f;
 }
+
+void Squid::Deactivate()
+{ 
+    isActive_ = false;
+}

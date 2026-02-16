@@ -586,6 +586,8 @@ void GameScene::IsCollision()
 		if (dist < hitRadius) {
 			// プレイヤー死亡
 			player_->Kill();
+			squid_->Deactivate();
+			isInkActive_ = false;
 		}
 	}
 	// ====================================================================
@@ -607,6 +609,7 @@ void GameScene::IsCollision()
 
 			if (dist < 3.0f && !enemy_->IsDead()) {
 				bullet->SetActive(false);
+
 				if (phase_ == 5) {
 					isBossHit_ = true;    // ボスヒットフラグ
 					enemy_->StopMoving(); // 敵を停止させる新関数
@@ -622,6 +625,12 @@ void GameScene::IsCollision()
 					enemy_->TakeDamage(1); // 通常敵処理
 					defeatCount_++;
 
+					if (defeatCount_ >= 10) {
+						if (squid_) {
+							squid_->Deactivate();
+						}
+						isInkActive_ = false;
+					}
 				}
 			}
 		}
@@ -648,6 +657,8 @@ void GameScene::IsCollision()
 
 			if (bomb->IsAlive() && dist <= bodyRadius) {
 				player_->Kill();
+				squid_->Deactivate();
+				isInkActive_ = false;
 				return;
 			}
 
@@ -659,6 +670,8 @@ void GameScene::IsCollision()
 
 				if (dist <= explosionRadius) {
 					player_->Kill();
+					squid_->Deactivate();
+					isInkActive_ = false;
 					return;
 				}
 			}

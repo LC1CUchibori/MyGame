@@ -29,6 +29,13 @@ void TitleScene::Initialize()
 	title_ = std::make_unique<TitleModel>();
 	title_->Initialize(titleModel_.get());
 
+	// STARTランプスプライト
+	gogoOFFTextureHandle_ = TextureManager::Load("gogoOFF.png");
+	gogoOFFSprite_ = Sprite::Create(gogoOFFTextureHandle_, {170, 200});
+
+	gogoONTextureHandle_ = TextureManager::Load("gogoON.png");
+	gogoONSprite_ = Sprite::Create(gogoONTextureHandle_, {170, 200});
+
 	// 背景ステージ
 	stage1 = std::make_unique<Stage>();
 	stage1->Initialize();
@@ -51,8 +58,10 @@ void TitleScene::Update()
 	// スプライトに色設定
 	HitSprite_->SetColor({ 1.0f, 1.0f, 1.0f, alpha });
 
-	//=======タイトルモデル移動処理===========
-	//title_->Update();
+	// SPACE押したらON
+	if (input->TriggerKey(DIK_SPACE)) {
+		isGogoOn_ = true;
+	}
 
 	stage1->Update();
 }
@@ -82,6 +91,14 @@ void TitleScene::Draw()
 	TitleSprite_->Draw();
 
 	HitSprite_->Draw();
+
+	// まを描画
+	gogoOFFSprite_->Draw();
+
+	// ON状態なら上から重ねる
+	if (isGogoOn_) {
+		gogoONSprite_->Draw();
+	}
 
 	if (input->TriggerKey(DIK_E)) {
 		isRule_ = !isRule_; // トグル（反転）

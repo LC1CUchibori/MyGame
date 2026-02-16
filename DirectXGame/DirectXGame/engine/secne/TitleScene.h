@@ -42,6 +42,14 @@ private:
 	uint32_t ruleTextureHandle_ = 0;
 	bool isRule_ = false;
 
+	// ================ STARTランプ ================
+	KamataEngine::Sprite* gogoOFFSprite_ = nullptr;
+	KamataEngine::Sprite* gogoONSprite_ = nullptr;
+	uint32_t gogoOFFTextureHandle_ = 0;
+	uint32_t gogoONTextureHandle_ = 0;
+	bool isGogoOn_ = false;
+
+
 	// ステージ
 	std::unique_ptr<Stage> stage1;
 
