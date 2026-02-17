@@ -121,7 +121,7 @@ void ChangeScene() {
     switch (scene)
     {
     case Scene::kTitleScene:
-        if (!isTransitioning && Input::GetInstance()->TriggerKey(DIK_RETURN)) {
+        if (!isTransitioning && Input::GetInstance()->TriggerKey(DIK_SPACE)) {
             fade.StartFadeOut();
             isTransitioning = true;
         }

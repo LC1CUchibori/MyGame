@@ -15,11 +15,11 @@ void TitleScene::Initialize()
 {
 	// タイトルpushスプライト
 	HitTextureHandle_ = TextureManager::Load("hit.png");
-	HitSprite_ = Sprite::Create(HitTextureHandle_, { 170,200 });
+	HitSprite_ = Sprite::Create(HitTextureHandle_, { 380,200 });
 
 	// タイトルスプライト
 	TitleTextureHandle_ = TextureManager::Load("Title.png");
-	TitleSprite_ = Sprite::Create(TitleTextureHandle_, { 525,250 });
+	TitleSprite_ = Sprite::Create(TitleTextureHandle_, { 380,-50 });
 
 	// ルール説明スプライト
 	ruleTextureHandle_ = TextureManager::Load("Rule.png");
@@ -31,10 +31,10 @@ void TitleScene::Initialize()
 
 	// STARTランプスプライト
 	gogoOFFTextureHandle_ = TextureManager::Load("gogoOFF.png");
-	gogoOFFSprite_ = Sprite::Create(gogoOFFTextureHandle_, {170, 200});
+	gogoOFFSprite_ = Sprite::Create(gogoOFFTextureHandle_, {0, 550});
 
 	gogoONTextureHandle_ = TextureManager::Load("gogoON.png");
-	gogoONSprite_ = Sprite::Create(gogoONTextureHandle_, {170, 200});
+	gogoONSprite_ = Sprite::Create(gogoONTextureHandle_, {0, 550});
 
 	// 背景ステージ
 	stage1 = std::make_unique<Stage>();
