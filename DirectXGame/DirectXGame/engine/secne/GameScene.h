@@ -35,14 +35,6 @@ public:
 	// フェーズ初期化
 	void InitializePhase();
 
-	bool IsGameOver() const {
-		return (player_ && sharkTop_ && player_->IsDead() && sharkTop_->HasReturned());
-	}
-
-	bool IsSceneReturnRequested() const { return isSceneReturnRequested_; }
-
-	bool IsGameClear() const { return isGameClear_; }
-
 	// ImGui描画
 	void DrawImGui();
 
@@ -55,7 +47,25 @@ public:
 	// 最終ボス戦
 	void LastPhase();
 
+	// イカの初期化
 	void SquidInitialize();
+
+	// ゲーム内のスプライト更新
+	void GameSecneSpriteUpdate();
+
+	void FadeUpdate();
+
+	bool IsGameOver() const {
+		return (player_ && sharkTop_ && player_->IsDead() && sharkTop_->HasReturned());
+	}
+
+	bool IsSceneReturnRequested() const { 
+		return isSceneReturnRequested_; 
+	}
+
+	bool IsGameClear() const {
+		return isGameClear_;
+	}
 
 private:
 	// モデル
@@ -168,13 +178,13 @@ private:
 	// 出現アニメーション制御用
 	bool isSpawnActive_ = false;
 	float spawnTimer_ = 0.0f;
-	float spawnX_ = -300.0f; //
+	float spawnX_ = -300.0f; 
 
 	// ゲームオーバーフラグ
 	bool isGameOver_ = false;
 
 	// フェーズ
-	int phaseCount_ = 1;
+	int phaseCount_ = 5;
 	int phase_ = phaseCount_;
 	bool isPhaseChanging_ = false;
 	bool isFadeActive_ = false; // フェード開始フラグ
@@ -211,7 +221,6 @@ private:
 	// 表示状態
 	bool isPushPromptActive_ = false;
 	bool isPushSpriteVisible_ = false; 
-
 	int currentEffectIndex_ = 0;
 
 	// Squid 出現用
@@ -229,7 +238,6 @@ private:
 	const float inkFadeTime_ = 120.0f;   // フェード時間（2秒）
 	float inkAlpha_ = 1.0f;
 	bool isInkFading_ = false;
-
 
 	// ポーズ関連
 	bool isPause_ = false;

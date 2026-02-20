@@ -223,7 +223,7 @@ void GameScene::Update() {
 	}
 
 	// フェード中・フェーズ切り替え中はイカ処理しない
-	if (!isFadeActive_ && !isPhaseChanging_) {
+	if (!isFadeActive_ && !isPhaseChanging_&&phase_!=5) {
 		SquidInitialize();
 	}
 
@@ -233,80 +233,11 @@ void GameScene::Update() {
 	// フェーズの処理
 	UpdatePhase();
 
-	if (input->TriggerKey(DIK_P)) {
-		isPause_ = !isPause_;
+	// ポーズ画面の処理
+	GameSecneSpriteUpdate();
 
-		// ポーズON時は右外から出す
-		if (isPause_) {
-			pauseSpriteX_ = pauseStartX_;
-		}
-	}
-
-	if (isPause_) {
-		// 右からスライドイン
-		if (pauseSpriteX_ > pauseTargetX_) {
-			pauseSpriteX_ -= pauseSpeed_;
-			if (pauseSpriteX_ < pauseTargetX_) {
-				pauseSpriteX_ = pauseTargetX_;
-			}
-		}
-
-		pauseSprite_->SetPosition({ pauseSpriteX_, 180.0f });
-	}
-
-
-	// ===================== 出現スプライトのアニメーション =====================
-	if (isSpawnActive_) {
-		spawnTimer_ += 1.0f;
-
-		// 出現演出
-		float startX = -500.0f; // 左外
-		float centerX = 390.0f; // 画面中央
-		float endX = 1280.0f;   // 右外
-
-		if (spawnTimer_ < 90) {
-			// 左→中央へ移動
-			float t = spawnTimer_ / 90.0f;
-			spawnX_ = startX + (centerX - startX) * t;
-		} else if (spawnTimer_ < 240) {
-			// 中央で停止
-			spawnX_ = centerX;
-		} else if (spawnTimer_ < 360) {
-			// 中央→右へ移動
-			float t = (spawnTimer_ - 240.0f) / 120.0f;
-			spawnX_ = centerX + (endX - centerX) * t;
-		} else {
-			// 終了
-			isSpawnActive_ = false;
-		}
-
-		spawnSprite_->SetPosition({spawnX_, 300.0f});
-	}
-	// ==============================================================================
-
-	
-	// ===========================フェードの処理===================================
-	if (enemy_ && enemy_->HasEscaped() && !isFadeActive_ && !isPhaseChanging_) {
-		isFadeActive_ = true;
-		isPhaseChanging_ = true;
-		fade.StartFadeOut();
-	}
-
-	if (isFadeActive_) {
-		fade.Update();
-
-		if (fade.IsFadeOutEnd()) {
-			phase_++;
-			InitializePhase();
-			fade.StartFadeIn();
-		}
-
-		if (fade.IsFadeInEnd()) {
-			isFadeActive_ = false;
-			isPhaseChanging_ = false;
-		}
-	}
-	// ==============================================================================
+	// フェードの更新
+	FadeUpdate();
 
 
 	// ======================== チャレンジ中は敵を move 固定 ================================
@@ -318,41 +249,6 @@ void GameScene::Update() {
 	}
 	// ======================================================================================
 
-	
-    // =========================== HPバー =================================
-	if (enemy_ && !enemy_->IsDead()) {
-
-		Vector3 enemyPos = enemy_->GetPosition();
-
-
-		float barX = enemyPos.x * 20.0f + 640.0f;
-		float barY = -enemyPos.y * 20.0f + 360.0f - 30.0f;
-
-		float maxWidth = 60.0f;
-		float height   = 6.0f;
-
-		float hpRate =
-			static_cast<float>(enemy_->GetHp()) /
-			static_cast<float>(enemy_->GetMaxHp());
-
-		if (hpRate < 0.0f) hpRate = 0.0f;
-		if (hpRate > 1.0f) hpRate = 1.0f;
-
-		float greenWidth = maxWidth * hpRate;
-
-		// 赤（背景
-		enemyHpBack_->SetSize({ maxWidth, height });
-		enemyHpBack_->SetPosition({ barX, barY });
-
-		// 緑（前
-		enemyHpFront_->SetSize({ greenWidth, height });
-
-		// 幅が減った分、中心を右にずらす
-		float offsetX = (maxWidth - greenWidth) * 0.5f;
-		enemyHpFront_->SetPosition({ barX - offsetX, barY });
-
- 	}
-    // ======================================================================
 	
 
 	if (enemy_->IsRequestBomb()) {
@@ -430,26 +326,30 @@ void GameScene::Draw() {
 	// 3Dオブジェクト描画前処理
 	Model::PreDraw(dxCommn->GetCommandList());
 
-	// プレイヤーの描画
+	// ----- プレイヤーの描画 ----
 	if (player_) {
 		player_->Draw(&camera_, playerTextureHandle_);
 	}
 
+	// ----- 敵の描画 ----
 	if (enemy_ && player_ && !(player_->IsDead())) {
-		// 敵の描画
 		enemy_->Draw(&camera_);
 	}
 
+	// ----- ふぐの描画 ----
 	for (TimeBomb* bomb : bombs_) {
 		bomb->Draw(&camera_);
 	}
 
+	// ----- サメの役物の描画 ----
 	if (sharkTop_) {
 		sharkTop_->Draw(&camera_);
 	}
 
-	// イカの描画
-	if (squid_) squid_->Draw(&camera_);
+	// ----- イカの描画 -----
+	if (phase_ != 5 && squid_) {
+		squid_->Draw(&camera_);
+	}
 
 	fade.Draw();
 
@@ -471,7 +371,7 @@ void GameScene::Draw() {
 	}
 
 	// イカ墨のスプライト
-	if (isInkActive_ && inkSprite_) {
+	if (phase_ != 5 &&isInkActive_ && inkSprite_) {
 		inkSprite_->Draw();
 	}
 
@@ -912,4 +812,139 @@ void GameScene::SquidInitialize()
 		}
 	}
 
+	if (phase_ == 5) {
+
+		// イカ削除
+		if (squid_) {
+			delete squid_;
+			squid_ = nullptr;
+		}
+
+		// 墨リセット
+		isInkActive_ = false;
+		hasInkSpawned_ = false;
+
+		if (inkSprite_) {
+			inkSprite_->SetColor({1,1,1,1});
+			inkSprite_->SetSize({0.1f,0.1f});
+		}
+	}
+}
+
+void GameScene::GameSecneSpriteUpdate()
+{
+	// ===================== ポーズ画面のスプライト制御 ======================
+	if (input->TriggerKey(DIK_P)) {
+		isPause_ = !isPause_;
+
+		// ポーズON時は右外から出す
+		if (isPause_) {
+			pauseSpriteX_ = pauseStartX_;
+		}
+	}
+
+	if (isPause_) {
+		// 右からスライドイン
+		if (pauseSpriteX_ > pauseTargetX_) {
+			pauseSpriteX_ -= pauseSpeed_;
+			if (pauseSpriteX_ < pauseTargetX_) {
+				pauseSpriteX_ = pauseTargetX_;
+			}
+		}
+
+		pauseSprite_->SetPosition({ pauseSpriteX_, 180.0f });
+	}
+	// ============================================================================
+
+
+	// ===================== 出現スプライトのアニメーション制御 =====================
+	if (isSpawnActive_) {
+		spawnTimer_ += 1.0f;
+
+		// 出現演出
+		float startX = -500.0f; // 左外
+		float centerX = 390.0f; // 画面中央
+		float endX = 1280.0f;   // 右外
+
+		if (spawnTimer_ < 90) {
+			// 左→中央へ移動
+			float t = spawnTimer_ / 90.0f;
+			spawnX_ = startX + (centerX - startX) * t;
+		} else if (spawnTimer_ < 240) {
+			// 中央で停止
+			spawnX_ = centerX;
+		} else if (spawnTimer_ < 360) {
+			// 中央→右へ移動
+			float t = (spawnTimer_ - 240.0f) / 120.0f;
+			spawnX_ = centerX + (endX - centerX) * t;
+		} else {
+			// 終了
+			isSpawnActive_ = false;
+		}
+
+		spawnSprite_->SetPosition({spawnX_, 300.0f});
+	}
+	// ==============================================================================
+
+
+	// =========================== HPバー =================================
+	if (enemy_ && !enemy_->IsDead()) {
+
+		Vector3 enemyPos = enemy_->GetPosition();
+
+
+		float barX = enemyPos.x * 20.0f + 640.0f;
+		float barY = -enemyPos.y * 20.0f + 360.0f - 30.0f;
+
+		float maxWidth = 60.0f;
+		float height   = 6.0f;
+
+		float hpRate =
+			static_cast<float>(enemy_->GetHp()) /
+			static_cast<float>(enemy_->GetMaxHp());
+
+		if (hpRate < 0.0f) hpRate = 0.0f;
+		if (hpRate > 1.0f) hpRate = 1.0f;
+
+		float greenWidth = maxWidth * hpRate;
+
+		// 赤（背景
+		enemyHpBack_->SetSize({ maxWidth, height });
+		enemyHpBack_->SetPosition({ barX, barY });
+
+		// 緑（前
+		enemyHpFront_->SetSize({ greenWidth, height });
+
+		// 幅が減った分、中心を右にずらす
+		float offsetX = (maxWidth - greenWidth) * 0.5f;
+		enemyHpFront_->SetPosition({ barX - offsetX, barY });
+
+	}
+	// ======================================================================
+}
+
+void GameScene::FadeUpdate()
+{
+	// ===========================フェードの処理===================================
+	if (enemy_ && enemy_->HasEscaped() && !isFadeActive_ && !isPhaseChanging_) {
+		isFadeActive_ = true;
+		isPhaseChanging_ = true;
+		fade.StartFadeOut();
+	}
+
+	if (isFadeActive_) {
+		fade.Update();
+
+		if (fade.IsFadeOutEnd()) {
+			phase_++;
+			InitializePhase();
+			fade.StartFadeIn();
+		}
+
+		if (fade.IsFadeInEnd()) {
+			isFadeActive_ = false;
+			isPhaseChanging_ = false;
+		}
+	}
+	// ==============================================================================
 }

@@ -97,6 +97,11 @@ public:
 		maxDashCount_ = count;
 	}
 
+	void ResetRequestBomb() { bomb_.requestBomb_ = false; }
+
+	void ResetDashTimer();
+
+	void ParticleUpdate();
 
 	bool CanShoot() const {
 		return canShoot_; 
@@ -123,9 +128,7 @@ public:
 
 	bool IsRequestBomb() const { return bomb_.requestBomb_; }
 
-	void ResetRequestBomb() { bomb_.requestBomb_ = false; }
-
-	void ResetDashTimer();
+	
 
 
 private:

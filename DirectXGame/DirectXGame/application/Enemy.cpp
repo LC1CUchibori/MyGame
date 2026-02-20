@@ -63,31 +63,8 @@ void Enemy::Update() {
     // --- メイン挙動 ---
     SetState();
 
-    // ========== パーティクル処理（後方オフセット） ==========
-    {
-        Particle* p = new Particle();
-        // パーティクルをエネミーの後ろ（奥）に生成
-        KamataEngine::Vector3 particlePos = worldTransform_.translation_;
-        particlePos.z += 5.0f;  // カメラから見て奥にオフセット
-        p->Initialize(particleModel_, camera_, particlePos);
-        particles_.push_back(p);
-    }
-
-    for (auto* p : particles_) {
-        p->Update();
-    }
-
-    particles_.erase(
-        std::remove_if(particles_.begin(), particles_.end(),
-            [](Particle* p) {
-                if (!p->IsAlive()) {
-                    delete p;
-                    return true;
-                }
-                return false;
-            }),
-        particles_.end());
-    // =========================================================
+    // --- パーティクル処理 ---
+    ParticleUpdate();
 
     // --- ワールド行列更新 ---
     worldTransform_.translation_ = position_;
@@ -347,4 +324,33 @@ void Enemy::ResetDashTimer()
 
     // ===== 移動も戻す（重要）=====
     move_.isApproaching_ = true;
+}
+
+void Enemy::ParticleUpdate()
+{
+    // ========== パーティクル処理（後方オフセット） ==========
+    {
+        Particle* p = new Particle();
+        // パーティクルをエネミーの後ろ（奥）に生成
+        KamataEngine::Vector3 particlePos = worldTransform_.translation_;
+        particlePos.z += 5.0f;  // カメラから見て奥にオフセット
+        p->Initialize(particleModel_, camera_, particlePos);
+        particles_.push_back(p);
+    }
+
+    for (auto* p : particles_) {
+        p->Update();
+    }
+
+    particles_.erase(
+        std::remove_if(particles_.begin(), particles_.end(),
+            [](Particle* p) {
+                if (!p->IsAlive()) {
+                    delete p;
+                    return true;
+                }
+                return false;
+            }),
+        particles_.end());
+    // =========================================================
 }
