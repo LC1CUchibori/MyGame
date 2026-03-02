@@ -75,12 +75,12 @@ void GameScene::Initialize() {
 	gameOverSprite_.reset(KamataEngine::Sprite::Create(gameOverTextureHandle_, {400.0f, 200.0f}));
 
 	// 出現スプライト初期化
-	spawnTextureHandle_ = TextureManager::Load("spawn.png");
+	spawnTextureHandle_ = TextureManager::Load("Danger.png");
 	spawnSprite_.reset(KamataEngine::Sprite::Create(spawnTextureHandle_, {spawnX_, 300.0f}));
 
 	isSpawnActive_ = true;
 	spawnTimer_ = 0.0f;
-	spawnX_ = -300.0f;
+	spawnX_ = -1000.0f;
 
 	fade.Initialize();
 
@@ -153,13 +153,20 @@ void GameScene::Initialize() {
 	inkSprite_ = Sprite::Create(inkTextureHandle_, { 640.0f,360.0f });
 	inkSprite_->SetSize({ 0.1f, 0.1f });
 
+	// ============= pauseスプライト =============
 	pauseTextureHandle_ = TextureManager::Load("Pause.png");
 	pauseSprite_.reset(Sprite::Create(
 		pauseTextureHandle_,
-		{ pauseStartX_, 360.0f }
+		{ pauseStartX_, 300.0f }
 	));
 
 	pauseSpriteX_ = pauseStartX_;
+	// =========================================
+
+	// =================== ルール説明スプライト ===================
+	ruleTextureHandle_ = TextureManager::Load("Rule.png");
+	ruleSprite_ = Sprite::Create(ruleTextureHandle_, { 0.0f,0.0f });
+	// ========================================================
 
 	worldTransform_.Initialize();
 	// カメラの初期化
@@ -167,6 +174,27 @@ void GameScene::Initialize() {
 }
 
 void GameScene::Update() {
+
+	// ========== ポーズのトリガー =========
+	if (input->TriggerKey(DIK_P)) {
+		isPause_ = !isPause_;
+
+		// ポーズON時は右外から出す
+		if (isPause_) {
+			pauseSpriteX_ = pauseStartX_;
+		}
+	}
+	// ======================================
+
+	// ====== ポーズ中 =======
+	if (isPause_) {
+
+		PauseUpdate();
+		// ポーズ中は更新処理をスキップ
+		return;
+	}
+	// =====================
+
 	// 背景ステージ
 	stage->Update();
 
@@ -314,11 +342,6 @@ void GameScene::Draw() {
 		}
 	}
 
-	if (isPause_) {
-		pauseSprite_->Draw();
-	}
-
-
 	Sprite::PostDraw();
 
 #pragma region 3Dオブジェクト描画
@@ -373,6 +396,15 @@ void GameScene::Draw() {
 	// イカ墨のスプライト
 	if (phase_ != 5 &&isInkActive_ && inkSprite_) {
 		inkSprite_->Draw();
+	}
+
+	// ポーズスプライト
+	if (isPause_) {
+		pauseSprite_->Draw();
+	}
+
+	if (isRule_) {
+		ruleSprite_->Draw(); // 表示
 	}
 
 	Sprite::PostDraw();
@@ -833,37 +865,14 @@ void GameScene::SquidInitialize()
 
 void GameScene::GameSecneSpriteUpdate()
 {
-	// ===================== ポーズ画面のスプライト制御 ======================
-	if (input->TriggerKey(DIK_P)) {
-		isPause_ = !isPause_;
-
-		// ポーズON時は右外から出す
-		if (isPause_) {
-			pauseSpriteX_ = pauseStartX_;
-		}
-	}
-
-	if (isPause_) {
-		// 右からスライドイン
-		if (pauseSpriteX_ > pauseTargetX_) {
-			pauseSpriteX_ -= pauseSpeed_;
-			if (pauseSpriteX_ < pauseTargetX_) {
-				pauseSpriteX_ = pauseTargetX_;
-			}
-		}
-
-		pauseSprite_->SetPosition({ pauseSpriteX_, 180.0f });
-	}
-	// ============================================================================
-
 
 	// ===================== 出現スプライトのアニメーション制御 =====================
 	if (isSpawnActive_) {
 		spawnTimer_ += 1.0f;
 
 		// 出現演出
-		float startX = -500.0f; // 左外
-		float centerX = 390.0f; // 画面中央
+		float startX = -1020.0f; // 左外
+		float centerX = 150.0f; // 画面中央
 		float endX = 1280.0f;   // 右外
 
 		if (spawnTimer_ < 90) {
@@ -921,6 +930,44 @@ void GameScene::GameSecneSpriteUpdate()
 
 	}
 	// ======================================================================
+}
+
+void GameScene::PauseUpdate()
+{
+	// ===================== ポーズ画面のスプライト制御 ======================
+
+	if (isPause_) {
+		// 右からスライドイン
+		if (pauseSpriteX_ > pauseTargetX_) {
+			pauseSpriteX_ -= pauseSpeed_;
+			if (pauseSpriteX_ < pauseTargetX_) {
+				pauseSpriteX_ = pauseTargetX_;
+			}
+		}
+
+		// 1キーで再開
+		if (isPause_) {
+			if (input->TriggerKey(DIK_1)) {
+				isPause_ = false;
+			}
+		}
+
+		// 2キーで操作ルール表示切替
+		if (isPause_) {
+			if (input->TriggerKey(DIK_2)) {
+				isRule_ = !isRule_; 
+			}
+		}
+
+		// 3キーでタイトルに戻る
+		if (isPause_) {
+			if (input->TriggerKey(DIK_3)) {
+				isReturnToTitle_ = true;
+			}
+		}
+		pauseSprite_->SetPosition({ pauseSpriteX_, 130.0f });
+	}
+	// ============================================================================
 }
 
 void GameScene::FadeUpdate()

@@ -27,6 +27,8 @@ private:
 	KamataEngine::Camera camera_;
 	// インプット
 	KamataEngine::Input* input = KamataEngine::Input::GetInstance();
+	// オーディオ
+	KamataEngine::Audio* audio = KamataEngine::Audio::GetInstance();
 
 	// タイトル操作テクスチャハンドル
 	uint32_t HitTextureHandle_ = 0;
@@ -37,10 +39,6 @@ private:
 	uint32_t TitleTextureHandle_ = 0;
 	KamataEngine::Sprite* TitleSprite_ = nullptr;
 
-	// ルール説明
-	KamataEngine::Sprite* ruleSprite_ = nullptr;
-	uint32_t ruleTextureHandle_ = 0;
-	bool isRule_ = false;
 
 	// ================ STARTランプ ================
 	KamataEngine::Sprite* gogoOFFSprite_ = nullptr;
@@ -58,5 +56,8 @@ private:
 	std::unique_ptr<KamataEngine::Model> titleModel_;
 
 	float hitAlphaTime_ = 0.0f;
+
+	// ペカリ音
+	uint32_t startSoundHandle_ = 0;
 };
 

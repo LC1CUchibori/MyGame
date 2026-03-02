@@ -21,10 +21,6 @@ void TitleScene::Initialize()
 	TitleTextureHandle_ = TextureManager::Load("Title.png");
 	TitleSprite_ = Sprite::Create(TitleTextureHandle_, { 380,-50 });
 
-	// ルール説明スプライト
-	ruleTextureHandle_ = TextureManager::Load("Rule.png");
-	ruleSprite_ = Sprite::Create(ruleTextureHandle_, { 0.0f,0.0f });
-
 	titleModel_.reset(Model::CreateFromOBJ("Title"));
 	title_ = std::make_unique<TitleModel>();
 	title_->Initialize(titleModel_.get());
@@ -43,6 +39,9 @@ void TitleScene::Initialize()
 	// 点滅タイマー
 	hitAlphaTime_ = 0.0f;
 
+	// ペカリ音
+	startSoundHandle_ = Audio::GetInstance()->LoadWave("SE/Start.mp3");
+
 	// カメラの初期化
 	camera_.Initialize();
 }
@@ -59,8 +58,11 @@ void TitleScene::Update()
 	HitSprite_->SetColor({ 1.0f, 1.0f, 1.0f, alpha });
 
 	// SPACE押したらON
-	if (input->TriggerKey(DIK_SPACE)) {
+	if (input->TriggerKey(DIK_SPACE) && !isGogoOn_) {
 		isGogoOn_ = true;
+
+		// ペカリ音再生
+		Audio::GetInstance()->PlayWave(startSoundHandle_, false);
 	}
 
 	stage1->Update();
@@ -92,19 +94,12 @@ void TitleScene::Draw()
 
 	HitSprite_->Draw();
 
-	// まを描画
+	// を描画
 	gogoOFFSprite_->Draw();
 
 	// ON状態なら上から重ねる
 	if (isGogoOn_) {
 		gogoONSprite_->Draw();
-	}
-
-	if (input->TriggerKey(DIK_E)) {
-		isRule_ = !isRule_; // トグル（反転）
-	}
-	if (isRule_) {
-		ruleSprite_->Draw(); // 表示
 	}
 
 	// 3Dモデル描画後処理

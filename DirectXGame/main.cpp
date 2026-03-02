@@ -185,6 +185,28 @@ void ChangeScene() {
             fade.StartFadeIn();
             isTransitioning = false;
         }
+
+        // --------------------- タイトルに戻る ---------------------
+        if (!isTransitioning && gameScene && gameScene->IsReturnToTitle()) {
+
+            fade.StartFadeOut();
+            isTransitioning = true;
+        }
+
+        if (isTransitioning && fade.IsFadeOutEnd()
+            && gameScene && gameScene->IsReturnToTitle()) {
+
+            delete gameScene;
+            gameScene = nullptr;
+
+            titleScene = new TitleScene();
+            titleScene->Initialize();
+
+            scene = Scene::kTitleScene;
+
+            fade.StartFadeIn();
+            isTransitioning = false;
+        }
         break;
 
         // --------------------- クリア画面からタイトルへ ---------------------

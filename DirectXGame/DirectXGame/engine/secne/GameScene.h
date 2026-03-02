@@ -53,8 +53,14 @@ public:
 	// ゲーム内のスプライト更新
 	void GameSecneSpriteUpdate();
 
+	void PauseUpdate();
+
 	void FadeUpdate();
 
+	void ResetReturnFlag() { isReturnToTitle_ = false; }
+
+
+	// =================== 取得用 ========================
 	bool IsGameOver() const {
 		return (player_ && sharkTop_ && player_->IsDead() && sharkTop_->HasReturned());
 	}
@@ -66,6 +72,12 @@ public:
 	bool IsGameClear() const {
 		return isGameClear_;
 	}
+
+	bool IsReturnToTitle() const {
+		return isReturnToTitle_; 
+	}
+
+	//  =================================================
 
 private:
 	// モデル
@@ -167,6 +179,11 @@ private:
 	Sprite* inkSprite_ = nullptr;
 	uint32_t inkTextureHandle_ = 0;
 
+	// ルール説明
+	KamataEngine::Sprite* ruleSprite_ = nullptr;
+	uint32_t ruleTextureHandle_ = 0;
+	bool isRule_ = false;
+
 	bool isInkActive_ = false;
 	float inkScale_ = 0.1f;  // 墨の大きさ
 	float inkMaxScale_ = 1.5f;  // 墨のマックスサイズ
@@ -178,13 +195,13 @@ private:
 	// 出現アニメーション制御用
 	bool isSpawnActive_ = false;
 	float spawnTimer_ = 0.0f;
-	float spawnX_ = -300.0f; 
+	float spawnX_ = -1000.0f; 
 
 	// ゲームオーバーフラグ
 	bool isGameOver_ = false;
 
 	// フェーズ
-	int phaseCount_ = 5;
+	int phaseCount_ = 1;
 	int phase_ = phaseCount_;
 	bool isPhaseChanging_ = false;
 	bool isFadeActive_ = false; // フェード開始フラグ
@@ -223,6 +240,7 @@ private:
 	bool isPushSpriteVisible_ = false; 
 	int currentEffectIndex_ = 0;
 
+	// =================== イカ関連 =========================
 	// Squid 出現用
 	int squidTimer_ = 0;
 	int squidAppearTime_ = 0;
@@ -238,14 +256,17 @@ private:
 	const float inkFadeTime_ = 120.0f;   // フェード時間（2秒）
 	float inkAlpha_ = 1.0f;
 	bool isInkFading_ = false;
+	// =======================================================
 
-	// ポーズ関連
+	// =============== ポーズ関連 ========================
 	bool isPause_ = false;
 
 	float pauseSpriteX_ = 0.0f;
 	float pauseTargetX_ = 800.0f;   // 表示位置（右寄り）
 	float pauseStartX_ = 1300.0f;   // 画面右外
 	float pauseSpeed_ = 20.0f;      // スライド速度
+	bool isReturnToTitle_ = false;  // タイトルに戻るフラグ
+	// ====================================================
 
 	std::unique_ptr<KamataEngine::Sprite> pauseSprite_;
 	uint32_t pauseTextureHandle_;
