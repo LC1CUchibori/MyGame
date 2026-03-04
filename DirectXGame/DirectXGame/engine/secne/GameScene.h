@@ -190,6 +190,14 @@ private:
 	float inkGrowSpeed_ = 0.02f;  // 吐くスピード
 	const float inkBaseSize_ = 512.0f;  // 画像サイズ
 
+	// ポーズ画面スプライト
+	std::unique_ptr<KamataEngine::Sprite> pauseSprite_;
+	uint32_t pauseTextureHandle_;
+
+	// ポーズ指示スプライト
+	std::unique_ptr<KamataEngine::Sprite> pauseOrderSprite_;
+	uint32_t pauseOrderTextureHandle_;
+
 	// ========================================================
 
 	// 出現アニメーション制御用
@@ -267,9 +275,5 @@ private:
 	float pauseSpeed_ = 20.0f;      // スライド速度
 	bool isReturnToTitle_ = false;  // タイトルに戻るフラグ
 	// ====================================================
-
-	std::unique_ptr<KamataEngine::Sprite> pauseSprite_;
-	uint32_t pauseTextureHandle_;
-
 };
 

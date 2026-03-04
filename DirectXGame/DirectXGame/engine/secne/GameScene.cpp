@@ -148,10 +148,12 @@ void GameScene::Initialize() {
 	squidAppearTime_ = 300 + rand() % 180;
 	// ============================================
 
+	// ============= イカ墨スプライト =============
 	inkTextureHandle_ = TextureManager::Load("Ink.png");
 	// Initialize
 	inkSprite_ = Sprite::Create(inkTextureHandle_, { 640.0f,360.0f });
 	inkSprite_->SetSize({ 0.1f, 0.1f });
+	// =========================================
 
 	// ============= pauseスプライト =============
 	pauseTextureHandle_ = TextureManager::Load("Pause.png");
@@ -163,6 +165,11 @@ void GameScene::Initialize() {
 	pauseSpriteX_ = pauseStartX_;
 	// =========================================
 
+	// =================== ポーズ指示スプライト ===================
+	pauseOrderTextureHandle_ = TextureManager::Load("PauseOrder.png");
+	pauseOrderSprite_.reset(Sprite::Create(pauseOrderTextureHandle_, {1020.0f, -35.0f}));
+	// ============================================================
+
 	// =================== ルール説明スプライト ===================
 	ruleTextureHandle_ = TextureManager::Load("Rule.png");
 	ruleSprite_ = Sprite::Create(ruleTextureHandle_, { 0.0f,0.0f });
@@ -171,6 +178,7 @@ void GameScene::Initialize() {
 	worldTransform_.Initialize();
 	// カメラの初期化
 	camera_.Initialize();
+
 }
 
 void GameScene::Update() {
@@ -298,6 +306,7 @@ void GameScene::Update() {
 
 	worldTransform_.UpdateMatrix();
 	worldTransform_.TransferMatrix();
+
 }
 
 void GameScene::Draw() {
@@ -406,6 +415,8 @@ void GameScene::Draw() {
 	if (isRule_) {
 		ruleSprite_->Draw(); // 表示
 	}
+
+	pauseOrderSprite_->Draw();
 
 	Sprite::PostDraw();
 
