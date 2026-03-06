@@ -110,7 +110,8 @@ private:
 	std::unique_ptr<Stage> stage;
 
 	// パーティクル
-	std::vector<Particle*> particles_;
+	std::vector<std::unique_ptr<Particle>> particles_;
+	Model* particleModel_ = nullptr;
 
 	// pushタイムバー
 	std::unique_ptr<Graph> RedGraph_;
@@ -135,14 +136,10 @@ private:
 	Squid* squid_ = nullptr;
 	KamataEngine::Model* squidModel_ = nullptr;
 
-	KamataEngine::Vector3 cursorPos_{0.0f, 0.0f, 30.0f}; // 初期位置
-	float cursorSpeed_ = 0.5f; // 移動速度
-	uint32_t crossTexture_;// 標準
+	uint32_t crossTexture_;
 	KamataEngine::Sprite* cursorSprite_ = nullptr;
-	float cursorX_ = 400.0f; // 初期位置
+	float cursorX_ = 400.0f;
 	float cursorY_ = 300.0f;
-	Crosshair3D* crosshair_ = nullptr;
-	KamataEngine::Model* crosshairModel_ = nullptr;
 
 	// サメの役物
 	std::unique_ptr<SharkTop> sharkTop_;
@@ -254,7 +251,7 @@ private:
 	int squidAppearTime_ = 0;
 	bool isSquidSpawned_ = false;
 	Vector2 inkSpawnPos_;   // 吐く位置
-	Vector2 inkTargetPos_;
+	Vector2 inkTargetPos_;       // 吐く目標位置
 	bool hasInkSpawned_ = false; // 墨のスプライトフラグ
 	int squidPhaseTimer_ = 0;
 
@@ -275,5 +272,10 @@ private:
 	float pauseSpeed_ = 20.0f;      // スライド速度
 	bool isReturnToTitle_ = false;  // タイトルに戻るフラグ
 	// ====================================================
+
+	bool isGameStopped_ = false;
+
+	Vector3 cameraOffset_ = { 0.0f, 20.0f, -80.0f };
+	float cameraFollowSpeed_ = 0.08f; // 小さいほどゆっくり追従
 };
 

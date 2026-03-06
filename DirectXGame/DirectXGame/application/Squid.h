@@ -20,6 +20,8 @@ public:
 
 	void Deactivate();
 
+
+
 	bool IsActive() const { return isActive_; }
 
 
@@ -49,5 +51,29 @@ private:
 
 	// 出現制御
 	bool isActive_ = false;      // 出現しているか
+
+	// =================== イカ関連 =========================
+	// Squid 出現用
+	int squidTimer_ = 0;
+	int squidAppearTime_ = 0;
+	bool isSquidSpawned_ = false;
+	KamataEngine::Vector2 inkSpawnPos_;   // 吐く位置
+	KamataEngine::Vector2 inkTargetPos_;       // 吐く目標位置
+	bool hasInkSpawned_ = false; // 墨のスプライトフラグ
+	int squidPhaseTimer_ = 0;
+
+	// イカ墨フェード用
+	float inkTimer_ = 0.0f;
+	const float inkStayTime_ = 300.0f;   // 5秒
+	const float inkFadeTime_ = 120.0f;   // フェード時間（2秒）
+	float inkAlpha_ = 1.0f;
+	bool isInkFading_ = false;
+
+	bool isInkActive_ = false;
+	float inkScale_ = 0.1f;  // 墨の大きさ
+	float inkMaxScale_ = 1.5f;  // 墨のマックスサイズ
+	float inkGrowSpeed_ = 0.02f;  // 吐くスピード
+	const float inkBaseSize_ = 512.0f;  // 画像サイズ
+	// =======================================================
 };
 

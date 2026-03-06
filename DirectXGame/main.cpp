@@ -40,6 +40,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
     //WinApp::GetInstance()->SetFullscreen(true);
 
+   
     ImGuiManager* imGuiManger_ = ImGuiManager::GetInstance();
 
     // フェード初期化

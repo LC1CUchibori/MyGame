@@ -48,6 +48,7 @@ void Particle::Update()
         alive_ = false;
     }
 
+
     objColor.SetColor(color);
     worldTransform_.UpdateMatrix();
     worldTransform_.TransferMatrix();

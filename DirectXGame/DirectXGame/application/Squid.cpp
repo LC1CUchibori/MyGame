@@ -23,6 +23,15 @@ void Squid::Initialize(KamataEngine::Model* model, KamataEngine::Camera* camera,
     // GameScene側で出現タイミングを管理しているので、生成時点で即アクティブにする
     isActive_ = true;
     state_ = SquidState::Descend;
+
+
+    // ============= イカ出現の動き ===============
+    squidTimer_ = 0;
+    isSquidSpawned_ = false;
+
+    // 5秒 + ランダム
+    squidAppearTime_ = 300 + rand() % 180;
+    // ============================================
 }
 
 void Squid::Update()
@@ -39,6 +48,12 @@ void Squid::Update()
             state_ = SquidState::stop;
         }
     }
+
+    squidPhaseTimer_ = 0;
+    isSquidSpawned_ = false;
+    squidAppearTime_ = 300 + rand() % 180;
+
+  
 
     worldTransform_.UpdateMatrix();
 }

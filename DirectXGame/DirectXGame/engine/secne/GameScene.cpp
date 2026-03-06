@@ -61,15 +61,24 @@ void GameScene::Initialize() {
 	stage = std::make_unique<Stage>();
 	stage->Initialize();
 
-	// 照準
-	crosshairModel_ = Model::CreateFromOBJ("CrossHair");
-	crosshair_ = new Crosshair3D();
-	crosshair_->Initialize(crosshairModel_);
+	crossTexture_ = TextureManager::Load("CrossHair.png");
+	cursorSprite_ = Sprite::Create(
+		crossTexture_,
+		{cursorX_, cursorY_}
+	);
+
+	// 中心基準にする
+	cursorSprite_->SetAnchorPoint({0.5f, 0.5f});
+	cursorSprite_->SetSize({50.0f, 50.0f});
 
 	// 鮫役物落下
 	sharkTopModel_.reset(Model::CreateFromOBJ("sharkTop"));
 	sharkTop_ =std::make_unique<SharkTop>();
 	sharkTop_->Initialize(sharkTopModel_.get());
+
+	// 弾パーティクル
+	particleModel_ = Model::CreateFromOBJ("EnemyBullet");
+
 
 	gameOverTextureHandle_ = TextureManager::Load("GameOver.png");
 	gameOverSprite_.reset(KamataEngine::Sprite::Create(gameOverTextureHandle_, {400.0f, 200.0f}));
@@ -179,9 +188,14 @@ void GameScene::Initialize() {
 	// カメラの初期化
 	camera_.Initialize();
 
+	camera_.UpdateMatrix();
 }
 
 void GameScene::Update() {
+	if (isGameStopped_) {
+		DrawImGui(); // ImGuiは動かす
+		return;
+	}
 
 	// ========== ポーズのトリガー =========
 	if (input->TriggerKey(DIK_P)) {
@@ -206,7 +220,16 @@ void GameScene::Update() {
 	// 背景ステージ
 	stage->Update();
 
-	Vector3 crossPos = crosshair_->GetPosition();
+	//　マウスカーソルの位置
+	POINT mousePos;
+	GetCursorPos(&mousePos);
+	ScreenToClient(GetActiveWindow(), &mousePos);
+
+	cursorX_ = (float)mousePos.x;
+	cursorY_ = (float)mousePos.y;
+
+	cursorSprite_->SetPosition({cursorX_, cursorY_});
+
 	Vector3 playerPos = player_->GetPosition();
 
 
@@ -275,6 +298,7 @@ void GameScene::Update() {
 	// フェードの更新
 	FadeUpdate();
 
+	DrawImGui();
 
 	// ======================== チャレンジ中は敵を move 固定 ================================
 	if (phase_ == 5 && bossState_ == BossChallengeState::Challenge && enemy_) {
@@ -303,6 +327,19 @@ void GameScene::Update() {
 	for (TimeBomb* bomb : bombs_) {
 		bomb->Update();
 	}
+
+
+	for (auto& p : particles_) {
+		p->Update();
+	}
+
+	particles_.erase(
+		std::remove_if(particles_.begin(), particles_.end(),
+			[](const std::unique_ptr<Particle>& p) {
+				return !p->IsAlive();
+			}),
+		particles_.end()
+	);
 
 	worldTransform_.UpdateMatrix();
 	worldTransform_.TransferMatrix();
@@ -373,6 +410,11 @@ void GameScene::Draw() {
 		bomb->Draw(&camera_);
 	}
 
+	// ----- パーティクル -----
+	for (auto& p : particles_) {
+		p->Draw();
+	}
+
 	// ----- サメの役物の描画 ----
 	if (sharkTop_) {
 		sharkTop_->Draw(&camera_);
@@ -417,6 +459,9 @@ void GameScene::Draw() {
 	}
 
 	pauseOrderSprite_->Draw();
+
+	// クロスヘア
+	cursorSprite_->Draw();
 
 	Sprite::PostDraw();
 
@@ -505,9 +550,24 @@ void GameScene::UpdatePhase()
 void GameScene::DrawImGui()
 {
 	player_->DrawImGui();
-	/*ImGui::Text("Enemy HP : %d / %d",
-		enemy_->GetHp(),
-		enemy_->GetMaxHp());*/
+
+	ImGui::Begin("Camera Control");
+	bool changed = false;
+	changed |= ImGui::DragFloat3("Rotation", &camera_.rotation_.x, 0.01f);
+	changed |= ImGui::DragFloat3("Translation", &camera_.translation_.x, 0.1f);
+	ImGui::End();
+
+	// --- ここから追加 ---
+	ImGui::Begin("Game Control");
+	if (ImGui::Button(isGameStopped_ ? "Resume Game" : "Stop Game")) {
+		isGameStopped_ = !isGameStopped_;
+	}
+	ImGui::End();
+	// --- ここまで追加 ---
+
+	if (changed) {
+		camera_.UpdateMatrix();
+	}
 }
 
 void GameScene::IsCollision()
@@ -529,7 +589,9 @@ void GameScene::IsCollision()
 		if (dist < hitRadius) {
 			// プレイヤー死亡
 			player_->Kill();
-			squid_->Deactivate();
+			if (squid_) {
+				squid_->Deactivate();
+			}
 			isInkActive_ = false;
 		}
 	}
@@ -552,6 +614,20 @@ void GameScene::IsCollision()
 
 			if (dist < 3.0f && !enemy_->IsDead()) {
 				bullet->SetActive(false);
+
+				// ===== パーティクル生成 =====
+				for (int i = 0; i < 10; i++) {
+
+					auto particle = std::make_unique<Particle>();
+
+					particle->Initialize(
+						particleModel_,
+						&camera_,
+						bulletPos
+					);
+
+					particles_.push_back(std::move(particle));
+				}
 
 				if (phase_ == 5) {
 					isBossHit_ = true;    // ボスヒットフラグ
