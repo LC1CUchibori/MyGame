@@ -68,11 +68,11 @@ void Player::Update()
 
 }
 
-void Player::Draw(KamataEngine::Camera* camera, uint32_t textureHandle)
+void Player::Draw(KamataEngine::Camera* camera)
 {
 
 	if (!isDead_) {
-		model_->Draw(worldTransform_, *camera, textureHandle);
+		model_->Draw(worldTransform_, *camera);
 
 		for (auto* bullet : bullets_) {
 			if (!bullet->IsActive()) continue;

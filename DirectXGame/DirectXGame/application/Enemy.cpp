@@ -78,7 +78,7 @@ void Enemy::Update() {
             float dx = targetPos_->x - position_.x;
             float dy = targetPos_->y - position_.y;
             float angle = std::atan2(dy, dx);
-            worldTransform_.rotation_.z = (angle - 3.14f * 1.5f) * (-1.0f);
+            worldTransform_.rotation_.z = (angle + 3.14f * 1.5f) * (-1.0f);
         }
         worldTransform_.rotation_.x = 0.0f;
     }

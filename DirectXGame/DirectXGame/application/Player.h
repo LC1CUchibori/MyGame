@@ -15,7 +15,7 @@ public:
     // 更新
     void Update();
     // 描画
-    void Draw(KamataEngine::Camera* camera, uint32_t textureHandle);
+    void Draw(KamataEngine::Camera* camera);
 
     void SetYaw(float yaw);
     // 弾発射

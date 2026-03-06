@@ -21,11 +21,11 @@ void GameScene::Initialize() {
 	std::srand(static_cast<unsigned int>(std::time(nullptr)));
 
 	// プレイヤー
-	playerModel_.reset(Model::CreateFromOBJ("Enemy"));
+	playerModel_.reset(Model::CreateFromOBJ("Submarine"));
 	player_ = std::make_unique<Player>();
 	player_->Initialize(playerModel_.get(), &camera_);
 
-	enemyModel_.reset(Model::CreateFromOBJ("Enemy"));
+	enemyModel_.reset(Model::CreateFromOBJ("shark"));
 	enemy_ = std::make_unique<Enemy>();
 	enemy_->Initialize(enemyModel_.get(), &camera_);
 	enemy_->SetTarget(&player_->GetPosition());
@@ -397,7 +397,7 @@ void GameScene::Draw() {
 
 	// ----- プレイヤーの描画 ----
 	if (player_) {
-		player_->Draw(&camera_, playerTextureHandle_);
+		player_->Draw(&camera_);
 	}
 
 	// ----- 敵の描画 ----
