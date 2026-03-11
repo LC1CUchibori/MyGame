@@ -277,5 +277,9 @@ private:
 
 	Vector3 cameraOffset_ = { 0.0f, 20.0f, -80.0f };
 	float cameraFollowSpeed_ = 0.08f; // 小さいほどゆっくり追従
+
+	float InkRespawnTimer_ = 0.0f;
+	float InkRespawnTime_ = 0.0f;
+	bool isInkRespawning_ = false;
 };
 

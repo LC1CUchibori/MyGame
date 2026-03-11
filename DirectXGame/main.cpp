@@ -167,7 +167,7 @@ void ChangeScene() {
         if (!isTransitioning && gameScene && gameScene->IsGameOver()) {
             // まずゲームオーバー画像表示だけ
             // ENTER を待つ
-            if (Input::GetInstance()->TriggerKey(DIK_RETURN)) {
+            if (Input::GetInstance()->TriggerKey(DIK_SPACE)) {
                 fade.StartFadeOut();
                 isTransitioning = true;
             }
@@ -212,7 +212,7 @@ void ChangeScene() {
 
         // --------------------- クリア画面からタイトルへ ---------------------
     case Scene::kGameClear:
-        if (!isTransitioning && Input::GetInstance()->TriggerKey(DIK_RETURN)) {
+        if (!isTransitioning && Input::GetInstance()->TriggerKey(DIK_SPACE)) {
             fade.StartFadeOut();
             isTransitioning = true;
         }

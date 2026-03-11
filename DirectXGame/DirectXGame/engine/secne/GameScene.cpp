@@ -275,6 +275,13 @@ void GameScene::Update() {
 	// ゲームオーバーシーンに移行
 	if (player_ && sharkTop_ && player_->IsDead() && sharkTop_->HasReturned()) {
 		isGameOver_ = true;
+
+		// ===== ここ追加 =====
+		if (squid_) {
+			squid_->Deactivate(); // イカ停止
+		}
+
+		isInkActive_ = false;     // イカ墨非表示
 	}
 
 	if (enemy_) {
@@ -551,23 +558,23 @@ void GameScene::DrawImGui()
 {
 	player_->DrawImGui();
 
-	ImGui::Begin("Camera Control");
-	bool changed = false;
-	changed |= ImGui::DragFloat3("Rotation", &camera_.rotation_.x, 0.01f);
-	changed |= ImGui::DragFloat3("Translation", &camera_.translation_.x, 0.1f);
-	ImGui::End();
+	//ImGui::Begin("Camera Control");
+	//bool changed = false;
+	//changed |= ImGui::DragFloat3("Rotation", &camera_.rotation_.x, 0.01f);
+	//changed |= ImGui::DragFloat3("Translation", &camera_.translation_.x, 0.1f);
+	//ImGui::End();
 
-	// --- ここから追加 ---
-	ImGui::Begin("Game Control");
-	if (ImGui::Button(isGameStopped_ ? "Resume Game" : "Stop Game")) {
-		isGameStopped_ = !isGameStopped_;
-	}
-	ImGui::End();
-	// --- ここまで追加 ---
+	//// --- ここから追加 ---
+	//ImGui::Begin("Game Control");
+	//if (ImGui::Button(isGameStopped_ ? "Resume Game" : "Stop Game")) {
+	//	isGameStopped_ = !isGameStopped_;
+	//}
+	//ImGui::End();
+	//// --- ここまで追加 ---
 
-	if (changed) {
+	/*if (changed) {
 		camera_.UpdateMatrix();
-	}
+	}*/
 }
 
 void GameScene::IsCollision()
@@ -823,6 +830,20 @@ void GameScene::LastPhase()
 
 void GameScene::SquidInitialize()
 {
+
+	// ===== 墨の再出現待ち =====
+	if (isInkRespawning_) {
+
+		InkRespawnTimer_++;
+
+		if (InkRespawnTimer_ >= InkRespawnTime_) {
+			isInkRespawning_ = false;
+			hasInkSpawned_ = false; // 次の墨を出せるようにする
+		}
+
+		return;
+	}
+
 	// フェーズ開始からの経過時間
 	squidPhaseTimer_++;
 
@@ -847,6 +868,8 @@ void GameScene::SquidInitialize()
 	if (squid_) {
 		squid_->Update();
 	}
+
+	
 
 	if (squid_ && squid_->IsStopped() && !hasInkSpawned_) {
 		isInkActive_ = true;
@@ -926,7 +949,13 @@ void GameScene::SquidInitialize()
 			if (fadeT >= 1.0f) {
 				isInkActive_ = false;
 				hasInkSpawned_ = false;
+
+				// 再出現待ち
+				isInkRespawning_ = true;
+				InkRespawnTimer_ = 0.0f;
+				InkRespawnTime_ = 300.0f + rand() % 180; // 5秒～8秒のランダム
 				inkSprite_->SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+
 			}
 		}
 	}
@@ -979,6 +1008,10 @@ void GameScene::GameSecneSpriteUpdate()
 		}
 
 		spawnSprite_->SetPosition({spawnX_, 300.0f});
+
+		// ===== フェード点滅 =====
+		float alpha = (sinf(spawnTimer_ * 0.1f) + 1.0f) * 0.5f; 
+		spawnSprite_->SetColor({1.0f, 1.0f, 1.0f, alpha});
 	}
 	// ==============================================================================
 
