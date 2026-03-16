@@ -181,6 +181,10 @@ private:
 	uint32_t ruleTextureHandle_ = 0;
 	bool isRule_ = false;
 
+	// ビネットスプライト
+	KamataEngine::Sprite* vignetteSprite_ = nullptr;
+	uint32_t vignetteTextureHandle_ = 0;
+
 	bool isInkActive_ = false;
 	float inkScale_ = 0.1f;  // 墨の大きさ
 	float inkMaxScale_ = 1.5f;  // 墨のマックスサイズ
