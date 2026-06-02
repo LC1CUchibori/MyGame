@@ -63,7 +63,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_WINDOWS;_DEBUG;USE_IMGUI;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
@@ -86,7 +86,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_WINDOWS;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <Optimization>MinSpace</Optimization>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -106,16 +106,27 @@
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="CrossHair3D.cpp" />
-    <ClCompile Include="Enemy.cpp" />
-    <ClCompile Include="GameScene.cpp" />
+    <ClCompile Include="DirectXGame\application\BackEffect.cpp" />
+    <ClCompile Include="DirectXGame\engine\3d\CrossHair3D.cpp" />
+    <ClCompile Include="DirectXGame\application\Enemy.cpp" />
+    <ClCompile Include="DirectXGame\engine\2d\Fade.cpp" />
+    <ClCompile Include="DirectXGame\engine\secne\GameScene.cpp" />
+    <ClCompile Include="DirectXGame\application\EnemyBullet.cpp" />
+    <ClCompile Include="DirectXGame\engine\secne\GameClearScene.cpp" />
+    <ClCompile Include="DirectXGame\application\Graph.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="DirectXGame\engine\3d\Model2.cpp" />
+    <ClCompile Include="DirectXGame\application\Player.cpp" />
+    <ClCompile Include="DirectXGame\application\Stage.cpp" />
+    <ClCompile Include="DirectXGame\engine\3d\TitleModel.cpp" />
+    <ClCompile Include="DirectXGame\engine\secne\TitleScene.cpp" />
+    <ClCompile Include="DirectXGame\engine\math\WorldTransformEx.cpp" />
+    <ClCompile Include="DirectXGame\engine\3d\SharkTop.cpp" />
+    <ClCompile Include="DirectXGame\application\PlayerBullet.cpp" />
+    <ClCompile Include="DirectXGame\application\Particle.cpp" />
+    <ClCompile Include="DirectXGame\application\TimeBomb.cpp" />
+    <ClCompile Include="DirectXGame\application\Squid.cpp" />
     <ClCompile Include="math.cpp" />
-    <ClCompile Include="Model2.cpp" />
-    <ClCompile Include="Player.cpp" />
-    <ClCompile Include="Stage.cpp" />
-    <ClCompile Include="TitleScene.cpp" />
-    <ClCompile Include="WorldTransformEx.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\TerrainPS.hlsl">
@@ -193,14 +204,26 @@
     <None Include="Resources\shaders\Sprite.hlsli" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CrossHair3D.h" />
-    <ClInclude Include="Enemy.h" />
-    <ClInclude Include="GameScene.h" />
-    <ClInclude Include="math.h" />
-    <ClInclude Include="Model2.h" />
-    <ClInclude Include="Player.h" />
-    <ClInclude Include="Stage.h" />
-    <ClInclude Include="TitleScene.h" />
+    <ClInclude Include="DirectXGame\application\BackEffect.h" />
+    <ClInclude Include="DirectXGame\engine\3d\CrossHair3D.h" />
+    <ClInclude Include="DirectXGame\application\Enemy.h" />
+    <ClInclude Include="DirectXGame\engine\2d\Fade.h" />
+    <ClInclude Include="DirectXGame\engine\secne\GameScene.h" />
+    <ClInclude Include="DirectXGame\engine\math\math.h" />
+    <ClInclude Include="DirectXGame\engine\3d\Model2.h" />
+    <ClInclude Include="DirectXGame\application\Player.h" />
+    <ClInclude Include="DirectXGame\application\Stage.h" />
+    <ClInclude Include="DirectXGame\engine\3d\TitleModel.h" />
+    <ClInclude Include="DirectXGame\engine\secne\TitleScene.h" />
+    <ClInclude Include="DirectXGame\application\EnemyBullet.h" />
+    <ClInclude Include="DirectXGame\engine\3d\SharkTop.h" />
+    <ClInclude Include="DirectXGame\engine\secne\GameOverScene.h" />
+    <ClInclude Include="DirectXGame\application\PlayerBullet.h" />
+    <ClInclude Include="DirectXGame\engine\secne\GameClearScene.h" />
+    <ClInclude Include="DirectXGame\application\Graph.h" />
+    <ClInclude Include="DirectXGame\application\Particle.h" />
+    <ClInclude Include="DirectXGame\application\TimeBomb.h" />
+    <ClInclude Include="DirectXGame\application\Squid.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

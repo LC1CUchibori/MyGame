@@ -71,6 +71,8 @@ Matrix4x4 Transpose(const Matrix4x4& m);
 // 逆行列を求める
 Matrix4x4 Inverse(const Matrix4x4& m, float* det = nullptr);
 
+//Matrix4x4 Multiply(const Matrix4x4& a, const Matrix4x4& b);
+
 // 拡大縮小行列の作成
 Matrix4x4 MakeScaleMatrix(const Vector3& scale);
 
