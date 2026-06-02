@@ -63,9 +63,6 @@
     <ClCompile Include="DirectXGame\engine\secne\TitleScene.cpp">
       <Filter>ソース ファイル\engine\scene</Filter>
     </ClCompile>
-    <ClCompile Include="DirectXGame\engine\math\math.cpp">
-      <Filter>ソース ファイル\engine\math</Filter>
-    </ClCompile>
     <ClCompile Include="DirectXGame\engine\math\WorldTransformEx.cpp">
       <Filter>ソース ファイル\engine\math</Filter>
     </ClCompile>
@@ -119,6 +116,9 @@
     </ClCompile>
     <ClCompile Include="DirectXGame\application\Squid.cpp">
       <Filter>ソース ファイル\application</Filter>
+    </ClCompile>
+    <ClCompile Include="math.cpp">
+      <Filter>ソース ファイル\engine\math</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

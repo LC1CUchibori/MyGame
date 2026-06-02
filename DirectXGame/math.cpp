@@ -1,10 +1,11 @@
 #include "math.h"
 #include <math/Vector4.h>
+#include <KamataEngine.h>
 using namespace KamataEngine;
 
 // 拡大縮小行列
 Matrix4x4 MakeScaleMatrix(const Vector3& scale) {
-	Matrix4x4 result = {};
+	KamataEngine::Matrix4x4 result = {};
 	result.m[0][0] = scale.x;
 	result.m[1][1] = scale.y;
 	result.m[2][2] = scale.z;

@@ -115,7 +115,6 @@
     <ClCompile Include="DirectXGame\engine\secne\GameClearScene.cpp" />
     <ClCompile Include="DirectXGame\application\Graph.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="DirectXGame\engine\math\math.cpp" />
     <ClCompile Include="DirectXGame\engine\3d\Model2.cpp" />
     <ClCompile Include="DirectXGame\application\Player.cpp" />
     <ClCompile Include="DirectXGame\application\Stage.cpp" />
@@ -127,6 +126,7 @@
     <ClCompile Include="DirectXGame\application\Particle.cpp" />
     <ClCompile Include="DirectXGame\application\TimeBomb.cpp" />
     <ClCompile Include="DirectXGame\application\Squid.cpp" />
+    <ClCompile Include="math.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\TerrainPS.hlsl">
