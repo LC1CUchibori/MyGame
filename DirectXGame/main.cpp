@@ -8,7 +8,7 @@
 using namespace KamataEngine;
 
 GameScene* gameScene = nullptr;
-TitleScene* titleScene = nullptr;
+TitleScene* titleScene = TitleScene::GetInstance();
 GameClearScene* gameClearScene = nullptr;
 Fade fade;  // フェード用インスタンス
 
@@ -48,7 +48,6 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
     // 最初のシーン
     scene = Scene::kTitleScene;
-    titleScene = new TitleScene;
     titleScene->Initialize();
 
     // メインループ
@@ -109,8 +108,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
     delete gameScene;
     gameScene = nullptr;
 
-    delete titleScene;
     titleScene = nullptr;
+
 
     return 0;
 }
@@ -128,7 +127,6 @@ void ChangeScene() {
         }
         if (isTransitioning && fade.IsFadeOutEnd()) {
 
-            delete titleScene;
             titleScene = nullptr;
 
             gameScene = new GameScene();
@@ -178,7 +176,7 @@ void ChangeScene() {
             delete gameScene;
             gameScene = nullptr;
 
-            titleScene = new TitleScene();
+          
             titleScene->Initialize();
 
             scene = Scene::kTitleScene;
@@ -200,7 +198,7 @@ void ChangeScene() {
             delete gameScene;
             gameScene = nullptr;
 
-            titleScene = new TitleScene();
+          
             titleScene->Initialize();
 
             scene = Scene::kTitleScene;
@@ -221,7 +219,7 @@ void ChangeScene() {
             delete gameClearScene;
             gameClearScene = nullptr;
 
-            titleScene = new TitleScene();
+            
             titleScene->Initialize();
 
             scene = Scene::kTitleScene;

@@ -106,6 +106,7 @@
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="BaseScene.cpp" />
     <ClCompile Include="DirectXGame\application\BackEffect.cpp" />
     <ClCompile Include="DirectXGame\engine\3d\CrossHair3D.cpp" />
     <ClCompile Include="DirectXGame\application\Enemy.cpp" />
@@ -204,6 +205,7 @@
     <None Include="Resources\shaders\Sprite.hlsli" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BaseScene.h" />
     <ClInclude Include="DirectXGame\application\BackEffect.h" />
     <ClInclude Include="DirectXGame\engine\3d\CrossHair3D.h" />
     <ClInclude Include="DirectXGame\application\Enemy.h" />

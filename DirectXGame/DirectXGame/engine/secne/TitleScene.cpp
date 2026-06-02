@@ -11,6 +11,11 @@ TitleScene::~TitleScene()
 {
 }
 
+TitleScene* TitleScene::GetInstance() {
+	static TitleScene instance;
+	return &instance;
+}
+
 void TitleScene::Initialize()
 {
 	// タイトルpushスプライト

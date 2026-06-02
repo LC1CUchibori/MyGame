@@ -15,8 +15,9 @@
 #include "../../application/TimeBomb.h"
 #include "../../application/Squid.h"
 #include <list>
+#include "BaseScene.h"
 
-class GameScene
+class GameScene: public BaseScene 
 {
 public:
 	GameScene();
@@ -24,13 +25,13 @@ public:
 	~GameScene();
 
 	// 初期化
-	void Initialize();
+	void Initialize() override;
 
 	// 更新
-	void Update();
+	void Update()override;
 
 	// 描画
-	void Draw();
+	void Draw()override;
 
 	// フェーズ初期化
 	void InitializePhase();

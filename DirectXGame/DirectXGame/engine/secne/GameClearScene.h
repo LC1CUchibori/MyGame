@@ -1,15 +1,16 @@
 #pragma once
 #include <KamataEngine.h>
 #include "../../application/Stage.h"
+#include "BaseScene.h"
 
-class GameClearScene {
+class GameClearScene : public BaseScene {
 public:
     GameClearScene();
     ~GameClearScene();
 
-    void Initialize();
-    void Update();
-    void Draw();
+    void Initialize() override;
+    void Update() override;
+    void Draw()override;
 
     bool IsFinished() const { return isFinished_; }
 
