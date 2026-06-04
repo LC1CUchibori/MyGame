@@ -4,13 +4,12 @@
 #include "../engine/3d/Model2.h"
 #include <vector>
 
-class Squid
-{
+class Squid {
 public:
 	Squid();
 	~Squid();
 
-	void Initialize(KamataEngine::Model* model,KamataEngine::Camera* camera, const KamataEngine::Vector3& pos);
+	void Initialize(KamataEngine::Model* model, KamataEngine::Camera* camera, const KamataEngine::Vector3& pos);
 
 	void Update();
 

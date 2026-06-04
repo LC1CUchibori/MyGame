@@ -3,19 +3,20 @@
 #include <vector>
 #include "PlayerBullet.h"
 #include "Particle.h"
+#include "GameObject.h"
 
-class Player {
+class Player:public GameObject {
 public:
     Player();
 
     ~Player();
 
     // 初期化
-    void Initialize(KamataEngine::Model* mode, KamataEngine::Camera* camera);
+    void Initialize(KamataEngine::Model* mode, KamataEngine::Camera* camera)override;
     // 更新
-    void Update();
+    void Update()override;
     // 描画
-    void Draw(KamataEngine::Camera* camera);
+	void Draw(KamataEngine::Camera* camera) override;
 
     void SetYaw(float yaw);
     // 弾発射

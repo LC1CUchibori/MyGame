@@ -5,22 +5,21 @@
 #include "EnemyBullet.h"
 #include <vector>
 #include "Particle.h"
+#include "GameObject.h"
 
-
-class Enemy
-{
+class Enemy : public GameObject {
 public:
 	Enemy();
 	~Enemy();
 
 	// 初期化
-	void Initialize(KamataEngine::Model* model,KamataEngine::Camera* camera);
+	void Initialize(KamataEngine::Model* model, KamataEngine::Camera* camera) override;
 	
 	// 更新
-	void Update();
+	void Update() override;
 	
 	// 描画
-	void Draw(KamataEngine::Camera* camera);
+	void Draw(KamataEngine::Camera* camera) override;
 	
 	// スピードについて
 	void SetSpeed(float speed) {

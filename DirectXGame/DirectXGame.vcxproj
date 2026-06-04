@@ -115,6 +115,7 @@
     <ClCompile Include="DirectXGame\application\EnemyBullet.cpp" />
     <ClCompile Include="DirectXGame\engine\secne\GameClearScene.cpp" />
     <ClCompile Include="DirectXGame\application\Graph.cpp" />
+    <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="DirectXGame\engine\3d\Model2.cpp" />
     <ClCompile Include="DirectXGame\application\Player.cpp" />
@@ -226,6 +227,7 @@
     <ClInclude Include="DirectXGame\application\Particle.h" />
     <ClInclude Include="DirectXGame\application\TimeBomb.h" />
     <ClInclude Include="DirectXGame\application\Squid.h" />
+    <ClInclude Include="GameObject.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
