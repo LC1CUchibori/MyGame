@@ -1,5 +1,11 @@
 #include "GameScene.h"
 
+#include "Phase1State.h"
+#include "Phase2State.h"
+#include "Phase3State.h"
+#include "Phase4State.h"
+#include "BossPhaseState.h"
+
 using namespace KamataEngine;
 
 GameScene::GameScene() {}
@@ -301,7 +307,10 @@ void GameScene::Update() {
 	IsCollision();
 
 	// フェーズの処理
-	UpdatePhase();
+	if (phaseState_)
+	{
+		phaseState_->Update(this);
+	}
 
 	// ポーズ画面の処理
 	GameSecneSpriteUpdate();
@@ -535,29 +544,29 @@ void GameScene::InitializePhase() {
 	}
 }
 
-void GameScene::UpdatePhase()
-{
-	switch (phase_) {
-	case 1:
-		enemy_->SetMaxDashCount(1);
-		break;
-	case 2:
-		enemy_->SetMaxDashCount(2);
-		break;
-	case 3:
-		enemy_->SetMaxDashCount(3);
-		break;
-	case 4:
-		enemy_->SetMaxDashCount(4);
-		break;
-	case 5:
-		enemy_->SetMaxDashCount(5);
-		LastPhase();
-		break;
-	default:
-		break;
-	}
-}
+//void GameScene::UpdatePhase()
+//{
+//	switch (phase_) {
+//	case 1:
+//		enemy_->SetMaxDashCount(1);
+//		break;
+//	case 2:
+//		enemy_->SetMaxDashCount(2);
+//		break;
+//	case 3:
+//		enemy_->SetMaxDashCount(3);
+//		break;
+//	case 4:
+//		enemy_->SetMaxDashCount(4);
+//		break;
+//	case 5:
+//		enemy_->SetMaxDashCount(5);
+//		LastPhase();
+//		break;
+//	default:
+//		break;
+//	}
+//}
 
 void GameScene::DrawImGui()
 {
@@ -1121,4 +1130,32 @@ void GameScene::FadeUpdate()
 		}
 	}
 	// ==============================================================================
+}
+
+void GameScene::ChangePhase(int phase)
+{
+	switch (phase)
+	{
+	case 1:
+		phaseState_ = std::make_unique<Phase1State>();
+		break;
+
+	case 2:
+		phaseState_ = std::make_unique<Phase2State>();
+		break;
+
+	case 3:
+		phaseState_ = std::make_unique<Phase3State>();
+		break;
+
+	case 4:
+		phaseState_ = std::make_unique<Phase4State>();
+		break;
+
+	case 5:
+		phaseState_ = std::make_unique<BossPhaseState>();
+		break;
+	}
+
+	phaseState_->Enter(this);
 }

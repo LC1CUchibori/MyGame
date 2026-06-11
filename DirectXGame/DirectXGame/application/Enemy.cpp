@@ -6,6 +6,7 @@
 Enemy::Enemy() {}
 
 Enemy::~Enemy() {
+
 }
 
 void Enemy::Initialize(KamataEngine::Model* model, KamataEngine::Camera* camera) {
@@ -50,6 +51,7 @@ void Enemy::Initialize(KamataEngine::Model* model, KamataEngine::Camera* camera)
 
     hp_ = 10;
     maxHp_ = 10;
+
 }
 
 void Enemy::Update() {
@@ -60,7 +62,6 @@ void Enemy::Update() {
     // --- モデルのスケール ---
     worldTransform_.scale_ = { 2.0f, 2.0f, 2.0f };
 
-    // --- メイン挙動 ---
     SetState();
 
     // --- パーティクル処理 ---

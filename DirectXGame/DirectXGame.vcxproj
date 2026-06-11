@@ -107,6 +107,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="BaseScene.cpp" />
+    <ClCompile Include="DirectXGame\engine\secne\BossPhaseState.cpp" />
     <ClCompile Include="DirectXGame\application\BackEffect.cpp" />
     <ClCompile Include="DirectXGame\engine\3d\CrossHair3D.cpp" />
     <ClCompile Include="DirectXGame\application\Enemy.cpp" />
@@ -115,6 +116,9 @@
     <ClCompile Include="DirectXGame\application\EnemyBullet.cpp" />
     <ClCompile Include="DirectXGame\engine\secne\GameClearScene.cpp" />
     <ClCompile Include="DirectXGame\application\Graph.cpp" />
+    <ClCompile Include="DirectXGame\application\EnemyAttackState.cpp" />
+    <ClCompile Include="DirectXGame\application\EnemyMoveState.cpp" />
+    <ClCompile Include="DirectXGame\application\EnemyState.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="DirectXGame\engine\3d\Model2.cpp" />
@@ -129,6 +133,11 @@
     <ClCompile Include="DirectXGame\application\TimeBomb.cpp" />
     <ClCompile Include="DirectXGame\application\Squid.cpp" />
     <ClCompile Include="math.cpp" />
+    <ClCompile Include="DirectXGame\engine\secne\Phase1State.cpp" />
+    <ClCompile Include="DirectXGame\engine\secne\PhaseState.cpp" />
+    <ClCompile Include="DirectXGame\engine\secne\Phase2State.cpp" />
+    <ClCompile Include="DirectXGame\engine\secne\Phase3State.cpp" />
+    <ClCompile Include="DirectXGame\engine\secne\Phase4State.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\TerrainPS.hlsl">
@@ -207,6 +216,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BaseScene.h" />
+    <ClInclude Include="DirectXGame\engine\secne\BossPhaseState.h" />
     <ClInclude Include="DirectXGame\application\BackEffect.h" />
     <ClInclude Include="DirectXGame\engine\3d\CrossHair3D.h" />
     <ClInclude Include="DirectXGame\application\Enemy.h" />
@@ -227,7 +237,15 @@
     <ClInclude Include="DirectXGame\application\Particle.h" />
     <ClInclude Include="DirectXGame\application\TimeBomb.h" />
     <ClInclude Include="DirectXGame\application\Squid.h" />
+    <ClInclude Include="DirectXGame\application\EnemyAttackState.h" />
+    <ClInclude Include="DirectXGame\application\EnemyMoveState.h" />
+    <ClInclude Include="DirectXGame\application\EnemyState.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="DirectXGame\engine\secne\Phase1State.h" />
+    <ClInclude Include="DirectXGame\engine\secne\PhaseState.h" />
+    <ClInclude Include="DirectXGame\engine\secne\Phase2State.h" />
+    <ClInclude Include="DirectXGame\engine\secne\Phase3State.h" />
+    <ClInclude Include="DirectXGame\engine\secne\Phase4State.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

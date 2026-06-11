@@ -16,6 +16,8 @@
 #include "../../application/Squid.h"
 #include <list>
 #include "BaseScene.h"
+#include "PhaseState.h"
+
 
 class GameScene: public BaseScene 
 {
@@ -60,6 +62,8 @@ public:
 
 	void ResetReturnFlag() { isReturnToTitle_ = false; }
 
+	void ChangePhase(int phase);
+
 
 	// =================== 取得用 ========================
 	bool IsGameOver() const {
@@ -78,6 +82,10 @@ public:
 		return isReturnToTitle_; 
 	}
 
+	Enemy* GetEnemy()
+	{
+		return enemy_.get();
+	}
 	//  =================================================
 
 private:
@@ -286,5 +294,7 @@ private:
 	float InkRespawnTimer_ = 0.0f;
 	float InkRespawnTime_ = 0.0f;
 	bool isInkRespawning_ = false;
+
+	std::unique_ptr<PhaseState> phaseState_;
 };
 

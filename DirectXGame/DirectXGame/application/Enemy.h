@@ -7,6 +7,8 @@
 #include "Particle.h"
 #include "GameObject.h"
 
+class EnemyState;
+
 class Enemy : public GameObject {
 public:
 	Enemy();
@@ -127,7 +129,15 @@ public:
 
 	bool IsRequestBomb() const { return bomb_.requestBomb_; }
 
+	/*void ChangeState(EnemyState* state)
+	{
+		delete state_;
+		state_ = state;
+	}*/
 	
+	private:
+
+	/*EnemyState* state_ = nullptr;*/
 
 
 private:
