@@ -28,6 +28,8 @@ void TimeBomb::Initialize(KamataEngine::Model* model,KamataEngine::Model* inside
     insideWorldTransform_.Initialize();
     insideWorldTransform_.translation_ = pos;
 
+
+
 }
 
 void TimeBomb::Update()
