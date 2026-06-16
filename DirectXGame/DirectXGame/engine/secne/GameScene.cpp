@@ -97,10 +97,6 @@ void GameScene::Initialize() {
 	spawnTimer_ = 0.0f;
 	spawnX_ = -1000.0f;
 
-	// ビネット
-	vignetteTextureHandle_ = TextureManager::Load("Vignette.png");
-	vignetteSprite_ = Sprite::Create(vignetteTextureHandle_, {0.0f, 0.0f});
-
 	fade.Initialize();
 
 	// ボタンPUSHスプライト
@@ -457,7 +453,6 @@ void GameScene::Draw() {
 	// 出現スプライト描画
 	if (isSpawnActive_) {
 		spawnSprite_->Draw();
-		vignetteSprite_->Draw();
 	}
 
 	if (enemy_ && !enemy_->IsDead()&&player_&& !player_->IsDead()) {
@@ -998,7 +993,7 @@ void GameScene::GameSecneSpriteUpdate()
 
 	// ===================== 出現スプライトのアニメーション制御 =====================
 	if (isSpawnActive_) {
-		spawnTimer_ += 1.5f;
+		spawnTimer_ += 1.0f;
 
 		// 出現演出
 		float startX = -1020.0f; // 左外
@@ -1026,8 +1021,6 @@ void GameScene::GameSecneSpriteUpdate()
 		// ===== フェード点滅 =====
 		float alpha = (sinf(spawnTimer_ * 0.1f) + 1.0f) * 0.5f; 
 		spawnSprite_->SetColor({1.0f, 1.0f, 1.0f, alpha});
-
-		vignetteSprite_->SetColor({1.0f, 1.0f, 1.0f, alpha * 0.5f}); // ビネットは半透明で点滅
 	}
 	// ==============================================================================
 
