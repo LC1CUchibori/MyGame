@@ -295,5 +295,8 @@ private:
 	bool isInkRespawning_ = false;
 
 	std::unique_ptr<PhaseState> phaseState_;
+
+	// ゲームオブジェクトの管理
+	std::vector<GameObject*> gameObjects_;
 };
 

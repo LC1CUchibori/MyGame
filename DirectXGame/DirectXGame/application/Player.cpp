@@ -55,6 +55,10 @@ void Player::Initialize(KamataEngine::Model* model,KamataEngine::Camera*camera)
 
 void Player::Update()
 {
+	if (isDead_) {
+		return;
+	}
+
 	// プレイヤーの移動処理
 	PlayerMove();
 
@@ -70,6 +74,9 @@ void Player::Update()
 
 void Player::Draw(KamataEngine::Camera* camera)
 {
+	if (isDead_) {
+		return;
+	}
 
 	if (!isDead_) {
 		model_->Draw(worldTransform_, *camera);

@@ -30,11 +30,13 @@ void GameScene::Initialize() {
 	playerModel_.reset(Model::CreateFromOBJ("Submarine"));
 	player_ = std::make_unique<Player>();
 	player_->Initialize(playerModel_.get(), &camera_);
+	gameObjects_.push_back(player_.get());
 
 	enemyModel_.reset(Model::CreateFromOBJ("shark"));
 	enemy_ = std::make_unique<Enemy>();
 	enemy_->Initialize(enemyModel_.get(), &camera_);
 	enemy_->SetTarget(&player_->GetPosition());
+	gameObjects_.push_back(enemy_.get());
 
 
 	// ===============================背景演出の初期化================================
@@ -199,6 +201,8 @@ void GameScene::Initialize() {
 	ruleSprite_ = Sprite::Create(ruleTextureHandle_, { 0.0f,0.0f });
 	// ========================================================
 
+
+
 	worldTransform_.Initialize();
 	// カメラの初期化
 	camera_.Initialize();
@@ -268,9 +272,17 @@ void GameScene::Update() {
 		}
 	}
 
-	// プレイヤー更新
-	if (player_) {
-		player_->Update();
+	//// プレイヤー更新
+	//if (player_) {
+	//	player_->Update();
+	//}
+
+	//// 敵の更新
+	//enemy_->Update();
+
+	for(auto* obj : gameObjects_)
+	{
+		obj->Update();
 	}
 
 	// sharkTop更新
@@ -280,11 +292,6 @@ void GameScene::Update() {
 			bomb->Kill();
 		}
 		bombs_.clear();
-	}
-
-	// 敵の更新
-	if (enemy_ && player_ && sharkTop_ && !(player_->IsDead() && sharkTop_->HasReturned())) {
-		enemy_->Update();
 	}
 
 	// ゲームオーバーシーンに移行
@@ -416,13 +423,18 @@ void GameScene::Draw() {
 	Model::PreDraw(dxCommn->GetCommandList());
 
 	// ----- プレイヤーの描画 ----
-	if (player_) {
-		player_->Draw(&camera_);
-	}
+	//if (player_) {
+	//	player_->Draw(&camera_);
+	//}
 
-	// ----- 敵の描画 ----
-	if (enemy_ && player_ && !(player_->IsDead())) {
-		enemy_->Draw(&camera_);
+	//// ----- 敵の描画 ----
+	//if (enemy_ && player_ && !(player_->IsDead())) {
+	//	enemy_->Draw(&camera_);
+	//}
+
+	for(auto* obj : gameObjects_)
+	{
+		obj->Draw(&camera_);
 	}
 
 	// ----- ふぐの描画 ----

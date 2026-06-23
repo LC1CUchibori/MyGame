@@ -56,6 +56,10 @@ void Enemy::Initialize(KamataEngine::Model* model, KamataEngine::Camera* camera)
 
 void Enemy::Update() {
 
+    if (enemy_ && player_ && sharkTop_ && !(player_->IsDead() && sharkTop_->HasReturned())) {
+        return;
+    }
+
     // --- 前フレーム位置を保存 ---
     KamataEngine::Vector3 prevPos = position_;
 
@@ -90,6 +94,19 @@ void Enemy::Update() {
 
 
 void Enemy::Draw(KamataEngine::Camera* camera) {
+
+   /* if (!player_) {
+        return;
+    }
+
+    if (player_->IsDead()) {
+        return;
+    }
+
+    if (isDead_) {
+        return;
+    }*/
+
     // エネミー本体を先に描画
     model_->Draw(worldTransform_, *camera);
 

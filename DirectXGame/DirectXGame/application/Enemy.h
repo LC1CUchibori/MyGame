@@ -6,6 +6,8 @@
 #include <vector>
 #include "Particle.h"
 #include "GameObject.h"
+#include "Player.h"
+#include <DirectXGame/engine/3d/SharkTop.h>
 
 class EnemyState;
 
@@ -153,6 +155,10 @@ private:
 	KamataEngine::Vector3 position_;
 	// プレイヤーの位置
 	const KamataEngine::Vector3* targetPos_ = nullptr;
+
+	std::unique_ptr<Player> player_;
+	std::unique_ptr<Enemy> enemy_;
+	std::unique_ptr<SharkTop> sharkTop_;
 
 	// 突進構造体
 	struct DashData {
