@@ -272,13 +272,6 @@ void GameScene::Update() {
 		}
 	}
 
-	//// プレイヤー更新
-	//if (player_) {
-	//	player_->Update();
-	//}
-
-	//// 敵の更新
-	//enemy_->Update();
 
 	for(auto* obj : gameObjects_)
 	{
