@@ -107,6 +107,7 @@ void Enemy::Draw(KamataEngine::Camera* camera) {
         return;
     }*/
 
+
     // エネミー本体を先に描画
     model_->Draw(worldTransform_, *camera);
 
