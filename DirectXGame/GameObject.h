@@ -13,6 +13,9 @@ public:
         return true;
     }
 
+    virtual void SetPosition(const KamataEngine::Vector3& pos) = 0;
+
+
 private:
     // モデル
     KamataEngine::Model* model_ = nullptr;

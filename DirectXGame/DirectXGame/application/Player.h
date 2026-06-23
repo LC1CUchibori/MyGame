@@ -32,6 +32,8 @@ public:
     // 弾の更新
     void BulletUpdate();
 
+    void SetPosition(const KamataEngine::Vector3& pos)override { dammyPos_ = pos; }
+
 
     bool CanShoot() const { return canShoot_; }
     bool IsDead() const { return isDead_; }
@@ -89,4 +91,7 @@ private:
     float dy;
     float angle;
     POINT mousePos;
+
+
+    KamataEngine::Vector3 dammyPos_ = {0.0f, 0.0f, 0.0f};
 };

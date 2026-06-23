@@ -333,7 +333,7 @@ void GameScene::Update() {
 		Vector3 pos = enemy_->GetPosition();
 		pos.z = player_->GetPosition().z;
 
-		bomb->Initialize(bombModel_.get(), insideBombModel_, &camera_, pos);
+		bomb->Initialize(bombModel_.get(), &camera_);
 		bombs_.push_back(bomb);
 
 		enemy_->ResetRequestBomb();

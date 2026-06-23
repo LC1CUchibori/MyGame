@@ -12,21 +12,27 @@ TimeBomb::~TimeBomb()
 {
 }
 
-void TimeBomb::Initialize(KamataEngine::Model* model,KamataEngine::Model* insideModel, KamataEngine::Camera* camera, const KamataEngine::Vector3& pos)
+using namespace KamataEngine;
+
+void TimeBomb::Initialize(KamataEngine::Model* model, KamataEngine::Camera* camera)
 {
     assert(model);
 
     model_ = model;
-    insideModel_ = insideModel;
+    insideBombModel_ = Model::CreateFromOBJ("InsideHugu");
     camera_ = camera;
 
-    status_.position_ = pos;
 
     worldTransform_.Initialize();
     worldTransform_.translation_ = status_.position_;
 
     insideWorldTransform_.Initialize();
-    insideWorldTransform_.translation_ = pos;
+}
+
+void TimeBomb::SetPosition(const KamataEngine::Vector3& pos) {
+	status_.position_ = pos;
+	worldTransform_.translation_ = pos;
+	insideWorldTransform_.translation_ = pos;
 }
 
 void TimeBomb::Update()
@@ -118,11 +124,11 @@ void TimeBomb::Draw(KamataEngine::Camera* camera)
     model_->Draw(worldTransform_, *camera);
 
     // 大きくなり始めたら棘を描画
-    if (status_.showSpike_ && insideModel_) {
+    if (status_.showSpike_ && insideBombModel_) {
         insideWorldTransform_.translation_ = worldTransform_.translation_;
         insideWorldTransform_.UpdateMatrix();
         insideWorldTransform_.TransferMatrix();
-        insideModel_->Draw(insideWorldTransform_, *camera);
+        insideBombModel_->Draw(insideWorldTransform_, *camera);
     }
 }
 

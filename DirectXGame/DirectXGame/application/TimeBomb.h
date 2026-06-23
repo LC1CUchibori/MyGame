@@ -2,14 +2,15 @@
 #include <KamataEngine.h>
 #include "../engine/3d/Model2.h"
 #include <vector>
+#include "GameObject.h"
 
-class TimeBomb
+class TimeBomb:public GameObject
 {
 public:
 	TimeBomb();
 	~TimeBomb();
 
-	void Initialize(KamataEngine::Model* model,KamataEngine::Model* insideModel,KamataEngine::Camera* camera, const KamataEngine::Vector3& pos);
+	void Initialize(KamataEngine::Model* model, KamataEngine::Camera* camera)override;
 
 	void Update();
 
@@ -22,6 +23,8 @@ public:
 	bool GetScale() const { return scale_; }
 
 	void Kill();
+
+	void SetPosition(const KamataEngine::Vector3& pos)override;
 
 	KamataEngine::Vector3 GetPosition()const { return status_.position_; }
 
@@ -38,7 +41,7 @@ private:
 	KamataEngine::Camera* camera_ = nullptr;
 
 	// 棘モデル
-	KamataEngine::Model* insideModel_ = nullptr;
+	KamataEngine::Model* insideBombModel_ = nullptr;
 
 	struct BombStatus {
 		KamataEngine::Vector3 position_{};
