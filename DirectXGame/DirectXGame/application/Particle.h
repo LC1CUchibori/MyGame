@@ -30,7 +30,7 @@ private:
     float lifetime_ = 0.0f;
     float maxLifetime_ = 0.8f;
 
-    bool alive_ = true;
+    bool alive_ = false;
 
     // 色
     float alpha = 0.0f;

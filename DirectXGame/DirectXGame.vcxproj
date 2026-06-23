@@ -138,6 +138,7 @@
     <ClCompile Include="DirectXGame\engine\secne\Phase2State.cpp" />
     <ClCompile Include="DirectXGame\engine\secne\Phase3State.cpp" />
     <ClCompile Include="DirectXGame\engine\secne\Phase4State.cpp" />
+    <ClCompile Include="DirectXGame\application\ParticlePool.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\TerrainPS.hlsl">
@@ -246,6 +247,7 @@
     <ClInclude Include="DirectXGame\engine\secne\Phase2State.h" />
     <ClInclude Include="DirectXGame\engine\secne\Phase3State.h" />
     <ClInclude Include="DirectXGame\engine\secne\Phase4State.h" />
+    <ClInclude Include="DirectXGame\application\ParticlePool.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

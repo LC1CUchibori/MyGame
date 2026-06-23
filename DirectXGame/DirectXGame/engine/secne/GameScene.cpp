@@ -85,6 +85,15 @@ void GameScene::Initialize() {
 	// 弾パーティクル
 	particleModel_ = Model::CreateFromOBJ("EnemyBullet");
 
+	// パーティクル
+	particlePool_ = std::make_unique<ParticlePool>();
+
+	particlePool_->Initialize(
+		particleModel_,
+		&camera_,
+		300
+	);
+
 
 	gameOverTextureHandle_ = TextureManager::Load("GameOver.png");
 	gameOverSprite_.reset(KamataEngine::Sprite::Create(gameOverTextureHandle_, {400.0f, 200.0f}));
@@ -345,17 +354,12 @@ void GameScene::Update() {
 	}
 
 
-	for (auto& p : particles_) {
-		p->Update();
-	}
+	/*for (auto& particle : particles_) {
+		particle->Update();
+	}*/
 
-	particles_.erase(
-		std::remove_if(particles_.begin(), particles_.end(),
-			[](const std::unique_ptr<Particle>& p) {
-				return !p->IsAlive();
-			}),
-		particles_.end()
-	);
+	particlePool_->Update();
+
 
 	worldTransform_.UpdateMatrix();
 	worldTransform_.TransferMatrix();
@@ -427,9 +431,10 @@ void GameScene::Draw() {
 	}
 
 	// ----- パーティクル -----
-	for (auto& p : particles_) {
+	/*for (auto& p : particles_) {
 		p->Draw();
-	}
+	}*/
+	particlePool_->Draw();
 
 	// ----- サメの役物の描画 ----
 	if (sharkTop_) {
@@ -642,7 +647,8 @@ void GameScene::IsCollision()
 						bulletPos
 					);
 
-					particles_.push_back(std::move(particle));
+					particlePool_->Create(
+						enemy_->GetPosition());
 				}
 
 				if (phase_ == 5) {

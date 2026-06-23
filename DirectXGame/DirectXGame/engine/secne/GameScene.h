@@ -17,6 +17,7 @@
 #include <list>
 #include "BaseScene.h"
 #include "PhaseState.h"
+#include "../../application/ParticlePool.h"
 
 
 class GameScene: public BaseScene 
@@ -119,8 +120,10 @@ private:
 	std::unique_ptr<Stage> stage;
 
 	// パーティクル
-	std::vector<std::unique_ptr<Particle>> particles_;
-	Model* particleModel_ = nullptr;
+	/*std::vector<std::unique_ptr<Particle>> particles_;
+	Model* particleModel_ = nullptr;*/
+	std::unique_ptr<ParticlePool> particlePool_;
+	KamataEngine::Model* particleModel_ = nullptr;
 
 	// pushタイムバー
 	std::unique_ptr<Graph> RedGraph_;
