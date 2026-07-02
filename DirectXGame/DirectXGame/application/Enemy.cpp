@@ -202,4 +202,6 @@ void Enemy::ChangeState(EnemyState* state)
 {
     delete state_;
     state_ = state;
+
+
 }
