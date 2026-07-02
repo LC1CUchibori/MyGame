@@ -8,6 +8,7 @@
 #include "GameObject.h"
 #include "Player.h"
 #include <DirectXGame/engine/3d/SharkTop.h>
+#include "EnemyState.h"
 
 class EnemyState;
 
@@ -131,15 +132,14 @@ public:
 
 	bool IsRequestBomb() const { return bomb_.requestBomb_; }
 
-	/*void ChangeState(EnemyState* state)
-	{
-		delete state_;
-		state_ = state;
-	}*/
+	void ChangeState(EnemyState* state);
+
+	friend class EnemyMoveState;
+	friend class EnemyAttackState;
 	
 	private:
 
-	/*EnemyState* state_ = nullptr;*/
+	EnemyState* state_ = nullptr;
 
 
 private:
@@ -209,13 +209,13 @@ private:
 	};
 	Bomb bomb_;
 
-	// state構造体
-	enum class State:uint8_t
-	{
-		move,   // 移動
-		attack, // 突進
-	};
-	State state_;
+	//// state構造体
+	//enum class State:uint8_t
+	//{
+	//	move,   // 移動
+	//	attack, // 突進
+	//};
+	//State state_;
 
 	KamataEngine::Vector3 direction;
 
