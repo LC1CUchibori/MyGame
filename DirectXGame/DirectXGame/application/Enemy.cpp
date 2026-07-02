@@ -2,6 +2,8 @@
 #include <cassert>
 #include <cmath>
 #include "TimeBomb.h"
+#include "EnemyMoveState.h"
+#include "EnemyAttackState.h"
 
 Enemy::Enemy() {}
 
@@ -52,6 +54,7 @@ void Enemy::Initialize(KamataEngine::Model* model, KamataEngine::Camera* camera)
     hp_ = 10;
     maxHp_ = 10;
 
+    state_ = new EnemyMoveState();
 }
 
 void Enemy::Update() {
@@ -66,7 +69,9 @@ void Enemy::Update() {
     // --- モデルのスケール ---
     worldTransform_.scale_ = { 2.0f, 2.0f, 2.0f };
 
-    SetState();
+    //SetState();
+
+    state_->Update(this);
 
     // --- パーティクル処理 ---
     ParticleUpdate();
@@ -142,187 +147,6 @@ void Enemy::TakeDamage(int damage)
     }
 }
 
-void Enemy::SetState() {
-
-    switch (state_) {
-
-        // =============================
-        //  移動ステート
-        // =============================
-    case State::move:
-
-        // --- 死亡演出 ---
-        if (isDead_) {
-            // 最初は震える
-            if (shakeTimer_ < 60) {
-                position_.x += std::sin(shakeTimer_ * 0.5f) * 0.3f;
-                position_.y += std::cos(shakeTimer_ * 0.7f) * 0.3f;
-                shakeTimer_++;
-            }
-            // 震え後は上方向へ逃げる
-            else {
-                position_.y += move_.escapeSpeed_;
-            }
-            return;
-        }
-
-        // --- 突進開始条件 ---
-        if (!forceMove_ && dash_.stateTimer_ >= 300 && !dash_.isDashing) {
-
-            // 突進前の「震え予兆」
-            if (dash_.preShakeTimer_ < 20) {
-                position_.x += std::sin(dash_.preShakeTimer_ * 0.5f) * 0.3f;
-                position_.y += std::cos(dash_.preShakeTimer_ * 0.7f) * 0.3f;
-                dash_.preShakeTimer_++;
-            }
-            // 震え終わったら突進開始
-            else {
-                state_ = State::attack;
-                dash_.isDashing     = true;
-                dash_.justFinished_ = false;
-                currentDashCount_++; 
-
-                // --- 突進方向をプレイヤーへ向けて正規化 ---
-                if (targetPos_) {
-                    direction.x = targetPos_->x - position_.x;
-                    direction.y = targetPos_->y - position_.y;
-                    direction.z = 0.0f;
-
-                    float len = std::sqrt(direction.x * direction.x + direction.y * direction.y);
-                    if (len > 0.001f) {
-                        direction.x /= len;
-                        direction.y /= len;
-                    }
-                }
-
-                dash_.preShakeTimer_ = 0;
-            }
-        }
-
-        // --- 上空からの接近シーン ---
-        if (move_.isApproaching_) {
-
-            position_.z -= move_.approachSpeed_;
-
-            // --- Y位置も線形補間で下げる ---
-            float t = (200.0f - position_.z) / (200.0f - move_.stopZ_);
-            position_.y = 60.0f + t * (move_.stopY_ - 60.0f);
-
-            // --- 接近完了 ---
-            if (position_.z <= move_.stopZ_) {
-                position_.z = move_.stopZ_;
-                position_.y = move_.stopY_;
-                move_.isApproaching_ = false;
-            }
-        }
-        else {
-            // --- 突進待ち時間カウント ---
-            dash_.stateTimer_++;
-
-            // --- 通常移動 ---
-            if (!dash_.isDashing) {
-
-                if (!move_.verticalOnly_) {
-                    // --- 左右移動 ---
-                    position_.x += move_.speed_ * move_.direction_;
-
-                    if (position_.x >= 23.0f) { 
-                        position_.x = 23.0f; 
-                        move_.direction_ = -1.0f; 
-                    }
-                    if (position_.x <= -23.0f) { 
-                        position_.x = -23.0f; 
-                        move_.direction_ = 1.0f; 
-                    }
-                }
-                else {
-                    // --- 上下移動 --- 
-                    position_.y += move_.speed_ * move_.direction_;
-
-                    if (position_.y >= 11.5f) {
-                        position_.y = 11.5f;
-                        move_.direction_ = -1.0f;
-                    }
-                    if (position_.y <= -11.5f) {
-                        position_.y = -11.5f;
-                        move_.direction_ = 1.0f;
-                    }
-                }
-            }
-        }
-        break;
-
-        // =============================
-        //  攻撃ステート
-        // =============================
-    case State::attack:
-
-        if (dash_.isDashing && targetPos_) {
-
-            float dashSpeed = 0.5f;
-
-            // --- プレイヤー方向へ直線突進 ---
-            position_.x += direction.x * dashSpeed;
-            position_.y += direction.y * dashSpeed;
-            position_.z += direction.z * dashSpeed;
-
-            // ===== 爆弾設置処理 =====
-            bomb_.bombTimer_++;
-
-            if (bomb_.bombTimer_ >= bomb_.bombInterval_) {
-                bomb_.requestBomb_ = true; // GameScene に通知
-                bomb_.bombTimer_ = 0;
-            }
-
-            bool clampX = false;
-            bool clampY = false;
-
-            if (position_.x > 25.0f) { position_.x = 25.0f;  clampX = (direction.x > 0); }
-            if (position_.x < -25.0f){ position_.x = -25.0f; clampX = (direction.x < 0); }
-
-            if (position_.y > 13.5f) { position_.y = 13.5f;  clampY = (direction.y > 0); }
-            if (position_.y < -13.5f){ position_.y = -13.5f; clampY = (direction.y < 0); }
-
-            if (clampX || clampY) {
-
-                dash_.isDashing = false;
-                bomb_.bombTimer_ = 0;
-
-                if (currentDashCount_ < maxDashCount_) {
-                    // ===== 連続突進 =====
-                    state_ = State::move; // 少しmoveにする
-                    dash_.stateTimer_ = 300;    // すぐ次の突進に入れる
-                }
-                else {
-                    // ===== 突進終了 =====
-                    state_ = State::move;
-                    dash_.stateTimer_ = 0;
-                    currentDashCount_ = 0;
-                    bomb_.requestBomb_ = false;
-                }
-                dash_.justFinished_ = true;
-
-                if (clampX) {
-                    // ---左右の壁にぶつかった時の上下移動 ---
-                    move_.verticalOnly_ = true;
-                    move_.direction_ = (direction.y >= 0) ? 1.0f : -1.0f;
-                }
-                if (clampY) {
-                    // --- 上下の壁にぶつかった時の左右移動 ---
-                    move_.verticalOnly_ = false;
-                    move_.direction_ = (direction.x >= 0) ? 1.0f : -1.0f;
-                }
-
-                return;
-            }
-        }
-        break;
-
-    default:
-        break;
-    }
-}
-
 void Enemy::ResetDashTimer()
 {
     // ===== 突進状態リセット =====
@@ -339,7 +163,7 @@ void Enemy::ResetDashTimer()
     currentDashCount_ = 0;
 
     // ===== ステートを安全側に =====
-    state_ = State::move;
+    ChangeState(new EnemyMoveState());
 
     // ===== 移動も戻す（重要）=====
     move_.isApproaching_ = true;
@@ -372,4 +196,10 @@ void Enemy::ParticleUpdate()
             }),
         particles_.end());
     // =========================================================
+}
+
+void Enemy::ChangeState(EnemyState* state)
+{
+    delete state_;
+    state_ = state;
 }
